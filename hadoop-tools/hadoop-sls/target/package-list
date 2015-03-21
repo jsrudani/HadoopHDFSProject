@@ -1,0 +1,7 @@
+org.apache.hadoop.yarn.sls
+org.apache.hadoop.yarn.sls.appmaster
+org.apache.hadoop.yarn.sls.conf
+org.apache.hadoop.yarn.sls.nodemanager
+org.apache.hadoop.yarn.sls.scheduler
+org.apache.hadoop.yarn.sls.utils
+org.apache.hadoop.yarn.sls.web

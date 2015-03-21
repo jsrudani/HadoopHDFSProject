@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-tools/hadoop-pipes/src/main/native/examples/impl/wordcount-simple.cc
+hadoop/Pipes.hh
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-tools/hadoop-pipes/src/main/native/examples/impl/hadoop/Pipes.hh
+hadoop/TemplateFactory.hh
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-tools/hadoop-pipes/src/main/native/examples/impl/hadoop/TemplateFactory.hh
+hadoop/StringUtils.hh
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-tools/hadoop-pipes/src/main/native/examples/impl/hadoop/StringUtils.hh
+
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-tools/hadoop-pipes/src/main/native/pipes/api/hadoop/Pipes.hh
+string
+-
+stdint.h
+-
+
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-tools/hadoop-pipes/src/main/native/pipes/api/hadoop/TemplateFactory.hh
+
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-tools/hadoop-pipes/src/main/native/utils/api/hadoop/StringUtils.hh
+stdint.h
+-
+string
+-
+vector
+-
+

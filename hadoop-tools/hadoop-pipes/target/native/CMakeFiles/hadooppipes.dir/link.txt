@@ -1,0 +1,2 @@
+/usr/bin/ar cr libhadooppipes.a  CMakeFiles/hadooppipes.dir/main/native/pipes/impl/HadoopPipes.cc.o
+/usr/bin/ranlib libhadooppipes.a

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<javadocOptions>
+  <groups>
+    <group>
+      <title>Apache Hadoop Tools Dist API</title>
+      <packages>org.apache.hadoop*</packages>
+    </group>
+  </groups>
+  <docletArtifacts>
+    <docletArtifact />
+    <docletArtifact>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-annotations</artifactId>
+      <version>2.3.0</version>
+    </docletArtifact>
+  </docletArtifacts>
+  <tagletArtifacts>
+    <tagletArtifact />
+  </tagletArtifacts>
+  <javadocResourcesDirectory>src/main/javadoc</javadocResourcesDirectory>
+</javadocOptions>

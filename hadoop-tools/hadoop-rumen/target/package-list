@@ -1,0 +1,6 @@
+org.apache.hadoop.tools.rumen
+org.apache.hadoop.tools.rumen.anonymization
+org.apache.hadoop.tools.rumen.datatypes
+org.apache.hadoop.tools.rumen.datatypes.util
+org.apache.hadoop.tools.rumen.serializers
+org.apache.hadoop.tools.rumen.state

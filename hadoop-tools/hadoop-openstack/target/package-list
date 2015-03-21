@@ -1,0 +1,6 @@
+org.apache.hadoop.fs.swift.auth
+org.apache.hadoop.fs.swift.auth.entities
+org.apache.hadoop.fs.swift.exceptions
+org.apache.hadoop.fs.swift.http
+org.apache.hadoop.fs.swift.snative
+org.apache.hadoop.fs.swift.util

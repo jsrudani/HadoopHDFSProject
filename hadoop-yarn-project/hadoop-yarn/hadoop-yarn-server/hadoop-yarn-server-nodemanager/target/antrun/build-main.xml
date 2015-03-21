@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <mkdir dir="/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/target/native/target"/>
+  <exec dir="/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/target/native" executable="cmake" failonerror="true">
+    <arg line="/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/src/ -DHADOOP_CONF_DIR=../etc/hadoop -DJVM_ARCH_DATA_MODEL=64"/>
+    <env value="" key="CFLAGS"/>
+  </exec>
+  <exec dir="/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/target/native" executable="make" failonerror="true">
+    <arg line="VERBOSE=1"/>
+  </exec>
+  <exec dir="/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager/target/native" executable="make" failonerror="true"></exec>
+</target>
+</project>

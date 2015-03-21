@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <mkdir dir="/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-tools/hadoop-pipes/target/native"/>
+  <exec dir="/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-tools/hadoop-pipes/target/native" executable="cmake" failonerror="true">
+    <arg line="/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-tools/hadoop-pipes/src/ -DJVM_ARCH_DATA_MODEL=64"/>
+  </exec>
+  <exec dir="/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-tools/hadoop-pipes/target/native" executable="make" failonerror="true">
+    <arg line="VERBOSE=1"/>
+  </exec>
+  <exec dir="/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-tools/hadoop-pipes/target/native" executable="make" failonerror="true"></exec>
+</target>
+</project>

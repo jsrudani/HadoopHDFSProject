@@ -1,0 +1,6 @@
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-tools/hadoop-pipes/target/native/CMakeFiles/hadooppipes.dir
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-tools/hadoop-pipes/target/native/CMakeFiles/hadooputils.dir
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-tools/hadoop-pipes/target/native/CMakeFiles/pipes-sort.dir
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-tools/hadoop-pipes/target/native/CMakeFiles/wordcount-nopipe.dir
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-tools/hadoop-pipes/target/native/CMakeFiles/wordcount-part.dir
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-tools/hadoop-pipes/target/native/CMakeFiles/wordcount-simple.dir

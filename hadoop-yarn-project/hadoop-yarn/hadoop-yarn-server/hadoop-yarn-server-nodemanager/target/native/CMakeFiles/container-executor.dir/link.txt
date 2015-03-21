@@ -1,0 +1,1 @@
+/usr/bin/cc   -g -Wall -O2 -D_GNU_SOURCE -D_REENTRANT    CMakeFiles/container-executor.dir/main/native/container-executor/impl/main.c.o  -o target/usr/local/bin/container-executor -rdynamic libcontainer.a 
