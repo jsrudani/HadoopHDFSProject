@@ -1,0 +1,67 @@
+CACHING IN HDFS
+===============================
+CREATING CACHE IN HDFS
+===============================
+jsrudani@Jigs:~/hadoopcache/hadoopInstalled/hadoop$ hdfs cacheadmin -addPool inMem -limit 10485760 -maxTtl never
+Successfully added cache pool inMem.
+jsrudani@Jigs:~/hadoopcache/hadoopInstalled/hadoop$ hdfs cacheadmin -listPools
+Found 1 result.
+NAME   OWNER     GROUP     MODE           LIMIT  MAXTTL
+inMem  jsrudani  jsrudani  rwxr-xr-x   10485760   never
+
+CREATING CACHE DIRECTIVE IN HDFS
+================================
+jsrudani@Jigs:~/hadoopcache/hadoopInstalled/hadoop$ hdfs cacheadmin -addDirective -path /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File1.txt -pool inMem
+Added cache directive 1
+jsrudani@Jigs:~/hadoopcache/hadoopInstalled/hadoop$ hdfs cacheadmin -listDirectives
+Found 1 entry
+ ID POOL    REPL EXPIRY  PATH                                                            
+  1 inMem      1 never   /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File1.txt
+
+CACHE STATISTICS IN HDFS
+===============================
+jsrudani@Jigs:~/hadoopcache/hadoopInstalled/hadoop$ hdfs cacheadmin -listPools -stats inMem
+Found 1 result.
+NAME   OWNER     GROUP     MODE           LIMIT  MAXTTL  BYTES_NEEDED  BYTES_CACHED  BYTES_OVERLIMIT  FILES_NEEDED  FILES_CACHED
+inMem  jsrudani  jsrudani  rwxr-xr-x   10485760   never            16            16                0             1             1
+
+ADMIN REPORT
+====================================================
+jsrudani@Jigs:~/hadoopcache/hadoopInstalled/hadoop$ hdfs dfsadmin -report
+Configured Capacity: 487213572096 (453.75 GB)
+Present Capacity: 416936902656 (388.30 GB)
+DFS Remaining: 416936562688 (388.30 GB)
+DFS Used: 339968 (332 KB)
+DFS Used%: 0.00%
+Under replicated blocks: 9
+Blocks with corrupt replicas: 0
+Missing blocks: 0
+
+-------------------------------------------------
+Datanodes available: 1 (1 total, 0 dead)
+
+Live datanodes:
+Name: 127.0.0.1:50010 (localhost)
+Hostname: Jigs
+Decommission Status : Normal
+Configured Capacity: 487213572096 (453.75 GB)
+DFS Used: 339968 (332 KB)
+Non DFS Used: 70276669440 (65.45 GB)
+DFS Remaining: 416936562688 (388.30 GB)
+DFS Used%: 0.00%
+DFS Remaining%: 85.58%
+Configured Cache Capacity: 10485760 (10 MB)
+Cache Used: 4096 (4 KB)
+Cache Remaining: 10481664 (10.00 MB)
+Cache Used%: 0.04%
+Cache Remaining%: 99.96%
+Last contact: Wed Mar 04 08:09:41 CST 2015
+
+LOGS VERIFYING CACHING
+========================================
+2015-03-04 08:04:33,279 INFO org.apache.hadoop.hdfs.server.blockmanagement.CacheReplicationMonitor: Rescanning because of pending operations
+2015-03-04 08:04:33,317 INFO org.apache.hadoop.hdfs.server.blockmanagement.CacheReplicationMonitor: Scanned 1 directive(s) and 1 block(s) in 38 millisecond(s).
+2015-03-04 08:04:35,174 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: Processed cache report from DatanodeRegistration(127.0.0.1, datanodeUuid=31416bf4-779c-40e9-b238-18a7ba53fe90, infoPort=50075, ipcPort=50020, storageInfo=lv=-51;cid=CID-ef75ee14-f6eb-44e5-8ae1-fcdf585c7cc8;nsid=211831818;c=0), blocks: 0, processing time: 0 msecs
+2015-03-04 08:04:47,102 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: Processed cache report from DatanodeRegistration(127.0.0.1, datanodeUuid=31416bf4-779c-40e9-b238-18a7ba53fe90, infoPort=50075, ipcPort=50020, storageInfo=lv=-51;cid=CID-ef75ee14-f6eb-44e5-8ae1-fcdf585c7cc8;nsid=211831818;c=0), blocks: 1, processing time: 0 msecs
+2015-03-04 08:04:59,101 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: Processed cache report from DatanodeRegistration(127.0.0.1, datanodeUuid=31416bf4-779c-40e9-b238-18a7ba53fe90, infoPort=50075, ipcPort=50020, storageInfo=lv=-51;cid=CID-ef75ee14-f6eb-44e5-8ae1-fcdf585c7cc8;nsid=211831818;c=0), blocks: 1, processing time: 0 msecs
+
