@@ -1,0 +1,2 @@
+/usr/bin/ar cr target/usr/local/lib/libhdfs.a  CMakeFiles/hdfs_static.dir/main/native/libhdfs/exception.c.o CMakeFiles/hdfs_static.dir/main/native/libhdfs/jni_helper.c.o CMakeFiles/hdfs_static.dir/main/native/libhdfs/hdfs.c.o
+/usr/bin/ranlib target/usr/local/lib/libhdfs.a

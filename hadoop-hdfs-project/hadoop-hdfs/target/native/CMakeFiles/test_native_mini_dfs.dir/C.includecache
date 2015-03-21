@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/jsrudani/Softwares/java/include/jni.h
+stdio.h
+-
+stdarg.h
+-
+jni_md.h
+/home/jsrudani/Softwares/java/include/jni_md.h
+
+/home/jsrudani/Softwares/java/include/linux/jni_md.h
+
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-hdfs-project/hadoop-hdfs/src/main/native/libhdfs/expect.h
+inttypes.h
+-
+stdio.h
+-
+
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-hdfs-project/hadoop-hdfs/src/main/native/libhdfs/native_mini_dfs.h
+jni.h
+-
+
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-hdfs-project/hadoop-hdfs/src/main/native/libhdfs/test_native_mini_dfs.c
+expect.h
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-hdfs-project/hadoop-hdfs/src/main/native/libhdfs/expect.h
+native_mini_dfs.h
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-hdfs-project/hadoop-hdfs/src/main/native/libhdfs/native_mini_dfs.h
+errno.h
+-
+

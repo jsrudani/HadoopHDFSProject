@@ -1,0 +1,551 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    /**<a name="line.1"></a>
+<FONT color="green">002</FONT>     * Licensed to the Apache Software Foundation (ASF) under one<a name="line.2"></a>
+<FONT color="green">003</FONT>     * or more contributor license agreements.  See the NOTICE file<a name="line.3"></a>
+<FONT color="green">004</FONT>     * distributed with this work for additional information<a name="line.4"></a>
+<FONT color="green">005</FONT>     * regarding copyright ownership.  The ASF licenses this file<a name="line.5"></a>
+<FONT color="green">006</FONT>     * to you under the Apache License, Version 2.0 (the<a name="line.6"></a>
+<FONT color="green">007</FONT>     * "License"); you may not use this file except in compliance<a name="line.7"></a>
+<FONT color="green">008</FONT>     * with the License.  You may obtain a copy of the License at<a name="line.8"></a>
+<FONT color="green">009</FONT>     *<a name="line.9"></a>
+<FONT color="green">010</FONT>     *     http://www.apache.org/licenses/LICENSE-2.0<a name="line.10"></a>
+<FONT color="green">011</FONT>     *<a name="line.11"></a>
+<FONT color="green">012</FONT>     * Unless required by applicable law or agreed to in writing, software<a name="line.12"></a>
+<FONT color="green">013</FONT>     * distributed under the License is distributed on an "AS IS" BASIS,<a name="line.13"></a>
+<FONT color="green">014</FONT>     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.14"></a>
+<FONT color="green">015</FONT>     * See the License for the specific language governing permissions and<a name="line.15"></a>
+<FONT color="green">016</FONT>     * limitations under the License.<a name="line.16"></a>
+<FONT color="green">017</FONT>     */<a name="line.17"></a>
+<FONT color="green">018</FONT>    package org.apache.hadoop.hdfs.util;<a name="line.18"></a>
+<FONT color="green">019</FONT>    <a name="line.19"></a>
+<FONT color="green">020</FONT>    import java.util.ArrayList;<a name="line.20"></a>
+<FONT color="green">021</FONT>    import java.util.Collections;<a name="line.21"></a>
+<FONT color="green">022</FONT>    import java.util.Iterator;<a name="line.22"></a>
+<FONT color="green">023</FONT>    import java.util.List;<a name="line.23"></a>
+<FONT color="green">024</FONT>    <a name="line.24"></a>
+<FONT color="green">025</FONT>    import com.google.common.base.Preconditions;<a name="line.25"></a>
+<FONT color="green">026</FONT>    <a name="line.26"></a>
+<FONT color="green">027</FONT>    /**<a name="line.27"></a>
+<FONT color="green">028</FONT>     * The difference between the current state and a previous state of a list.<a name="line.28"></a>
+<FONT color="green">029</FONT>     * <a name="line.29"></a>
+<FONT color="green">030</FONT>     * Given a previous state of a set and a sequence of create, delete and modify<a name="line.30"></a>
+<FONT color="green">031</FONT>     * operations such that the current state of the set can be obtained by applying<a name="line.31"></a>
+<FONT color="green">032</FONT>     * the operations on the previous state, the following algorithm construct the<a name="line.32"></a>
+<FONT color="green">033</FONT>     * difference between the current state and the previous state of the set.<a name="line.33"></a>
+<FONT color="green">034</FONT>     * <a name="line.34"></a>
+<FONT color="green">035</FONT>     * &lt;pre&gt;<a name="line.35"></a>
+<FONT color="green">036</FONT>     * Two lists are maintained in the algorithm:<a name="line.36"></a>
+<FONT color="green">037</FONT>     * - c-list for newly created elements<a name="line.37"></a>
+<FONT color="green">038</FONT>     * - d-list for the deleted elements<a name="line.38"></a>
+<FONT color="green">039</FONT>     *<a name="line.39"></a>
+<FONT color="green">040</FONT>     * Denote the state of an element by the following<a name="line.40"></a>
+<FONT color="green">041</FONT>     *   (0, 0): neither in c-list nor d-list<a name="line.41"></a>
+<FONT color="green">042</FONT>     *   (c, 0): in c-list but not in d-list<a name="line.42"></a>
+<FONT color="green">043</FONT>     *   (0, d): in d-list but not in c-list<a name="line.43"></a>
+<FONT color="green">044</FONT>     *   (c, d): in both c-list and d-list<a name="line.44"></a>
+<FONT color="green">045</FONT>     *<a name="line.45"></a>
+<FONT color="green">046</FONT>     * For each case below, ( , ) at the end shows the result state of the element.<a name="line.46"></a>
+<FONT color="green">047</FONT>     *<a name="line.47"></a>
+<FONT color="green">048</FONT>     * Case 1. Suppose the element i is NOT in the previous state.           (0, 0)<a name="line.48"></a>
+<FONT color="green">049</FONT>     *   1.1. create i in current: add it to c-list                          (c, 0)<a name="line.49"></a>
+<FONT color="green">050</FONT>     *   1.1.1. create i in current and then create: impossible<a name="line.50"></a>
+<FONT color="green">051</FONT>     *   1.1.2. create i in current and then delete: remove it from c-list   (0, 0)<a name="line.51"></a>
+<FONT color="green">052</FONT>     *   1.1.3. create i in current and then modify: replace it in c-list    (c', 0)<a name="line.52"></a>
+<FONT color="green">053</FONT>     *<a name="line.53"></a>
+<FONT color="green">054</FONT>     *   1.2. delete i from current: impossible<a name="line.54"></a>
+<FONT color="green">055</FONT>     *<a name="line.55"></a>
+<FONT color="green">056</FONT>     *   1.3. modify i in current: impossible<a name="line.56"></a>
+<FONT color="green">057</FONT>     *<a name="line.57"></a>
+<FONT color="green">058</FONT>     * Case 2. Suppose the element i is ALREADY in the previous state.       (0, 0)<a name="line.58"></a>
+<FONT color="green">059</FONT>     *   2.1. create i in current: impossible<a name="line.59"></a>
+<FONT color="green">060</FONT>     *<a name="line.60"></a>
+<FONT color="green">061</FONT>     *   2.2. delete i from current: add it to d-list                        (0, d)<a name="line.61"></a>
+<FONT color="green">062</FONT>     *   2.2.1. delete i from current and then create: add it to c-list      (c, d)<a name="line.62"></a>
+<FONT color="green">063</FONT>     *   2.2.2. delete i from current and then delete: impossible<a name="line.63"></a>
+<FONT color="green">064</FONT>     *   2.2.2. delete i from current and then modify: impossible<a name="line.64"></a>
+<FONT color="green">065</FONT>     *<a name="line.65"></a>
+<FONT color="green">066</FONT>     *   2.3. modify i in current: put it in both c-list and d-list          (c, d)<a name="line.66"></a>
+<FONT color="green">067</FONT>     *   2.3.1. modify i in current and then create: impossible<a name="line.67"></a>
+<FONT color="green">068</FONT>     *   2.3.2. modify i in current and then delete: remove it from c-list   (0, d)<a name="line.68"></a>
+<FONT color="green">069</FONT>     *   2.3.3. modify i in current and then modify: replace it in c-list    (c', d)<a name="line.69"></a>
+<FONT color="green">070</FONT>     * &lt;/pre&gt;<a name="line.70"></a>
+<FONT color="green">071</FONT>     *<a name="line.71"></a>
+<FONT color="green">072</FONT>     * @param &lt;K&gt; The key type.<a name="line.72"></a>
+<FONT color="green">073</FONT>     * @param &lt;E&gt; The element type, which must implement {@link Element} interface.<a name="line.73"></a>
+<FONT color="green">074</FONT>     */<a name="line.74"></a>
+<FONT color="green">075</FONT>    public class Diff&lt;K, E extends Diff.Element&lt;K&gt;&gt; {<a name="line.75"></a>
+<FONT color="green">076</FONT>      public static enum ListType {<a name="line.76"></a>
+<FONT color="green">077</FONT>        CREATED, DELETED<a name="line.77"></a>
+<FONT color="green">078</FONT>      }<a name="line.78"></a>
+<FONT color="green">079</FONT>    <a name="line.79"></a>
+<FONT color="green">080</FONT>      /** An interface for the elements in a {@link Diff}. */<a name="line.80"></a>
+<FONT color="green">081</FONT>      public static interface Element&lt;K&gt; extends Comparable&lt;K&gt; {<a name="line.81"></a>
+<FONT color="green">082</FONT>        /** @return the key of this object. */<a name="line.82"></a>
+<FONT color="green">083</FONT>        public K getKey();<a name="line.83"></a>
+<FONT color="green">084</FONT>      }<a name="line.84"></a>
+<FONT color="green">085</FONT>    <a name="line.85"></a>
+<FONT color="green">086</FONT>      /** An interface for passing a method in order to process elements. */<a name="line.86"></a>
+<FONT color="green">087</FONT>      public static interface Processor&lt;E&gt; {<a name="line.87"></a>
+<FONT color="green">088</FONT>        /** Process the given element. */<a name="line.88"></a>
+<FONT color="green">089</FONT>        public void process(E element);<a name="line.89"></a>
+<FONT color="green">090</FONT>      }<a name="line.90"></a>
+<FONT color="green">091</FONT>    <a name="line.91"></a>
+<FONT color="green">092</FONT>      /** Containing exactly one element. */<a name="line.92"></a>
+<FONT color="green">093</FONT>      public static class Container&lt;E&gt; {<a name="line.93"></a>
+<FONT color="green">094</FONT>        private final E element;<a name="line.94"></a>
+<FONT color="green">095</FONT>    <a name="line.95"></a>
+<FONT color="green">096</FONT>        private Container(E element) {<a name="line.96"></a>
+<FONT color="green">097</FONT>          this.element = element;<a name="line.97"></a>
+<FONT color="green">098</FONT>        }<a name="line.98"></a>
+<FONT color="green">099</FONT>    <a name="line.99"></a>
+<FONT color="green">100</FONT>        /** @return the element. */<a name="line.100"></a>
+<FONT color="green">101</FONT>        public E getElement() {<a name="line.101"></a>
+<FONT color="green">102</FONT>          return element;<a name="line.102"></a>
+<FONT color="green">103</FONT>        }<a name="line.103"></a>
+<FONT color="green">104</FONT>      }<a name="line.104"></a>
+<FONT color="green">105</FONT>      <a name="line.105"></a>
+<FONT color="green">106</FONT>      /** <a name="line.106"></a>
+<FONT color="green">107</FONT>       * Undo information for some operations such as delete(E)<a name="line.107"></a>
+<FONT color="green">108</FONT>       * and {@link Diff#modify(Element, Element)}.<a name="line.108"></a>
+<FONT color="green">109</FONT>       */<a name="line.109"></a>
+<FONT color="green">110</FONT>      public static class UndoInfo&lt;E&gt; {<a name="line.110"></a>
+<FONT color="green">111</FONT>        private final int createdInsertionPoint;<a name="line.111"></a>
+<FONT color="green">112</FONT>        private final E trashed;<a name="line.112"></a>
+<FONT color="green">113</FONT>        private final Integer deletedInsertionPoint;<a name="line.113"></a>
+<FONT color="green">114</FONT>        <a name="line.114"></a>
+<FONT color="green">115</FONT>        private UndoInfo(final int createdInsertionPoint, final E trashed,<a name="line.115"></a>
+<FONT color="green">116</FONT>            final Integer deletedInsertionPoint) {<a name="line.116"></a>
+<FONT color="green">117</FONT>          this.createdInsertionPoint = createdInsertionPoint;<a name="line.117"></a>
+<FONT color="green">118</FONT>          this.trashed = trashed;<a name="line.118"></a>
+<FONT color="green">119</FONT>          this.deletedInsertionPoint = deletedInsertionPoint;<a name="line.119"></a>
+<FONT color="green">120</FONT>        }<a name="line.120"></a>
+<FONT color="green">121</FONT>        <a name="line.121"></a>
+<FONT color="green">122</FONT>        public E getTrashedElement() {<a name="line.122"></a>
+<FONT color="green">123</FONT>          return trashed;<a name="line.123"></a>
+<FONT color="green">124</FONT>        }<a name="line.124"></a>
+<FONT color="green">125</FONT>      }<a name="line.125"></a>
+<FONT color="green">126</FONT>    <a name="line.126"></a>
+<FONT color="green">127</FONT>      private static final int DEFAULT_ARRAY_INITIAL_CAPACITY = 4;<a name="line.127"></a>
+<FONT color="green">128</FONT>    <a name="line.128"></a>
+<FONT color="green">129</FONT>      /**<a name="line.129"></a>
+<FONT color="green">130</FONT>       * Search the element from the list.<a name="line.130"></a>
+<FONT color="green">131</FONT>       * @return -1 if the list is null; otherwise, return the insertion point<a name="line.131"></a>
+<FONT color="green">132</FONT>       *    defined in {@link Collections#binarySearch(List, Object)}.<a name="line.132"></a>
+<FONT color="green">133</FONT>       *    Note that, when the list is null, -1 is the correct insertion point.<a name="line.133"></a>
+<FONT color="green">134</FONT>       */<a name="line.134"></a>
+<FONT color="green">135</FONT>      protected static &lt;K, E extends Comparable&lt;K&gt;&gt; int search(<a name="line.135"></a>
+<FONT color="green">136</FONT>          final List&lt;E&gt; elements, final K name) {<a name="line.136"></a>
+<FONT color="green">137</FONT>        return elements == null? -1: Collections.binarySearch(elements, name);<a name="line.137"></a>
+<FONT color="green">138</FONT>      }<a name="line.138"></a>
+<FONT color="green">139</FONT>    <a name="line.139"></a>
+<FONT color="green">140</FONT>      private static &lt;E&gt; void remove(final List&lt;E&gt; elements, final int i,<a name="line.140"></a>
+<FONT color="green">141</FONT>          final E expected) {<a name="line.141"></a>
+<FONT color="green">142</FONT>        final E removed = elements.remove(-i - 1);<a name="line.142"></a>
+<FONT color="green">143</FONT>        Preconditions.checkState(removed == expected,<a name="line.143"></a>
+<FONT color="green">144</FONT>            "removed != expected=%s, removed=%s.", expected, removed);<a name="line.144"></a>
+<FONT color="green">145</FONT>      }<a name="line.145"></a>
+<FONT color="green">146</FONT>    <a name="line.146"></a>
+<FONT color="green">147</FONT>      /** c-list: element(s) created in current. */<a name="line.147"></a>
+<FONT color="green">148</FONT>      private List&lt;E&gt; created;<a name="line.148"></a>
+<FONT color="green">149</FONT>      /** d-list: element(s) deleted from current. */<a name="line.149"></a>
+<FONT color="green">150</FONT>      private List&lt;E&gt; deleted;<a name="line.150"></a>
+<FONT color="green">151</FONT>      <a name="line.151"></a>
+<FONT color="green">152</FONT>      protected Diff() {}<a name="line.152"></a>
+<FONT color="green">153</FONT>    <a name="line.153"></a>
+<FONT color="green">154</FONT>      protected Diff(final List&lt;E&gt; created, final List&lt;E&gt; deleted) {<a name="line.154"></a>
+<FONT color="green">155</FONT>        this.created = created;<a name="line.155"></a>
+<FONT color="green">156</FONT>        this.deleted = deleted;<a name="line.156"></a>
+<FONT color="green">157</FONT>      }<a name="line.157"></a>
+<FONT color="green">158</FONT>    <a name="line.158"></a>
+<FONT color="green">159</FONT>      /** @return the created list, which is never null. */<a name="line.159"></a>
+<FONT color="green">160</FONT>      public List&lt;E&gt; getList(final ListType type) {<a name="line.160"></a>
+<FONT color="green">161</FONT>        final List&lt;E&gt; list = type == ListType.CREATED? created: deleted;<a name="line.161"></a>
+<FONT color="green">162</FONT>        return list == null? Collections.&lt;E&gt;emptyList(): list;<a name="line.162"></a>
+<FONT color="green">163</FONT>      }<a name="line.163"></a>
+<FONT color="green">164</FONT>    <a name="line.164"></a>
+<FONT color="green">165</FONT>      public int searchIndex(final ListType type, final K name) {<a name="line.165"></a>
+<FONT color="green">166</FONT>        return search(getList(type), name);<a name="line.166"></a>
+<FONT color="green">167</FONT>      }<a name="line.167"></a>
+<FONT color="green">168</FONT>    <a name="line.168"></a>
+<FONT color="green">169</FONT>      /**<a name="line.169"></a>
+<FONT color="green">170</FONT>       * @return null if the element is not found;<a name="line.170"></a>
+<FONT color="green">171</FONT>       *         otherwise, return the element in the created/deleted list.<a name="line.171"></a>
+<FONT color="green">172</FONT>       */<a name="line.172"></a>
+<FONT color="green">173</FONT>      public E search(final ListType type, final K name) {<a name="line.173"></a>
+<FONT color="green">174</FONT>        final List&lt;E&gt; list = getList(type); <a name="line.174"></a>
+<FONT color="green">175</FONT>        final int c = search(list, name);<a name="line.175"></a>
+<FONT color="green">176</FONT>        return c &lt; 0 ? null : list.get(c);<a name="line.176"></a>
+<FONT color="green">177</FONT>      }<a name="line.177"></a>
+<FONT color="green">178</FONT>      <a name="line.178"></a>
+<FONT color="green">179</FONT>      /** @return true if no changes contained in the diff */<a name="line.179"></a>
+<FONT color="green">180</FONT>      public boolean isEmpty() {<a name="line.180"></a>
+<FONT color="green">181</FONT>        return (created == null || created.isEmpty())<a name="line.181"></a>
+<FONT color="green">182</FONT>            &amp;&amp; (deleted == null || deleted.isEmpty());<a name="line.182"></a>
+<FONT color="green">183</FONT>      }<a name="line.183"></a>
+<FONT color="green">184</FONT>      <a name="line.184"></a>
+<FONT color="green">185</FONT>      /**<a name="line.185"></a>
+<FONT color="green">186</FONT>       * Insert the given element to the created/deleted list.<a name="line.186"></a>
+<FONT color="green">187</FONT>       * @param i the insertion point defined<a name="line.187"></a>
+<FONT color="green">188</FONT>       *          in {@link Collections#binarySearch(List, Object)}<a name="line.188"></a>
+<FONT color="green">189</FONT>       */<a name="line.189"></a>
+<FONT color="green">190</FONT>      private void insert(final ListType type, final E element, final int i) {<a name="line.190"></a>
+<FONT color="green">191</FONT>        List&lt;E&gt; list = type == ListType.CREATED? created: deleted; <a name="line.191"></a>
+<FONT color="green">192</FONT>        if (i &gt;= 0) {<a name="line.192"></a>
+<FONT color="green">193</FONT>          throw new AssertionError("Element already exists: element=" + element<a name="line.193"></a>
+<FONT color="green">194</FONT>              + ", " + type + "=" + list);<a name="line.194"></a>
+<FONT color="green">195</FONT>        }<a name="line.195"></a>
+<FONT color="green">196</FONT>        if (list == null) {<a name="line.196"></a>
+<FONT color="green">197</FONT>          list = new ArrayList&lt;E&gt;(DEFAULT_ARRAY_INITIAL_CAPACITY);<a name="line.197"></a>
+<FONT color="green">198</FONT>          if (type == ListType.CREATED) {<a name="line.198"></a>
+<FONT color="green">199</FONT>            created = list;<a name="line.199"></a>
+<FONT color="green">200</FONT>          } else if (type == ListType.DELETED){<a name="line.200"></a>
+<FONT color="green">201</FONT>            deleted = list;<a name="line.201"></a>
+<FONT color="green">202</FONT>          }<a name="line.202"></a>
+<FONT color="green">203</FONT>        }<a name="line.203"></a>
+<FONT color="green">204</FONT>        list.add(-i - 1, element);<a name="line.204"></a>
+<FONT color="green">205</FONT>      }<a name="line.205"></a>
+<FONT color="green">206</FONT>    <a name="line.206"></a>
+<FONT color="green">207</FONT>      /**<a name="line.207"></a>
+<FONT color="green">208</FONT>       * Create an element in current state.<a name="line.208"></a>
+<FONT color="green">209</FONT>       * @return the c-list insertion point for undo.<a name="line.209"></a>
+<FONT color="green">210</FONT>       */<a name="line.210"></a>
+<FONT color="green">211</FONT>      public int create(final E element) {<a name="line.211"></a>
+<FONT color="green">212</FONT>        final int c = search(created, element.getKey());<a name="line.212"></a>
+<FONT color="green">213</FONT>        insert(ListType.CREATED, element, c);<a name="line.213"></a>
+<FONT color="green">214</FONT>        return c;<a name="line.214"></a>
+<FONT color="green">215</FONT>      }<a name="line.215"></a>
+<FONT color="green">216</FONT>    <a name="line.216"></a>
+<FONT color="green">217</FONT>      /**<a name="line.217"></a>
+<FONT color="green">218</FONT>       * Undo the previous create(E) operation. Note that the behavior is<a name="line.218"></a>
+<FONT color="green">219</FONT>       * undefined if the previous operation is not create(E).<a name="line.219"></a>
+<FONT color="green">220</FONT>       */<a name="line.220"></a>
+<FONT color="green">221</FONT>      public void undoCreate(final E element, final int insertionPoint) {<a name="line.221"></a>
+<FONT color="green">222</FONT>        remove(created, insertionPoint, element);<a name="line.222"></a>
+<FONT color="green">223</FONT>      }<a name="line.223"></a>
+<FONT color="green">224</FONT>    <a name="line.224"></a>
+<FONT color="green">225</FONT>      /**<a name="line.225"></a>
+<FONT color="green">226</FONT>       * Delete an element from current state.<a name="line.226"></a>
+<FONT color="green">227</FONT>       * @return the undo information.<a name="line.227"></a>
+<FONT color="green">228</FONT>       */<a name="line.228"></a>
+<FONT color="green">229</FONT>      public UndoInfo&lt;E&gt; delete(final E element) {<a name="line.229"></a>
+<FONT color="green">230</FONT>        final int c = search(created, element.getKey());<a name="line.230"></a>
+<FONT color="green">231</FONT>        E previous = null;<a name="line.231"></a>
+<FONT color="green">232</FONT>        Integer d = null;<a name="line.232"></a>
+<FONT color="green">233</FONT>        if (c &gt;= 0) {<a name="line.233"></a>
+<FONT color="green">234</FONT>          // remove a newly created element<a name="line.234"></a>
+<FONT color="green">235</FONT>          previous = created.remove(c);<a name="line.235"></a>
+<FONT color="green">236</FONT>        } else {<a name="line.236"></a>
+<FONT color="green">237</FONT>          // not in c-list, it must be in previous<a name="line.237"></a>
+<FONT color="green">238</FONT>          d = search(deleted, element.getKey());<a name="line.238"></a>
+<FONT color="green">239</FONT>          insert(ListType.DELETED, element, d);<a name="line.239"></a>
+<FONT color="green">240</FONT>        }<a name="line.240"></a>
+<FONT color="green">241</FONT>        return new UndoInfo&lt;E&gt;(c, previous, d);<a name="line.241"></a>
+<FONT color="green">242</FONT>      }<a name="line.242"></a>
+<FONT color="green">243</FONT>      <a name="line.243"></a>
+<FONT color="green">244</FONT>      /**<a name="line.244"></a>
+<FONT color="green">245</FONT>       * Undo the previous delete(E) operation. Note that the behavior is<a name="line.245"></a>
+<FONT color="green">246</FONT>       * undefined if the previous operation is not delete(E).<a name="line.246"></a>
+<FONT color="green">247</FONT>       */<a name="line.247"></a>
+<FONT color="green">248</FONT>      public void undoDelete(final E element, final UndoInfo&lt;E&gt; undoInfo) {<a name="line.248"></a>
+<FONT color="green">249</FONT>        final int c = undoInfo.createdInsertionPoint;<a name="line.249"></a>
+<FONT color="green">250</FONT>        if (c &gt;= 0) {<a name="line.250"></a>
+<FONT color="green">251</FONT>          created.add(c, undoInfo.trashed);<a name="line.251"></a>
+<FONT color="green">252</FONT>        } else {<a name="line.252"></a>
+<FONT color="green">253</FONT>          remove(deleted, undoInfo.deletedInsertionPoint, element);<a name="line.253"></a>
+<FONT color="green">254</FONT>        }<a name="line.254"></a>
+<FONT color="green">255</FONT>      }<a name="line.255"></a>
+<FONT color="green">256</FONT>    <a name="line.256"></a>
+<FONT color="green">257</FONT>      /**<a name="line.257"></a>
+<FONT color="green">258</FONT>       * Modify an element in current state.<a name="line.258"></a>
+<FONT color="green">259</FONT>       * @return the undo information.<a name="line.259"></a>
+<FONT color="green">260</FONT>       */<a name="line.260"></a>
+<FONT color="green">261</FONT>      public UndoInfo&lt;E&gt; modify(final E oldElement, final E newElement) {<a name="line.261"></a>
+<FONT color="green">262</FONT>        Preconditions.checkArgument(oldElement != newElement,<a name="line.262"></a>
+<FONT color="green">263</FONT>            "They are the same object: oldElement == newElement = %s", newElement);<a name="line.263"></a>
+<FONT color="green">264</FONT>        Preconditions.checkArgument(oldElement.compareTo(newElement.getKey()) == 0,<a name="line.264"></a>
+<FONT color="green">265</FONT>            "The names do not match: oldElement=%s, newElement=%s",<a name="line.265"></a>
+<FONT color="green">266</FONT>            oldElement, newElement);<a name="line.266"></a>
+<FONT color="green">267</FONT>        final int c = search(created, newElement.getKey());<a name="line.267"></a>
+<FONT color="green">268</FONT>        E previous = null;<a name="line.268"></a>
+<FONT color="green">269</FONT>        Integer d = null;<a name="line.269"></a>
+<FONT color="green">270</FONT>        if (c &gt;= 0) {<a name="line.270"></a>
+<FONT color="green">271</FONT>          // Case 1.1.3 and 2.3.3: element is already in c-list,<a name="line.271"></a>
+<FONT color="green">272</FONT>          previous = created.set(c, newElement);<a name="line.272"></a>
+<FONT color="green">273</FONT>          <a name="line.273"></a>
+<FONT color="green">274</FONT>          // For previous != oldElement, set it to oldElement<a name="line.274"></a>
+<FONT color="green">275</FONT>          previous = oldElement;<a name="line.275"></a>
+<FONT color="green">276</FONT>        } else {<a name="line.276"></a>
+<FONT color="green">277</FONT>          d = search(deleted, oldElement.getKey());<a name="line.277"></a>
+<FONT color="green">278</FONT>          if (d &lt; 0) {<a name="line.278"></a>
+<FONT color="green">279</FONT>            // Case 2.3: neither in c-list nor d-list<a name="line.279"></a>
+<FONT color="green">280</FONT>            insert(ListType.CREATED, newElement, c);<a name="line.280"></a>
+<FONT color="green">281</FONT>            insert(ListType.DELETED, oldElement, d);<a name="line.281"></a>
+<FONT color="green">282</FONT>          }<a name="line.282"></a>
+<FONT color="green">283</FONT>        }<a name="line.283"></a>
+<FONT color="green">284</FONT>        return new UndoInfo&lt;E&gt;(c, previous, d);<a name="line.284"></a>
+<FONT color="green">285</FONT>      }<a name="line.285"></a>
+<FONT color="green">286</FONT>    <a name="line.286"></a>
+<FONT color="green">287</FONT>      /**<a name="line.287"></a>
+<FONT color="green">288</FONT>       * Undo the previous modify(E, E) operation. Note that the behavior<a name="line.288"></a>
+<FONT color="green">289</FONT>       * is undefined if the previous operation is not modify(E, E).<a name="line.289"></a>
+<FONT color="green">290</FONT>       */<a name="line.290"></a>
+<FONT color="green">291</FONT>      public void undoModify(final E oldElement, final E newElement,<a name="line.291"></a>
+<FONT color="green">292</FONT>          final UndoInfo&lt;E&gt; undoInfo) {<a name="line.292"></a>
+<FONT color="green">293</FONT>        final int c = undoInfo.createdInsertionPoint;<a name="line.293"></a>
+<FONT color="green">294</FONT>        if (c &gt;= 0) {<a name="line.294"></a>
+<FONT color="green">295</FONT>          created.set(c, undoInfo.trashed);<a name="line.295"></a>
+<FONT color="green">296</FONT>        } else {<a name="line.296"></a>
+<FONT color="green">297</FONT>          final int d = undoInfo.deletedInsertionPoint;<a name="line.297"></a>
+<FONT color="green">298</FONT>          if (d &lt; 0) {<a name="line.298"></a>
+<FONT color="green">299</FONT>            remove(created, c, newElement);<a name="line.299"></a>
+<FONT color="green">300</FONT>            remove(deleted, d, oldElement);<a name="line.300"></a>
+<FONT color="green">301</FONT>          }<a name="line.301"></a>
+<FONT color="green">302</FONT>        }<a name="line.302"></a>
+<FONT color="green">303</FONT>      }<a name="line.303"></a>
+<FONT color="green">304</FONT>    <a name="line.304"></a>
+<FONT color="green">305</FONT>      /**<a name="line.305"></a>
+<FONT color="green">306</FONT>       * Find an element in the previous state.<a name="line.306"></a>
+<FONT color="green">307</FONT>       * <a name="line.307"></a>
+<FONT color="green">308</FONT>       * @return null if the element cannot be determined in the previous state<a name="line.308"></a>
+<FONT color="green">309</FONT>       *         since no change is recorded and it should be determined in the<a name="line.309"></a>
+<FONT color="green">310</FONT>       *         current state; otherwise, return a {@link Container} containing the<a name="line.310"></a>
+<FONT color="green">311</FONT>       *         element in the previous state. Note that the element can possibly<a name="line.311"></a>
+<FONT color="green">312</FONT>       *         be null which means that the element is not found in the previous<a name="line.312"></a>
+<FONT color="green">313</FONT>       *         state.<a name="line.313"></a>
+<FONT color="green">314</FONT>       */<a name="line.314"></a>
+<FONT color="green">315</FONT>      public Container&lt;E&gt; accessPrevious(final K name) {<a name="line.315"></a>
+<FONT color="green">316</FONT>        return accessPrevious(name, created, deleted);<a name="line.316"></a>
+<FONT color="green">317</FONT>      }<a name="line.317"></a>
+<FONT color="green">318</FONT>    <a name="line.318"></a>
+<FONT color="green">319</FONT>      private static &lt;K, E extends Diff.Element&lt;K&gt;&gt; Container&lt;E&gt; accessPrevious(<a name="line.319"></a>
+<FONT color="green">320</FONT>          final K name, final List&lt;E&gt; clist, final List&lt;E&gt; dlist) {<a name="line.320"></a>
+<FONT color="green">321</FONT>        final int d = search(dlist, name);<a name="line.321"></a>
+<FONT color="green">322</FONT>        if (d &gt;= 0) {<a name="line.322"></a>
+<FONT color="green">323</FONT>          // the element was in previous and was once deleted in current.<a name="line.323"></a>
+<FONT color="green">324</FONT>          return new Container&lt;E&gt;(dlist.get(d));<a name="line.324"></a>
+<FONT color="green">325</FONT>        } else {<a name="line.325"></a>
+<FONT color="green">326</FONT>          final int c = search(clist, name);<a name="line.326"></a>
+<FONT color="green">327</FONT>          // When c &gt;= 0, the element in current is a newly created element.<a name="line.327"></a>
+<FONT color="green">328</FONT>          return c &lt; 0? null: new Container&lt;E&gt;(null);<a name="line.328"></a>
+<FONT color="green">329</FONT>        }<a name="line.329"></a>
+<FONT color="green">330</FONT>      }<a name="line.330"></a>
+<FONT color="green">331</FONT>    <a name="line.331"></a>
+<FONT color="green">332</FONT>      /**<a name="line.332"></a>
+<FONT color="green">333</FONT>       * Find an element in the current state.<a name="line.333"></a>
+<FONT color="green">334</FONT>       * <a name="line.334"></a>
+<FONT color="green">335</FONT>       * @return null if the element cannot be determined in the current state since<a name="line.335"></a>
+<FONT color="green">336</FONT>       *         no change is recorded and it should be determined in the previous<a name="line.336"></a>
+<FONT color="green">337</FONT>       *         state; otherwise, return a {@link Container} containing the element in<a name="line.337"></a>
+<FONT color="green">338</FONT>       *         the current state. Note that the element can possibly be null which<a name="line.338"></a>
+<FONT color="green">339</FONT>       *         means that the element is not found in the current state.<a name="line.339"></a>
+<FONT color="green">340</FONT>       */<a name="line.340"></a>
+<FONT color="green">341</FONT>      public Container&lt;E&gt; accessCurrent(K name) {<a name="line.341"></a>
+<FONT color="green">342</FONT>        return accessPrevious(name, deleted, created);<a name="line.342"></a>
+<FONT color="green">343</FONT>      }<a name="line.343"></a>
+<FONT color="green">344</FONT>    <a name="line.344"></a>
+<FONT color="green">345</FONT>      /**<a name="line.345"></a>
+<FONT color="green">346</FONT>       * Apply this diff to previous state in order to obtain current state.<a name="line.346"></a>
+<FONT color="green">347</FONT>       * @return the current state of the list.<a name="line.347"></a>
+<FONT color="green">348</FONT>       */<a name="line.348"></a>
+<FONT color="green">349</FONT>      public List&lt;E&gt; apply2Previous(final List&lt;E&gt; previous) {<a name="line.349"></a>
+<FONT color="green">350</FONT>        return apply2Previous(previous,<a name="line.350"></a>
+<FONT color="green">351</FONT>            getList(ListType.CREATED), getList(ListType.DELETED));<a name="line.351"></a>
+<FONT color="green">352</FONT>      }<a name="line.352"></a>
+<FONT color="green">353</FONT>    <a name="line.353"></a>
+<FONT color="green">354</FONT>      private static &lt;K, E extends Diff.Element&lt;K&gt;&gt; List&lt;E&gt; apply2Previous(<a name="line.354"></a>
+<FONT color="green">355</FONT>          final List&lt;E&gt; previous, final List&lt;E&gt; clist, final List&lt;E&gt; dlist) {<a name="line.355"></a>
+<FONT color="green">356</FONT>        // Assumptions:<a name="line.356"></a>
+<FONT color="green">357</FONT>        // (A1) All lists are sorted.<a name="line.357"></a>
+<FONT color="green">358</FONT>        // (A2) All elements in dlist must be in previous.<a name="line.358"></a>
+<FONT color="green">359</FONT>        // (A3) All elements in clist must be not in tmp = previous - dlist.<a name="line.359"></a>
+<FONT color="green">360</FONT>        final List&lt;E&gt; tmp = new ArrayList&lt;E&gt;(previous.size() - dlist.size());<a name="line.360"></a>
+<FONT color="green">361</FONT>        {<a name="line.361"></a>
+<FONT color="green">362</FONT>          // tmp = previous - dlist<a name="line.362"></a>
+<FONT color="green">363</FONT>          final Iterator&lt;E&gt; i = previous.iterator();<a name="line.363"></a>
+<FONT color="green">364</FONT>          for(E deleted : dlist) {<a name="line.364"></a>
+<FONT color="green">365</FONT>            E e = i.next(); //since dlist is non-empty, e must exist by (A2).<a name="line.365"></a>
+<FONT color="green">366</FONT>            int cmp = 0;<a name="line.366"></a>
+<FONT color="green">367</FONT>            for(; (cmp = e.compareTo(deleted.getKey())) &lt; 0; e = i.next()) {<a name="line.367"></a>
+<FONT color="green">368</FONT>              tmp.add(e);<a name="line.368"></a>
+<FONT color="green">369</FONT>            }<a name="line.369"></a>
+<FONT color="green">370</FONT>            Preconditions.checkState(cmp == 0); // check (A2)<a name="line.370"></a>
+<FONT color="green">371</FONT>          }<a name="line.371"></a>
+<FONT color="green">372</FONT>          for(; i.hasNext(); ) {<a name="line.372"></a>
+<FONT color="green">373</FONT>            tmp.add(i.next());<a name="line.373"></a>
+<FONT color="green">374</FONT>          }<a name="line.374"></a>
+<FONT color="green">375</FONT>        }<a name="line.375"></a>
+<FONT color="green">376</FONT>    <a name="line.376"></a>
+<FONT color="green">377</FONT>        final List&lt;E&gt; current = new ArrayList&lt;E&gt;(tmp.size() + clist.size());<a name="line.377"></a>
+<FONT color="green">378</FONT>        {<a name="line.378"></a>
+<FONT color="green">379</FONT>          // current = tmp + clist<a name="line.379"></a>
+<FONT color="green">380</FONT>          final Iterator&lt;E&gt; tmpIterator = tmp.iterator();<a name="line.380"></a>
+<FONT color="green">381</FONT>          final Iterator&lt;E&gt; cIterator = clist.iterator();<a name="line.381"></a>
+<FONT color="green">382</FONT>    <a name="line.382"></a>
+<FONT color="green">383</FONT>          E t = tmpIterator.hasNext()? tmpIterator.next(): null;<a name="line.383"></a>
+<FONT color="green">384</FONT>          E c = cIterator.hasNext()? cIterator.next(): null;<a name="line.384"></a>
+<FONT color="green">385</FONT>          for(; t != null || c != null; ) {<a name="line.385"></a>
+<FONT color="green">386</FONT>            final int cmp = c == null? 1<a name="line.386"></a>
+<FONT color="green">387</FONT>                : t == null? -1<a name="line.387"></a>
+<FONT color="green">388</FONT>                : c.compareTo(t.getKey());<a name="line.388"></a>
+<FONT color="green">389</FONT>    <a name="line.389"></a>
+<FONT color="green">390</FONT>            if (cmp &lt; 0) {<a name="line.390"></a>
+<FONT color="green">391</FONT>              current.add(c);<a name="line.391"></a>
+<FONT color="green">392</FONT>              c = cIterator.hasNext()? cIterator.next(): null;<a name="line.392"></a>
+<FONT color="green">393</FONT>            } else if (cmp &gt; 0) {<a name="line.393"></a>
+<FONT color="green">394</FONT>              current.add(t);<a name="line.394"></a>
+<FONT color="green">395</FONT>              t = tmpIterator.hasNext()? tmpIterator.next(): null;<a name="line.395"></a>
+<FONT color="green">396</FONT>            } else {<a name="line.396"></a>
+<FONT color="green">397</FONT>              throw new AssertionError("Violated assumption (A3).");<a name="line.397"></a>
+<FONT color="green">398</FONT>            }<a name="line.398"></a>
+<FONT color="green">399</FONT>          }<a name="line.399"></a>
+<FONT color="green">400</FONT>        }<a name="line.400"></a>
+<FONT color="green">401</FONT>        return current;<a name="line.401"></a>
+<FONT color="green">402</FONT>      }<a name="line.402"></a>
+<FONT color="green">403</FONT>    <a name="line.403"></a>
+<FONT color="green">404</FONT>      /**<a name="line.404"></a>
+<FONT color="green">405</FONT>       * Apply the reverse of this diff to current state in order<a name="line.405"></a>
+<FONT color="green">406</FONT>       * to obtain the previous state.<a name="line.406"></a>
+<FONT color="green">407</FONT>       * @return the previous state of the list.<a name="line.407"></a>
+<FONT color="green">408</FONT>       */<a name="line.408"></a>
+<FONT color="green">409</FONT>      public List&lt;E&gt; apply2Current(final List&lt;E&gt; current) {<a name="line.409"></a>
+<FONT color="green">410</FONT>        return apply2Previous(current,<a name="line.410"></a>
+<FONT color="green">411</FONT>            getList(ListType.DELETED), getList(ListType.CREATED));<a name="line.411"></a>
+<FONT color="green">412</FONT>      }<a name="line.412"></a>
+<FONT color="green">413</FONT>      <a name="line.413"></a>
+<FONT color="green">414</FONT>      /**<a name="line.414"></a>
+<FONT color="green">415</FONT>       * Combine this diff with a posterior diff.  We have the following cases:<a name="line.415"></a>
+<FONT color="green">416</FONT>       * <a name="line.416"></a>
+<FONT color="green">417</FONT>       * &lt;pre&gt;<a name="line.417"></a>
+<FONT color="green">418</FONT>       * 1. For (c, 0) in the posterior diff, check the element in this diff:<a name="line.418"></a>
+<FONT color="green">419</FONT>       * 1.1 (c', 0)  in this diff: impossible<a name="line.419"></a>
+<FONT color="green">420</FONT>       * 1.2 (0, d')  in this diff: put in c-list --&gt; (c, d')<a name="line.420"></a>
+<FONT color="green">421</FONT>       * 1.3 (c', d') in this diff: impossible<a name="line.421"></a>
+<FONT color="green">422</FONT>       * 1.4 (0, 0)   in this diff: put in c-list --&gt; (c, 0)<a name="line.422"></a>
+<FONT color="green">423</FONT>       * This is the same logic as create(E).<a name="line.423"></a>
+<FONT color="green">424</FONT>       * <a name="line.424"></a>
+<FONT color="green">425</FONT>       * 2. For (0, d) in the posterior diff,<a name="line.425"></a>
+<FONT color="green">426</FONT>       * 2.1 (c', 0)  in this diff: remove from c-list --&gt; (0, 0)<a name="line.426"></a>
+<FONT color="green">427</FONT>       * 2.2 (0, d')  in this diff: impossible<a name="line.427"></a>
+<FONT color="green">428</FONT>       * 2.3 (c', d') in this diff: remove from c-list --&gt; (0, d')<a name="line.428"></a>
+<FONT color="green">429</FONT>       * 2.4 (0, 0)   in this diff: put in d-list --&gt; (0, d)<a name="line.429"></a>
+<FONT color="green">430</FONT>       * This is the same logic as delete(E).<a name="line.430"></a>
+<FONT color="green">431</FONT>       * <a name="line.431"></a>
+<FONT color="green">432</FONT>       * 3. For (c, d) in the posterior diff,<a name="line.432"></a>
+<FONT color="green">433</FONT>       * 3.1 (c', 0)  in this diff: replace the element in c-list --&gt; (c, 0)<a name="line.433"></a>
+<FONT color="green">434</FONT>       * 3.2 (0, d')  in this diff: impossible<a name="line.434"></a>
+<FONT color="green">435</FONT>       * 3.3 (c', d') in this diff: replace the element in c-list --&gt; (c, d')<a name="line.435"></a>
+<FONT color="green">436</FONT>       * 3.4 (0, 0)   in this diff: put in c-list and d-list --&gt; (c, d)<a name="line.436"></a>
+<FONT color="green">437</FONT>       * This is the same logic as modify(E, E).<a name="line.437"></a>
+<FONT color="green">438</FONT>       * &lt;/pre&gt;<a name="line.438"></a>
+<FONT color="green">439</FONT>       * <a name="line.439"></a>
+<FONT color="green">440</FONT>       * @param posterior The posterior diff to combine with.<a name="line.440"></a>
+<FONT color="green">441</FONT>       * @param deletedProcesser<a name="line.441"></a>
+<FONT color="green">442</FONT>       *     process the deleted/overwritten elements in case 2.1, 2.3, 3.1 and 3.3.<a name="line.442"></a>
+<FONT color="green">443</FONT>       */<a name="line.443"></a>
+<FONT color="green">444</FONT>      public void combinePosterior(final Diff&lt;K, E&gt; posterior,<a name="line.444"></a>
+<FONT color="green">445</FONT>          final Processor&lt;E&gt; deletedProcesser) {<a name="line.445"></a>
+<FONT color="green">446</FONT>        final Iterator&lt;E&gt; createdIterator = posterior.getList(ListType.CREATED).iterator();<a name="line.446"></a>
+<FONT color="green">447</FONT>        final Iterator&lt;E&gt; deletedIterator = posterior.getList(ListType.DELETED).iterator();<a name="line.447"></a>
+<FONT color="green">448</FONT>    <a name="line.448"></a>
+<FONT color="green">449</FONT>        E c = createdIterator.hasNext()? createdIterator.next(): null;<a name="line.449"></a>
+<FONT color="green">450</FONT>        E d = deletedIterator.hasNext()? deletedIterator.next(): null;<a name="line.450"></a>
+<FONT color="green">451</FONT>    <a name="line.451"></a>
+<FONT color="green">452</FONT>        for(; c != null || d != null; ) {<a name="line.452"></a>
+<FONT color="green">453</FONT>          final int cmp = c == null? 1<a name="line.453"></a>
+<FONT color="green">454</FONT>              : d == null? -1<a name="line.454"></a>
+<FONT color="green">455</FONT>              : c.compareTo(d.getKey());<a name="line.455"></a>
+<FONT color="green">456</FONT>          if (cmp &lt; 0) {<a name="line.456"></a>
+<FONT color="green">457</FONT>            // case 1: only in c-list<a name="line.457"></a>
+<FONT color="green">458</FONT>            create(c);<a name="line.458"></a>
+<FONT color="green">459</FONT>            c = createdIterator.hasNext()? createdIterator.next(): null;<a name="line.459"></a>
+<FONT color="green">460</FONT>          } else if (cmp &gt; 0) {<a name="line.460"></a>
+<FONT color="green">461</FONT>            // case 2: only in d-list<a name="line.461"></a>
+<FONT color="green">462</FONT>            final UndoInfo&lt;E&gt; ui = delete(d);<a name="line.462"></a>
+<FONT color="green">463</FONT>            if (deletedProcesser != null) {<a name="line.463"></a>
+<FONT color="green">464</FONT>              deletedProcesser.process(ui.trashed);<a name="line.464"></a>
+<FONT color="green">465</FONT>            }<a name="line.465"></a>
+<FONT color="green">466</FONT>            d = deletedIterator.hasNext()? deletedIterator.next(): null;<a name="line.466"></a>
+<FONT color="green">467</FONT>          } else {<a name="line.467"></a>
+<FONT color="green">468</FONT>            // case 3: in both c-list and d-list <a name="line.468"></a>
+<FONT color="green">469</FONT>            final UndoInfo&lt;E&gt; ui = modify(d, c);<a name="line.469"></a>
+<FONT color="green">470</FONT>            if (deletedProcesser != null) {<a name="line.470"></a>
+<FONT color="green">471</FONT>              deletedProcesser.process(ui.trashed);<a name="line.471"></a>
+<FONT color="green">472</FONT>            }<a name="line.472"></a>
+<FONT color="green">473</FONT>            c = createdIterator.hasNext()? createdIterator.next(): null;<a name="line.473"></a>
+<FONT color="green">474</FONT>            d = deletedIterator.hasNext()? deletedIterator.next(): null;<a name="line.474"></a>
+<FONT color="green">475</FONT>          }<a name="line.475"></a>
+<FONT color="green">476</FONT>        }<a name="line.476"></a>
+<FONT color="green">477</FONT>      }<a name="line.477"></a>
+<FONT color="green">478</FONT>    <a name="line.478"></a>
+<FONT color="green">479</FONT>      @Override<a name="line.479"></a>
+<FONT color="green">480</FONT>      public String toString() {<a name="line.480"></a>
+<FONT color="green">481</FONT>        return getClass().getSimpleName()<a name="line.481"></a>
+<FONT color="green">482</FONT>            +  "{created=" + getList(ListType.CREATED)<a name="line.482"></a>
+<FONT color="green">483</FONT>            + ", deleted=" + getList(ListType.DELETED) + "}";<a name="line.483"></a>
+<FONT color="green">484</FONT>      }<a name="line.484"></a>
+<FONT color="green">485</FONT>    }<a name="line.485"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>

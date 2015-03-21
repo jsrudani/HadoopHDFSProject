@@ -1,0 +1,810 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    /**<a name="line.1"></a>
+<FONT color="green">002</FONT>     * Licensed to the Apache Software Foundation (ASF) under one<a name="line.2"></a>
+<FONT color="green">003</FONT>     * or more contributor license agreements.  See the NOTICE file<a name="line.3"></a>
+<FONT color="green">004</FONT>     * distributed with this work for additional information<a name="line.4"></a>
+<FONT color="green">005</FONT>     * regarding copyright ownership.  The ASF licenses this file<a name="line.5"></a>
+<FONT color="green">006</FONT>     * to you under the Apache License, Version 2.0 (the<a name="line.6"></a>
+<FONT color="green">007</FONT>     * "License"); you may not use this file except in compliance<a name="line.7"></a>
+<FONT color="green">008</FONT>     * with the License.  You may obtain a copy of the License at<a name="line.8"></a>
+<FONT color="green">009</FONT>     *<a name="line.9"></a>
+<FONT color="green">010</FONT>     *     http://www.apache.org/licenses/LICENSE-2.0<a name="line.10"></a>
+<FONT color="green">011</FONT>     *<a name="line.11"></a>
+<FONT color="green">012</FONT>     * Unless required by applicable law or agreed to in writing, software<a name="line.12"></a>
+<FONT color="green">013</FONT>     * distributed under the License is distributed on an "AS IS" BASIS,<a name="line.13"></a>
+<FONT color="green">014</FONT>     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.14"></a>
+<FONT color="green">015</FONT>     * See the License for the specific language governing permissions and<a name="line.15"></a>
+<FONT color="green">016</FONT>     * limitations under the License.<a name="line.16"></a>
+<FONT color="green">017</FONT>     */<a name="line.17"></a>
+<FONT color="green">018</FONT>    <a name="line.18"></a>
+<FONT color="green">019</FONT>    package org.apache.hadoop.hdfs.server.common;<a name="line.19"></a>
+<FONT color="green">020</FONT>    <a name="line.20"></a>
+<FONT color="green">021</FONT>    import com.google.common.base.Charsets;<a name="line.21"></a>
+<FONT color="green">022</FONT>    <a name="line.22"></a>
+<FONT color="green">023</FONT>    import org.apache.commons.logging.Log;<a name="line.23"></a>
+<FONT color="green">024</FONT>    import org.apache.commons.logging.LogFactory;<a name="line.24"></a>
+<FONT color="green">025</FONT>    import org.apache.hadoop.classification.InterfaceAudience;<a name="line.25"></a>
+<FONT color="green">026</FONT>    import org.apache.hadoop.conf.Configuration;<a name="line.26"></a>
+<FONT color="green">027</FONT>    import org.apache.hadoop.fs.Path;<a name="line.27"></a>
+<FONT color="green">028</FONT>    import org.apache.hadoop.hdfs.BlockReader;<a name="line.28"></a>
+<FONT color="green">029</FONT>    import org.apache.hadoop.hdfs.BlockReaderFactory;<a name="line.29"></a>
+<FONT color="green">030</FONT>    import org.apache.hadoop.hdfs.DFSClient;<a name="line.30"></a>
+<FONT color="green">031</FONT>    import org.apache.hadoop.hdfs.DFSUtil;<a name="line.31"></a>
+<FONT color="green">032</FONT>    import org.apache.hadoop.hdfs.net.TcpPeerServer;<a name="line.32"></a>
+<FONT color="green">033</FONT>    import org.apache.hadoop.hdfs.protocol.*;<a name="line.33"></a>
+<FONT color="green">034</FONT>    import org.apache.hadoop.hdfs.security.token.block.BlockTokenIdentifier;<a name="line.34"></a>
+<FONT color="green">035</FONT>    import org.apache.hadoop.hdfs.security.token.block.DataEncryptionKey;<a name="line.35"></a>
+<FONT color="green">036</FONT>    import org.apache.hadoop.hdfs.security.token.delegation.DelegationTokenIdentifier;<a name="line.36"></a>
+<FONT color="green">037</FONT>    import org.apache.hadoop.hdfs.server.blockmanagement.DatanodeDescriptor;<a name="line.37"></a>
+<FONT color="green">038</FONT>    import org.apache.hadoop.hdfs.server.datanode.CachingStrategy;<a name="line.38"></a>
+<FONT color="green">039</FONT>    import org.apache.hadoop.hdfs.server.namenode.NameNode;<a name="line.39"></a>
+<FONT color="green">040</FONT>    import org.apache.hadoop.hdfs.server.namenode.NameNodeHttpServer;<a name="line.40"></a>
+<FONT color="green">041</FONT>    import org.apache.hadoop.hdfs.web.resources.DelegationParam;<a name="line.41"></a>
+<FONT color="green">042</FONT>    import org.apache.hadoop.hdfs.web.resources.DoAsParam;<a name="line.42"></a>
+<FONT color="green">043</FONT>    import org.apache.hadoop.hdfs.web.resources.UserParam;<a name="line.43"></a>
+<FONT color="green">044</FONT>    import org.apache.hadoop.http.HtmlQuoting;<a name="line.44"></a>
+<FONT color="green">045</FONT>    import org.apache.hadoop.io.IOUtils;<a name="line.45"></a>
+<FONT color="green">046</FONT>    import org.apache.hadoop.net.NetUtils;<a name="line.46"></a>
+<FONT color="green">047</FONT>    import org.apache.hadoop.security.AccessControlException;<a name="line.47"></a>
+<FONT color="green">048</FONT>    import org.apache.hadoop.security.SecurityUtil;<a name="line.48"></a>
+<FONT color="green">049</FONT>    import org.apache.hadoop.security.UserGroupInformation;<a name="line.49"></a>
+<FONT color="green">050</FONT>    import org.apache.hadoop.security.UserGroupInformation.AuthenticationMethod;<a name="line.50"></a>
+<FONT color="green">051</FONT>    import org.apache.hadoop.security.authentication.util.KerberosName;<a name="line.51"></a>
+<FONT color="green">052</FONT>    import org.apache.hadoop.security.authorize.ProxyUsers;<a name="line.52"></a>
+<FONT color="green">053</FONT>    import org.apache.hadoop.security.token.Token;<a name="line.53"></a>
+<FONT color="green">054</FONT>    import org.apache.hadoop.util.VersionInfo;<a name="line.54"></a>
+<FONT color="green">055</FONT>    <a name="line.55"></a>
+<FONT color="green">056</FONT>    import javax.servlet.ServletContext;<a name="line.56"></a>
+<FONT color="green">057</FONT>    import javax.servlet.http.HttpServletRequest;<a name="line.57"></a>
+<FONT color="green">058</FONT>    import javax.servlet.jsp.JspWriter;<a name="line.58"></a>
+<FONT color="green">059</FONT>    <a name="line.59"></a>
+<FONT color="green">060</FONT>    import java.io.ByteArrayInputStream;<a name="line.60"></a>
+<FONT color="green">061</FONT>    import java.io.DataInputStream;<a name="line.61"></a>
+<FONT color="green">062</FONT>    import java.io.IOException;<a name="line.62"></a>
+<FONT color="green">063</FONT>    import java.io.UnsupportedEncodingException;<a name="line.63"></a>
+<FONT color="green">064</FONT>    import java.net.InetSocketAddress;<a name="line.64"></a>
+<FONT color="green">065</FONT>    import java.net.Socket;<a name="line.65"></a>
+<FONT color="green">066</FONT>    import java.net.URL;<a name="line.66"></a>
+<FONT color="green">067</FONT>    import java.net.URLEncoder;<a name="line.67"></a>
+<FONT color="green">068</FONT>    import java.util.*;<a name="line.68"></a>
+<FONT color="green">069</FONT>    <a name="line.69"></a>
+<FONT color="green">070</FONT>    import static org.apache.hadoop.fs.CommonConfigurationKeys.DEFAULT_HADOOP_HTTP_STATIC_USER;<a name="line.70"></a>
+<FONT color="green">071</FONT>    import static org.apache.hadoop.fs.CommonConfigurationKeys.HADOOP_HTTP_STATIC_USER;<a name="line.71"></a>
+<FONT color="green">072</FONT>    <a name="line.72"></a>
+<FONT color="green">073</FONT>    @InterfaceAudience.Private<a name="line.73"></a>
+<FONT color="green">074</FONT>    public class JspHelper {<a name="line.74"></a>
+<FONT color="green">075</FONT>      public static final String CURRENT_CONF = "current.conf";<a name="line.75"></a>
+<FONT color="green">076</FONT>      public static final String DELEGATION_PARAMETER_NAME = DelegationParam.NAME;<a name="line.76"></a>
+<FONT color="green">077</FONT>      public static final String NAMENODE_ADDRESS = "nnaddr";<a name="line.77"></a>
+<FONT color="green">078</FONT>      static final String SET_DELEGATION = "&amp;" + DELEGATION_PARAMETER_NAME +<a name="line.78"></a>
+<FONT color="green">079</FONT>                                                  "=";<a name="line.79"></a>
+<FONT color="green">080</FONT>      private static final Log LOG = LogFactory.getLog(JspHelper.class);<a name="line.80"></a>
+<FONT color="green">081</FONT>    <a name="line.81"></a>
+<FONT color="green">082</FONT>      /** Private constructor for preventing creating JspHelper object. */<a name="line.82"></a>
+<FONT color="green">083</FONT>      private JspHelper() {} <a name="line.83"></a>
+<FONT color="green">084</FONT>      <a name="line.84"></a>
+<FONT color="green">085</FONT>      // data structure to count number of blocks on datanodes.<a name="line.85"></a>
+<FONT color="green">086</FONT>      private static class NodeRecord extends DatanodeInfo {<a name="line.86"></a>
+<FONT color="green">087</FONT>        int frequency;<a name="line.87"></a>
+<FONT color="green">088</FONT>    <a name="line.88"></a>
+<FONT color="green">089</FONT>        public NodeRecord(DatanodeInfo info, int count) {<a name="line.89"></a>
+<FONT color="green">090</FONT>          super(info);<a name="line.90"></a>
+<FONT color="green">091</FONT>          this.frequency = count;<a name="line.91"></a>
+<FONT color="green">092</FONT>        }<a name="line.92"></a>
+<FONT color="green">093</FONT>        <a name="line.93"></a>
+<FONT color="green">094</FONT>        @Override<a name="line.94"></a>
+<FONT color="green">095</FONT>        public boolean equals(Object obj) {<a name="line.95"></a>
+<FONT color="green">096</FONT>          // Sufficient to use super equality as datanodes are uniquely identified<a name="line.96"></a>
+<FONT color="green">097</FONT>          // by DatanodeID<a name="line.97"></a>
+<FONT color="green">098</FONT>          return (this == obj) || super.equals(obj);<a name="line.98"></a>
+<FONT color="green">099</FONT>        }<a name="line.99"></a>
+<FONT color="green">100</FONT>        @Override<a name="line.100"></a>
+<FONT color="green">101</FONT>        public int hashCode() {<a name="line.101"></a>
+<FONT color="green">102</FONT>          // Super implementation is sufficient<a name="line.102"></a>
+<FONT color="green">103</FONT>          return super.hashCode();<a name="line.103"></a>
+<FONT color="green">104</FONT>        }<a name="line.104"></a>
+<FONT color="green">105</FONT>      }<a name="line.105"></a>
+<FONT color="green">106</FONT>    <a name="line.106"></a>
+<FONT color="green">107</FONT>      // compare two records based on their frequency<a name="line.107"></a>
+<FONT color="green">108</FONT>      private static class NodeRecordComparator implements Comparator&lt;NodeRecord&gt; {<a name="line.108"></a>
+<FONT color="green">109</FONT>    <a name="line.109"></a>
+<FONT color="green">110</FONT>        @Override<a name="line.110"></a>
+<FONT color="green">111</FONT>        public int compare(NodeRecord o1, NodeRecord o2) {<a name="line.111"></a>
+<FONT color="green">112</FONT>          if (o1.frequency &lt; o2.frequency) {<a name="line.112"></a>
+<FONT color="green">113</FONT>            return -1;<a name="line.113"></a>
+<FONT color="green">114</FONT>          } else if (o1.frequency &gt; o2.frequency) {<a name="line.114"></a>
+<FONT color="green">115</FONT>            return 1;<a name="line.115"></a>
+<FONT color="green">116</FONT>          } <a name="line.116"></a>
+<FONT color="green">117</FONT>          return 0;<a name="line.117"></a>
+<FONT color="green">118</FONT>        }<a name="line.118"></a>
+<FONT color="green">119</FONT>      }<a name="line.119"></a>
+<FONT color="green">120</FONT>      <a name="line.120"></a>
+<FONT color="green">121</FONT>      /**<a name="line.121"></a>
+<FONT color="green">122</FONT>       * convenience method for canonicalizing host name.<a name="line.122"></a>
+<FONT color="green">123</FONT>       * @param addr name:port or name <a name="line.123"></a>
+<FONT color="green">124</FONT>       * @return canonicalized host name<a name="line.124"></a>
+<FONT color="green">125</FONT>       */<a name="line.125"></a>
+<FONT color="green">126</FONT>       public static String canonicalize(String addr) {<a name="line.126"></a>
+<FONT color="green">127</FONT>        // default port 1 is supplied to allow addr without port.<a name="line.127"></a>
+<FONT color="green">128</FONT>        // the port will be ignored.<a name="line.128"></a>
+<FONT color="green">129</FONT>        return NetUtils.createSocketAddr(addr, 1).getAddress()<a name="line.129"></a>
+<FONT color="green">130</FONT>               .getCanonicalHostName();<a name="line.130"></a>
+<FONT color="green">131</FONT>      }<a name="line.131"></a>
+<FONT color="green">132</FONT>    <a name="line.132"></a>
+<FONT color="green">133</FONT>      /**<a name="line.133"></a>
+<FONT color="green">134</FONT>       * A helper class that generates the correct URL for different schema.<a name="line.134"></a>
+<FONT color="green">135</FONT>       *<a name="line.135"></a>
+<FONT color="green">136</FONT>       */<a name="line.136"></a>
+<FONT color="green">137</FONT>      public static final class Url {<a name="line.137"></a>
+<FONT color="green">138</FONT>        public static String authority(String scheme, DatanodeID d) {<a name="line.138"></a>
+<FONT color="green">139</FONT>          String fqdn = canonicalize(d.getIpAddr());<a name="line.139"></a>
+<FONT color="green">140</FONT>          if (scheme.equals("http")) {<a name="line.140"></a>
+<FONT color="green">141</FONT>            return fqdn + ":" + d.getInfoPort();<a name="line.141"></a>
+<FONT color="green">142</FONT>          } else if (scheme.equals("https")) {<a name="line.142"></a>
+<FONT color="green">143</FONT>            return fqdn + ":" + d.getInfoSecurePort();<a name="line.143"></a>
+<FONT color="green">144</FONT>          } else {<a name="line.144"></a>
+<FONT color="green">145</FONT>            throw new IllegalArgumentException("Unknown scheme:" + scheme);<a name="line.145"></a>
+<FONT color="green">146</FONT>          }<a name="line.146"></a>
+<FONT color="green">147</FONT>        }<a name="line.147"></a>
+<FONT color="green">148</FONT>    <a name="line.148"></a>
+<FONT color="green">149</FONT>        public static String url(String scheme, DatanodeID d) {<a name="line.149"></a>
+<FONT color="green">150</FONT>          return scheme + "://" + authority(scheme, d);<a name="line.150"></a>
+<FONT color="green">151</FONT>        }<a name="line.151"></a>
+<FONT color="green">152</FONT>      }<a name="line.152"></a>
+<FONT color="green">153</FONT>    <a name="line.153"></a>
+<FONT color="green">154</FONT>      public static DatanodeInfo bestNode(LocatedBlocks blks, Configuration conf)<a name="line.154"></a>
+<FONT color="green">155</FONT>          throws IOException {<a name="line.155"></a>
+<FONT color="green">156</FONT>        HashMap&lt;DatanodeInfo, NodeRecord&gt; map =<a name="line.156"></a>
+<FONT color="green">157</FONT>          new HashMap&lt;DatanodeInfo, NodeRecord&gt;();<a name="line.157"></a>
+<FONT color="green">158</FONT>        for (LocatedBlock block : blks.getLocatedBlocks()) {<a name="line.158"></a>
+<FONT color="green">159</FONT>          DatanodeInfo[] nodes = block.getLocations();<a name="line.159"></a>
+<FONT color="green">160</FONT>          for (DatanodeInfo node : nodes) {<a name="line.160"></a>
+<FONT color="green">161</FONT>            NodeRecord record = map.get(node);<a name="line.161"></a>
+<FONT color="green">162</FONT>            if (record == null) {<a name="line.162"></a>
+<FONT color="green">163</FONT>              map.put(node, new NodeRecord(node, 1));<a name="line.163"></a>
+<FONT color="green">164</FONT>            } else {<a name="line.164"></a>
+<FONT color="green">165</FONT>              record.frequency++;<a name="line.165"></a>
+<FONT color="green">166</FONT>            }<a name="line.166"></a>
+<FONT color="green">167</FONT>          }<a name="line.167"></a>
+<FONT color="green">168</FONT>        }<a name="line.168"></a>
+<FONT color="green">169</FONT>        NodeRecord[] nodes = map.values().toArray(new NodeRecord[map.size()]);<a name="line.169"></a>
+<FONT color="green">170</FONT>        Arrays.sort(nodes, new NodeRecordComparator());<a name="line.170"></a>
+<FONT color="green">171</FONT>        return bestNode(nodes, false, conf);<a name="line.171"></a>
+<FONT color="green">172</FONT>      }<a name="line.172"></a>
+<FONT color="green">173</FONT>    <a name="line.173"></a>
+<FONT color="green">174</FONT>      public static DatanodeInfo bestNode(LocatedBlock blk, Configuration conf)<a name="line.174"></a>
+<FONT color="green">175</FONT>          throws IOException {<a name="line.175"></a>
+<FONT color="green">176</FONT>        DatanodeInfo[] nodes = blk.getLocations();<a name="line.176"></a>
+<FONT color="green">177</FONT>        return bestNode(nodes, true, conf);<a name="line.177"></a>
+<FONT color="green">178</FONT>      }<a name="line.178"></a>
+<FONT color="green">179</FONT>    <a name="line.179"></a>
+<FONT color="green">180</FONT>      public static DatanodeInfo bestNode(DatanodeInfo[] nodes, boolean doRandom,<a name="line.180"></a>
+<FONT color="green">181</FONT>          Configuration conf) throws IOException {<a name="line.181"></a>
+<FONT color="green">182</FONT>        TreeSet&lt;DatanodeInfo&gt; deadNodes = new TreeSet&lt;DatanodeInfo&gt;();<a name="line.182"></a>
+<FONT color="green">183</FONT>        DatanodeInfo chosenNode = null;<a name="line.183"></a>
+<FONT color="green">184</FONT>        int failures = 0;<a name="line.184"></a>
+<FONT color="green">185</FONT>        Socket s = null;<a name="line.185"></a>
+<FONT color="green">186</FONT>        int index = -1;<a name="line.186"></a>
+<FONT color="green">187</FONT>        if (nodes == null || nodes.length == 0) {<a name="line.187"></a>
+<FONT color="green">188</FONT>          throw new IOException("No nodes contain this block");<a name="line.188"></a>
+<FONT color="green">189</FONT>        }<a name="line.189"></a>
+<FONT color="green">190</FONT>        while (s == null) {<a name="line.190"></a>
+<FONT color="green">191</FONT>          if (chosenNode == null) {<a name="line.191"></a>
+<FONT color="green">192</FONT>            do {<a name="line.192"></a>
+<FONT color="green">193</FONT>              if (doRandom) {<a name="line.193"></a>
+<FONT color="green">194</FONT>                index = DFSUtil.getRandom().nextInt(nodes.length);<a name="line.194"></a>
+<FONT color="green">195</FONT>              } else {<a name="line.195"></a>
+<FONT color="green">196</FONT>                index++;<a name="line.196"></a>
+<FONT color="green">197</FONT>              }<a name="line.197"></a>
+<FONT color="green">198</FONT>              chosenNode = nodes[index];<a name="line.198"></a>
+<FONT color="green">199</FONT>            } while (deadNodes.contains(chosenNode));<a name="line.199"></a>
+<FONT color="green">200</FONT>          }<a name="line.200"></a>
+<FONT color="green">201</FONT>          chosenNode = nodes[index];<a name="line.201"></a>
+<FONT color="green">202</FONT>    <a name="line.202"></a>
+<FONT color="green">203</FONT>          //just ping to check whether the node is alive<a name="line.203"></a>
+<FONT color="green">204</FONT>          InetSocketAddress targetAddr = NetUtils.createSocketAddr(<a name="line.204"></a>
+<FONT color="green">205</FONT>              chosenNode.getInfoAddr());<a name="line.205"></a>
+<FONT color="green">206</FONT>            <a name="line.206"></a>
+<FONT color="green">207</FONT>          try {<a name="line.207"></a>
+<FONT color="green">208</FONT>            s = NetUtils.getDefaultSocketFactory(conf).createSocket();<a name="line.208"></a>
+<FONT color="green">209</FONT>            s.connect(targetAddr, HdfsServerConstants.READ_TIMEOUT);<a name="line.209"></a>
+<FONT color="green">210</FONT>            s.setSoTimeout(HdfsServerConstants.READ_TIMEOUT);<a name="line.210"></a>
+<FONT color="green">211</FONT>          } catch (IOException e) {<a name="line.211"></a>
+<FONT color="green">212</FONT>            deadNodes.add(chosenNode);<a name="line.212"></a>
+<FONT color="green">213</FONT>            IOUtils.closeSocket(s);<a name="line.213"></a>
+<FONT color="green">214</FONT>            s = null;<a name="line.214"></a>
+<FONT color="green">215</FONT>            failures++;<a name="line.215"></a>
+<FONT color="green">216</FONT>          }<a name="line.216"></a>
+<FONT color="green">217</FONT>          if (failures == nodes.length)<a name="line.217"></a>
+<FONT color="green">218</FONT>            throw new IOException("Could not reach the block containing the data. Please try again");<a name="line.218"></a>
+<FONT color="green">219</FONT>            <a name="line.219"></a>
+<FONT color="green">220</FONT>        }<a name="line.220"></a>
+<FONT color="green">221</FONT>        s.close();<a name="line.221"></a>
+<FONT color="green">222</FONT>        return chosenNode;<a name="line.222"></a>
+<FONT color="green">223</FONT>      }<a name="line.223"></a>
+<FONT color="green">224</FONT>    <a name="line.224"></a>
+<FONT color="green">225</FONT>      public static void streamBlockInAscii(InetSocketAddress addr, String poolId,<a name="line.225"></a>
+<FONT color="green">226</FONT>          long blockId, Token&lt;BlockTokenIdentifier&gt; blockToken, long genStamp,<a name="line.226"></a>
+<FONT color="green">227</FONT>          long blockSize, long offsetIntoBlock, long chunkSizeToView,<a name="line.227"></a>
+<FONT color="green">228</FONT>          JspWriter out, Configuration conf, DFSClient.Conf dfsConf,<a name="line.228"></a>
+<FONT color="green">229</FONT>          DataEncryptionKey encryptionKey)<a name="line.229"></a>
+<FONT color="green">230</FONT>              throws IOException {<a name="line.230"></a>
+<FONT color="green">231</FONT>        if (chunkSizeToView == 0) return;<a name="line.231"></a>
+<FONT color="green">232</FONT>        Socket s = NetUtils.getDefaultSocketFactory(conf).createSocket();<a name="line.232"></a>
+<FONT color="green">233</FONT>        s.connect(addr, HdfsServerConstants.READ_TIMEOUT);<a name="line.233"></a>
+<FONT color="green">234</FONT>        s.setSoTimeout(HdfsServerConstants.READ_TIMEOUT);<a name="line.234"></a>
+<FONT color="green">235</FONT>          <a name="line.235"></a>
+<FONT color="green">236</FONT>        int amtToRead = (int)Math.min(chunkSizeToView, blockSize - offsetIntoBlock);<a name="line.236"></a>
+<FONT color="green">237</FONT>          <a name="line.237"></a>
+<FONT color="green">238</FONT>          // Use the block name for file name. <a name="line.238"></a>
+<FONT color="green">239</FONT>        String file = BlockReaderFactory.getFileName(addr, poolId, blockId);<a name="line.239"></a>
+<FONT color="green">240</FONT>        BlockReader blockReader = BlockReaderFactory.newBlockReader(dfsConf, file,<a name="line.240"></a>
+<FONT color="green">241</FONT>            new ExtendedBlock(poolId, blockId, 0, genStamp), blockToken,<a name="line.241"></a>
+<FONT color="green">242</FONT>            offsetIntoBlock, amtToRead,  true,<a name="line.242"></a>
+<FONT color="green">243</FONT>            "JspHelper", TcpPeerServer.peerFromSocketAndKey(s, encryptionKey),<a name="line.243"></a>
+<FONT color="green">244</FONT>            new DatanodeID(addr.getAddress().getHostAddress(),<a name="line.244"></a>
+<FONT color="green">245</FONT>                addr.getHostName(), poolId, addr.getPort(), 0, 0, 0), null,<a name="line.245"></a>
+<FONT color="green">246</FONT>                null, null, false, CachingStrategy.newDefaultStrategy());<a name="line.246"></a>
+<FONT color="green">247</FONT>            <a name="line.247"></a>
+<FONT color="green">248</FONT>        final byte[] buf = new byte[amtToRead];<a name="line.248"></a>
+<FONT color="green">249</FONT>        int readOffset = 0;<a name="line.249"></a>
+<FONT color="green">250</FONT>        int retries = 2;<a name="line.250"></a>
+<FONT color="green">251</FONT>        while ( amtToRead &gt; 0 ) {<a name="line.251"></a>
+<FONT color="green">252</FONT>          int numRead = amtToRead;<a name="line.252"></a>
+<FONT color="green">253</FONT>          try {<a name="line.253"></a>
+<FONT color="green">254</FONT>            blockReader.readFully(buf, readOffset, amtToRead);<a name="line.254"></a>
+<FONT color="green">255</FONT>          }<a name="line.255"></a>
+<FONT color="green">256</FONT>          catch (IOException e) {<a name="line.256"></a>
+<FONT color="green">257</FONT>            retries--;<a name="line.257"></a>
+<FONT color="green">258</FONT>            if (retries == 0)<a name="line.258"></a>
+<FONT color="green">259</FONT>              throw new IOException("Could not read data from datanode");<a name="line.259"></a>
+<FONT color="green">260</FONT>            continue;<a name="line.260"></a>
+<FONT color="green">261</FONT>          }<a name="line.261"></a>
+<FONT color="green">262</FONT>          amtToRead -= numRead;<a name="line.262"></a>
+<FONT color="green">263</FONT>          readOffset += numRead;<a name="line.263"></a>
+<FONT color="green">264</FONT>        }<a name="line.264"></a>
+<FONT color="green">265</FONT>        blockReader.close();<a name="line.265"></a>
+<FONT color="green">266</FONT>        out.print(HtmlQuoting.quoteHtmlChars(new String(buf, Charsets.UTF_8)));<a name="line.266"></a>
+<FONT color="green">267</FONT>      }<a name="line.267"></a>
+<FONT color="green">268</FONT>    <a name="line.268"></a>
+<FONT color="green">269</FONT>      public static void addTableHeader(JspWriter out) throws IOException {<a name="line.269"></a>
+<FONT color="green">270</FONT>        out.print("&lt;table border=\"1\""+<a name="line.270"></a>
+<FONT color="green">271</FONT>                  " cellpadding=\"2\" cellspacing=\"2\"&gt;");<a name="line.271"></a>
+<FONT color="green">272</FONT>        out.print("&lt;tbody&gt;");<a name="line.272"></a>
+<FONT color="green">273</FONT>      }<a name="line.273"></a>
+<FONT color="green">274</FONT>      public static void addTableRow(JspWriter out, String[] columns) throws IOException {<a name="line.274"></a>
+<FONT color="green">275</FONT>        out.print("&lt;tr&gt;");<a name="line.275"></a>
+<FONT color="green">276</FONT>        for (int i = 0; i &lt; columns.length; i++) {<a name="line.276"></a>
+<FONT color="green">277</FONT>          out.print("&lt;td style=\"vertical-align: top;\"&gt;&lt;B&gt;"+columns[i]+"&lt;/B&gt;&lt;br&gt;&lt;/td&gt;");<a name="line.277"></a>
+<FONT color="green">278</FONT>        }<a name="line.278"></a>
+<FONT color="green">279</FONT>        out.print("&lt;/tr&gt;");<a name="line.279"></a>
+<FONT color="green">280</FONT>      }<a name="line.280"></a>
+<FONT color="green">281</FONT>      public static void addTableRow(JspWriter out, String[] columns, int row) throws IOException {<a name="line.281"></a>
+<FONT color="green">282</FONT>        out.print("&lt;tr&gt;");<a name="line.282"></a>
+<FONT color="green">283</FONT>          <a name="line.283"></a>
+<FONT color="green">284</FONT>        for (int i = 0; i &lt; columns.length; i++) {<a name="line.284"></a>
+<FONT color="green">285</FONT>          if (row/2*2 == row) {//even<a name="line.285"></a>
+<FONT color="green">286</FONT>            out.print("&lt;td style=\"vertical-align: top;background-color:LightGrey;\"&gt;&lt;B&gt;"+columns[i]+"&lt;/B&gt;&lt;br&gt;&lt;/td&gt;");<a name="line.286"></a>
+<FONT color="green">287</FONT>          } else {<a name="line.287"></a>
+<FONT color="green">288</FONT>            out.print("&lt;td style=\"vertical-align: top;background-color:LightBlue;\"&gt;&lt;B&gt;"+columns[i]+"&lt;/B&gt;&lt;br&gt;&lt;/td&gt;");<a name="line.288"></a>
+<FONT color="green">289</FONT>              <a name="line.289"></a>
+<FONT color="green">290</FONT>          }<a name="line.290"></a>
+<FONT color="green">291</FONT>        }<a name="line.291"></a>
+<FONT color="green">292</FONT>        out.print("&lt;/tr&gt;");<a name="line.292"></a>
+<FONT color="green">293</FONT>      }<a name="line.293"></a>
+<FONT color="green">294</FONT>      public static void addTableFooter(JspWriter out) throws IOException {<a name="line.294"></a>
+<FONT color="green">295</FONT>        out.print("&lt;/tbody&gt;&lt;/table&gt;");<a name="line.295"></a>
+<FONT color="green">296</FONT>      }<a name="line.296"></a>
+<FONT color="green">297</FONT>    <a name="line.297"></a>
+<FONT color="green">298</FONT>      public static void sortNodeList(final List&lt;DatanodeDescriptor&gt; nodes,<a name="line.298"></a>
+<FONT color="green">299</FONT>                               String field, String order) {<a name="line.299"></a>
+<FONT color="green">300</FONT>            <a name="line.300"></a>
+<FONT color="green">301</FONT>        class NodeComapare implements Comparator&lt;DatanodeDescriptor&gt; {<a name="line.301"></a>
+<FONT color="green">302</FONT>          static final int <a name="line.302"></a>
+<FONT color="green">303</FONT>            FIELD_NAME              = 1,<a name="line.303"></a>
+<FONT color="green">304</FONT>            FIELD_LAST_CONTACT      = 2,<a name="line.304"></a>
+<FONT color="green">305</FONT>            FIELD_BLOCKS            = 3,<a name="line.305"></a>
+<FONT color="green">306</FONT>            FIELD_CAPACITY          = 4,<a name="line.306"></a>
+<FONT color="green">307</FONT>            FIELD_USED              = 5,<a name="line.307"></a>
+<FONT color="green">308</FONT>            FIELD_PERCENT_USED      = 6,<a name="line.308"></a>
+<FONT color="green">309</FONT>            FIELD_NONDFS_USED       = 7,<a name="line.309"></a>
+<FONT color="green">310</FONT>            FIELD_REMAINING         = 8,<a name="line.310"></a>
+<FONT color="green">311</FONT>            FIELD_PERCENT_REMAINING = 9,<a name="line.311"></a>
+<FONT color="green">312</FONT>            FIELD_ADMIN_STATE       = 10,<a name="line.312"></a>
+<FONT color="green">313</FONT>            FIELD_DECOMMISSIONED    = 11,<a name="line.313"></a>
+<FONT color="green">314</FONT>            SORT_ORDER_ASC          = 1,<a name="line.314"></a>
+<FONT color="green">315</FONT>            SORT_ORDER_DSC          = 2;<a name="line.315"></a>
+<FONT color="green">316</FONT>    <a name="line.316"></a>
+<FONT color="green">317</FONT>          int sortField = FIELD_NAME;<a name="line.317"></a>
+<FONT color="green">318</FONT>          int sortOrder = SORT_ORDER_ASC;<a name="line.318"></a>
+<FONT color="green">319</FONT>                <a name="line.319"></a>
+<FONT color="green">320</FONT>          public NodeComapare(String field, String order) {<a name="line.320"></a>
+<FONT color="green">321</FONT>            if (field.equals("lastcontact")) {<a name="line.321"></a>
+<FONT color="green">322</FONT>              sortField = FIELD_LAST_CONTACT;<a name="line.322"></a>
+<FONT color="green">323</FONT>            } else if (field.equals("capacity")) {<a name="line.323"></a>
+<FONT color="green">324</FONT>              sortField = FIELD_CAPACITY;<a name="line.324"></a>
+<FONT color="green">325</FONT>            } else if (field.equals("used")) {<a name="line.325"></a>
+<FONT color="green">326</FONT>              sortField = FIELD_USED;<a name="line.326"></a>
+<FONT color="green">327</FONT>            } else if (field.equals("nondfsused")) {<a name="line.327"></a>
+<FONT color="green">328</FONT>              sortField = FIELD_NONDFS_USED;<a name="line.328"></a>
+<FONT color="green">329</FONT>            } else if (field.equals("remaining")) {<a name="line.329"></a>
+<FONT color="green">330</FONT>              sortField = FIELD_REMAINING;<a name="line.330"></a>
+<FONT color="green">331</FONT>            } else if (field.equals("pcused")) {<a name="line.331"></a>
+<FONT color="green">332</FONT>              sortField = FIELD_PERCENT_USED;<a name="line.332"></a>
+<FONT color="green">333</FONT>            } else if (field.equals("pcremaining")) {<a name="line.333"></a>
+<FONT color="green">334</FONT>              sortField = FIELD_PERCENT_REMAINING;<a name="line.334"></a>
+<FONT color="green">335</FONT>            } else if (field.equals("blocks")) {<a name="line.335"></a>
+<FONT color="green">336</FONT>              sortField = FIELD_BLOCKS;<a name="line.336"></a>
+<FONT color="green">337</FONT>            } else if (field.equals("adminstate")) {<a name="line.337"></a>
+<FONT color="green">338</FONT>              sortField = FIELD_ADMIN_STATE;<a name="line.338"></a>
+<FONT color="green">339</FONT>            } else if (field.equals("decommissioned")) {<a name="line.339"></a>
+<FONT color="green">340</FONT>              sortField = FIELD_DECOMMISSIONED;<a name="line.340"></a>
+<FONT color="green">341</FONT>            } else {<a name="line.341"></a>
+<FONT color="green">342</FONT>              sortField = FIELD_NAME;<a name="line.342"></a>
+<FONT color="green">343</FONT>            }<a name="line.343"></a>
+<FONT color="green">344</FONT>                    <a name="line.344"></a>
+<FONT color="green">345</FONT>            if (order.equals("DSC")) {<a name="line.345"></a>
+<FONT color="green">346</FONT>              sortOrder = SORT_ORDER_DSC;<a name="line.346"></a>
+<FONT color="green">347</FONT>            } else {<a name="line.347"></a>
+<FONT color="green">348</FONT>              sortOrder = SORT_ORDER_ASC;<a name="line.348"></a>
+<FONT color="green">349</FONT>            }<a name="line.349"></a>
+<FONT color="green">350</FONT>          }<a name="line.350"></a>
+<FONT color="green">351</FONT>    <a name="line.351"></a>
+<FONT color="green">352</FONT>          @Override<a name="line.352"></a>
+<FONT color="green">353</FONT>          public int compare(DatanodeDescriptor d1,<a name="line.353"></a>
+<FONT color="green">354</FONT>                             DatanodeDescriptor d2) {<a name="line.354"></a>
+<FONT color="green">355</FONT>            int ret = 0;<a name="line.355"></a>
+<FONT color="green">356</FONT>            switch (sortField) {<a name="line.356"></a>
+<FONT color="green">357</FONT>            case FIELD_LAST_CONTACT:<a name="line.357"></a>
+<FONT color="green">358</FONT>              ret = (int) (d2.getLastUpdate() - d1.getLastUpdate());<a name="line.358"></a>
+<FONT color="green">359</FONT>              break;<a name="line.359"></a>
+<FONT color="green">360</FONT>            case FIELD_CAPACITY:<a name="line.360"></a>
+<FONT color="green">361</FONT>              long  dlong = d1.getCapacity() - d2.getCapacity();<a name="line.361"></a>
+<FONT color="green">362</FONT>              ret = (dlong &lt; 0) ? -1 : ((dlong &gt; 0) ? 1 : 0);<a name="line.362"></a>
+<FONT color="green">363</FONT>              break;<a name="line.363"></a>
+<FONT color="green">364</FONT>            case FIELD_USED:<a name="line.364"></a>
+<FONT color="green">365</FONT>              dlong = d1.getDfsUsed() - d2.getDfsUsed();<a name="line.365"></a>
+<FONT color="green">366</FONT>              ret = (dlong &lt; 0) ? -1 : ((dlong &gt; 0) ? 1 : 0);<a name="line.366"></a>
+<FONT color="green">367</FONT>              break;<a name="line.367"></a>
+<FONT color="green">368</FONT>            case FIELD_NONDFS_USED:<a name="line.368"></a>
+<FONT color="green">369</FONT>              dlong = d1.getNonDfsUsed() - d2.getNonDfsUsed();<a name="line.369"></a>
+<FONT color="green">370</FONT>              ret = (dlong &lt; 0) ? -1 : ((dlong &gt; 0) ? 1 : 0);<a name="line.370"></a>
+<FONT color="green">371</FONT>              break;<a name="line.371"></a>
+<FONT color="green">372</FONT>            case FIELD_REMAINING:<a name="line.372"></a>
+<FONT color="green">373</FONT>              dlong = d1.getRemaining() - d2.getRemaining();<a name="line.373"></a>
+<FONT color="green">374</FONT>              ret = (dlong &lt; 0) ? -1 : ((dlong &gt; 0) ? 1 : 0);<a name="line.374"></a>
+<FONT color="green">375</FONT>              break;<a name="line.375"></a>
+<FONT color="green">376</FONT>            case FIELD_PERCENT_USED:<a name="line.376"></a>
+<FONT color="green">377</FONT>              double ddbl =((d1.getDfsUsedPercent())-<a name="line.377"></a>
+<FONT color="green">378</FONT>                            (d2.getDfsUsedPercent()));<a name="line.378"></a>
+<FONT color="green">379</FONT>              ret = (ddbl &lt; 0) ? -1 : ((ddbl &gt; 0) ? 1 : 0);<a name="line.379"></a>
+<FONT color="green">380</FONT>              break;<a name="line.380"></a>
+<FONT color="green">381</FONT>            case FIELD_PERCENT_REMAINING:<a name="line.381"></a>
+<FONT color="green">382</FONT>              ddbl =((d1.getRemainingPercent())-<a name="line.382"></a>
+<FONT color="green">383</FONT>                     (d2.getRemainingPercent()));<a name="line.383"></a>
+<FONT color="green">384</FONT>              ret = (ddbl &lt; 0) ? -1 : ((ddbl &gt; 0) ? 1 : 0);<a name="line.384"></a>
+<FONT color="green">385</FONT>              break;<a name="line.385"></a>
+<FONT color="green">386</FONT>            case FIELD_BLOCKS:<a name="line.386"></a>
+<FONT color="green">387</FONT>              ret = d1.numBlocks() - d2.numBlocks();<a name="line.387"></a>
+<FONT color="green">388</FONT>              break;<a name="line.388"></a>
+<FONT color="green">389</FONT>            case FIELD_ADMIN_STATE:<a name="line.389"></a>
+<FONT color="green">390</FONT>              ret = d1.getAdminState().toString().compareTo(<a name="line.390"></a>
+<FONT color="green">391</FONT>                  d2.getAdminState().toString());<a name="line.391"></a>
+<FONT color="green">392</FONT>              break;<a name="line.392"></a>
+<FONT color="green">393</FONT>            case FIELD_DECOMMISSIONED:<a name="line.393"></a>
+<FONT color="green">394</FONT>              ret = DFSUtil.DECOM_COMPARATOR.compare(d1, d2);<a name="line.394"></a>
+<FONT color="green">395</FONT>              break;<a name="line.395"></a>
+<FONT color="green">396</FONT>            case FIELD_NAME: <a name="line.396"></a>
+<FONT color="green">397</FONT>              ret = d1.getHostName().compareTo(d2.getHostName());<a name="line.397"></a>
+<FONT color="green">398</FONT>              break;<a name="line.398"></a>
+<FONT color="green">399</FONT>            default:<a name="line.399"></a>
+<FONT color="green">400</FONT>              throw new IllegalArgumentException("Invalid sortField");<a name="line.400"></a>
+<FONT color="green">401</FONT>            }<a name="line.401"></a>
+<FONT color="green">402</FONT>            return (sortOrder == SORT_ORDER_DSC) ? -ret : ret;<a name="line.402"></a>
+<FONT color="green">403</FONT>          }<a name="line.403"></a>
+<FONT color="green">404</FONT>        }<a name="line.404"></a>
+<FONT color="green">405</FONT>            <a name="line.405"></a>
+<FONT color="green">406</FONT>        Collections.sort(nodes, new NodeComapare(field, order));<a name="line.406"></a>
+<FONT color="green">407</FONT>      }<a name="line.407"></a>
+<FONT color="green">408</FONT>    <a name="line.408"></a>
+<FONT color="green">409</FONT>      public static void printPathWithLinks(String dir, JspWriter out, <a name="line.409"></a>
+<FONT color="green">410</FONT>                                            int namenodeInfoPort,<a name="line.410"></a>
+<FONT color="green">411</FONT>                                            String tokenString,<a name="line.411"></a>
+<FONT color="green">412</FONT>                                            String nnAddress<a name="line.412"></a>
+<FONT color="green">413</FONT>                                            ) throws IOException {<a name="line.413"></a>
+<FONT color="green">414</FONT>        try {<a name="line.414"></a>
+<FONT color="green">415</FONT>          String[] parts = dir.split(Path.SEPARATOR);<a name="line.415"></a>
+<FONT color="green">416</FONT>          StringBuilder tempPath = new StringBuilder(dir.length());<a name="line.416"></a>
+<FONT color="green">417</FONT>          out.print("&lt;a href=\"browseDirectory.jsp" + "?dir="+ Path.SEPARATOR<a name="line.417"></a>
+<FONT color="green">418</FONT>              + "&amp;namenodeInfoPort=" + namenodeInfoPort<a name="line.418"></a>
+<FONT color="green">419</FONT>              + getDelegationTokenUrlParam(tokenString) <a name="line.419"></a>
+<FONT color="green">420</FONT>              + getUrlParam(NAMENODE_ADDRESS, nnAddress) + "\"&gt;" + Path.SEPARATOR<a name="line.420"></a>
+<FONT color="green">421</FONT>              + "&lt;/a&gt;");<a name="line.421"></a>
+<FONT color="green">422</FONT>          tempPath.append(Path.SEPARATOR);<a name="line.422"></a>
+<FONT color="green">423</FONT>          for (int i = 0; i &lt; parts.length-1; i++) {<a name="line.423"></a>
+<FONT color="green">424</FONT>            if (!parts[i].equals("")) {<a name="line.424"></a>
+<FONT color="green">425</FONT>              tempPath.append(parts[i]);<a name="line.425"></a>
+<FONT color="green">426</FONT>              out.print("&lt;a href=\"browseDirectory.jsp" + "?dir="<a name="line.426"></a>
+<FONT color="green">427</FONT>                  + HtmlQuoting.quoteHtmlChars(tempPath.toString()) + "&amp;namenodeInfoPort=" + namenodeInfoPort<a name="line.427"></a>
+<FONT color="green">428</FONT>                  + getDelegationTokenUrlParam(tokenString)<a name="line.428"></a>
+<FONT color="green">429</FONT>                  + getUrlParam(NAMENODE_ADDRESS, nnAddress));<a name="line.429"></a>
+<FONT color="green">430</FONT>              out.print("\"&gt;" + HtmlQuoting.quoteHtmlChars(parts[i]) + "&lt;/a&gt;" + Path.SEPARATOR);<a name="line.430"></a>
+<FONT color="green">431</FONT>              tempPath.append(Path.SEPARATOR);<a name="line.431"></a>
+<FONT color="green">432</FONT>            }<a name="line.432"></a>
+<FONT color="green">433</FONT>          }<a name="line.433"></a>
+<FONT color="green">434</FONT>          if(parts.length &gt; 0) {<a name="line.434"></a>
+<FONT color="green">435</FONT>            out.print(HtmlQuoting.quoteHtmlChars(parts[parts.length-1]));<a name="line.435"></a>
+<FONT color="green">436</FONT>          }<a name="line.436"></a>
+<FONT color="green">437</FONT>        }<a name="line.437"></a>
+<FONT color="green">438</FONT>        catch (UnsupportedEncodingException ex) {<a name="line.438"></a>
+<FONT color="green">439</FONT>          ex.printStackTrace();<a name="line.439"></a>
+<FONT color="green">440</FONT>        }<a name="line.440"></a>
+<FONT color="green">441</FONT>      }<a name="line.441"></a>
+<FONT color="green">442</FONT>    <a name="line.442"></a>
+<FONT color="green">443</FONT>      public static void printGotoForm(JspWriter out,<a name="line.443"></a>
+<FONT color="green">444</FONT>                                       int namenodeInfoPort,<a name="line.444"></a>
+<FONT color="green">445</FONT>                                       String tokenString,<a name="line.445"></a>
+<FONT color="green">446</FONT>                                       String file,<a name="line.446"></a>
+<FONT color="green">447</FONT>                                       String nnAddress) throws IOException {<a name="line.447"></a>
+<FONT color="green">448</FONT>        out.print("&lt;form action=\"browseDirectory.jsp\" method=\"get\" name=\"goto\"&gt;");<a name="line.448"></a>
+<FONT color="green">449</FONT>        out.print("Goto : ");<a name="line.449"></a>
+<FONT color="green">450</FONT>        out.print("&lt;input name=\"dir\" type=\"text\" width=\"50\" id=\"dir\" value=\""+ HtmlQuoting.quoteHtmlChars(file)+"\"/&gt;");<a name="line.450"></a>
+<FONT color="green">451</FONT>        out.print("&lt;input name=\"go\" type=\"submit\" value=\"go\"/&gt;");<a name="line.451"></a>
+<FONT color="green">452</FONT>        out.print("&lt;input name=\"namenodeInfoPort\" type=\"hidden\" "<a name="line.452"></a>
+<FONT color="green">453</FONT>            + "value=\"" + namenodeInfoPort  + "\"/&gt;");<a name="line.453"></a>
+<FONT color="green">454</FONT>        if (UserGroupInformation.isSecurityEnabled()) {<a name="line.454"></a>
+<FONT color="green">455</FONT>          out.print("&lt;input name=\"" + DELEGATION_PARAMETER_NAME<a name="line.455"></a>
+<FONT color="green">456</FONT>              + "\" type=\"hidden\" value=\"" + tokenString + "\"/&gt;");<a name="line.456"></a>
+<FONT color="green">457</FONT>        }<a name="line.457"></a>
+<FONT color="green">458</FONT>        out.print("&lt;input name=\""+ NAMENODE_ADDRESS +"\" type=\"hidden\" "<a name="line.458"></a>
+<FONT color="green">459</FONT>            + "value=\"" + nnAddress  + "\"/&gt;");<a name="line.459"></a>
+<FONT color="green">460</FONT>        out.print("&lt;/form&gt;");<a name="line.460"></a>
+<FONT color="green">461</FONT>      }<a name="line.461"></a>
+<FONT color="green">462</FONT>      <a name="line.462"></a>
+<FONT color="green">463</FONT>      public static void createTitle(JspWriter out, <a name="line.463"></a>
+<FONT color="green">464</FONT>                                     HttpServletRequest req, <a name="line.464"></a>
+<FONT color="green">465</FONT>                                     String  file) throws IOException{<a name="line.465"></a>
+<FONT color="green">466</FONT>        if(file == null) file = "";<a name="line.466"></a>
+<FONT color="green">467</FONT>        int start = Math.max(0,file.length() - 100);<a name="line.467"></a>
+<FONT color="green">468</FONT>        if(start != 0)<a name="line.468"></a>
+<FONT color="green">469</FONT>          file = "..." + file.substring(start, file.length());<a name="line.469"></a>
+<FONT color="green">470</FONT>        out.print("&lt;title&gt;HDFS:" + file + "&lt;/title&gt;");<a name="line.470"></a>
+<FONT color="green">471</FONT>      }<a name="line.471"></a>
+<FONT color="green">472</FONT>    <a name="line.472"></a>
+<FONT color="green">473</FONT>      /** Convert a String to chunk-size-to-view. */<a name="line.473"></a>
+<FONT color="green">474</FONT>      public static int string2ChunkSizeToView(String s, int defaultValue) {<a name="line.474"></a>
+<FONT color="green">475</FONT>        int n = s == null? 0: Integer.parseInt(s);<a name="line.475"></a>
+<FONT color="green">476</FONT>        return n &gt; 0? n: defaultValue;<a name="line.476"></a>
+<FONT color="green">477</FONT>      }<a name="line.477"></a>
+<FONT color="green">478</FONT>    <a name="line.478"></a>
+<FONT color="green">479</FONT>      /** Return a table containing version information. */<a name="line.479"></a>
+<FONT color="green">480</FONT>      public static String getVersionTable() {<a name="line.480"></a>
+<FONT color="green">481</FONT>        return "&lt;div class='dfstable'&gt;&lt;table&gt;"       <a name="line.481"></a>
+<FONT color="green">482</FONT>            + "\n  &lt;tr&gt;&lt;td class='col1'&gt;Version:&lt;/td&gt;&lt;td&gt;" + VersionInfo.getVersion() + ", " + VersionInfo.getRevision() + "&lt;/td&gt;&lt;/tr&gt;"<a name="line.482"></a>
+<FONT color="green">483</FONT>            + "\n  &lt;tr&gt;&lt;td class='col1'&gt;Compiled:&lt;/td&gt;&lt;td&gt;" + VersionInfo.getDate() + " by " + VersionInfo.getUser() + " from " + VersionInfo.getBranch() + "&lt;/td&gt;&lt;/tr&gt;"<a name="line.483"></a>
+<FONT color="green">484</FONT>            + "\n&lt;/table&gt;&lt;/div&gt;";<a name="line.484"></a>
+<FONT color="green">485</FONT>      }<a name="line.485"></a>
+<FONT color="green">486</FONT>    <a name="line.486"></a>
+<FONT color="green">487</FONT>      /**<a name="line.487"></a>
+<FONT color="green">488</FONT>       * Validate filename. <a name="line.488"></a>
+<FONT color="green">489</FONT>       * @return null if the filename is invalid.<a name="line.489"></a>
+<FONT color="green">490</FONT>       *         Otherwise, return the validated filename.<a name="line.490"></a>
+<FONT color="green">491</FONT>       */<a name="line.491"></a>
+<FONT color="green">492</FONT>      public static String validatePath(String p) {<a name="line.492"></a>
+<FONT color="green">493</FONT>        return p == null || p.length() == 0?<a name="line.493"></a>
+<FONT color="green">494</FONT>            null: new Path(p).toUri().getPath();<a name="line.494"></a>
+<FONT color="green">495</FONT>      }<a name="line.495"></a>
+<FONT color="green">496</FONT>    <a name="line.496"></a>
+<FONT color="green">497</FONT>      /**<a name="line.497"></a>
+<FONT color="green">498</FONT>       * Validate a long value. <a name="line.498"></a>
+<FONT color="green">499</FONT>       * @return null if the value is invalid.<a name="line.499"></a>
+<FONT color="green">500</FONT>       *         Otherwise, return the validated Long object.<a name="line.500"></a>
+<FONT color="green">501</FONT>       */<a name="line.501"></a>
+<FONT color="green">502</FONT>      public static Long validateLong(String value) {<a name="line.502"></a>
+<FONT color="green">503</FONT>        return value == null? null: Long.parseLong(value);<a name="line.503"></a>
+<FONT color="green">504</FONT>      }<a name="line.504"></a>
+<FONT color="green">505</FONT>    <a name="line.505"></a>
+<FONT color="green">506</FONT>      /**<a name="line.506"></a>
+<FONT color="green">507</FONT>       * Validate a URL.<a name="line.507"></a>
+<FONT color="green">508</FONT>       * @return null if the value is invalid.<a name="line.508"></a>
+<FONT color="green">509</FONT>       *         Otherwise, return the validated URL String.<a name="line.509"></a>
+<FONT color="green">510</FONT>       */<a name="line.510"></a>
+<FONT color="green">511</FONT>      public static String validateURL(String value) {<a name="line.511"></a>
+<FONT color="green">512</FONT>        try {<a name="line.512"></a>
+<FONT color="green">513</FONT>          return URLEncoder.encode(new URL(value).toString(), "UTF-8");<a name="line.513"></a>
+<FONT color="green">514</FONT>        } catch (IOException e) {<a name="line.514"></a>
+<FONT color="green">515</FONT>          return null;<a name="line.515"></a>
+<FONT color="green">516</FONT>        }<a name="line.516"></a>
+<FONT color="green">517</FONT>      }<a name="line.517"></a>
+<FONT color="green">518</FONT>      <a name="line.518"></a>
+<FONT color="green">519</FONT>      /**<a name="line.519"></a>
+<FONT color="green">520</FONT>       * If security is turned off, what is the default web user?<a name="line.520"></a>
+<FONT color="green">521</FONT>       * @param conf the configuration to look in<a name="line.521"></a>
+<FONT color="green">522</FONT>       * @return the remote user that was configuration<a name="line.522"></a>
+<FONT color="green">523</FONT>       */<a name="line.523"></a>
+<FONT color="green">524</FONT>      public static UserGroupInformation getDefaultWebUser(Configuration conf<a name="line.524"></a>
+<FONT color="green">525</FONT>                                                           ) throws IOException {<a name="line.525"></a>
+<FONT color="green">526</FONT>        return UserGroupInformation.createRemoteUser(getDefaultWebUserName(conf));<a name="line.526"></a>
+<FONT color="green">527</FONT>      }<a name="line.527"></a>
+<FONT color="green">528</FONT>    <a name="line.528"></a>
+<FONT color="green">529</FONT>      private static String getDefaultWebUserName(Configuration conf<a name="line.529"></a>
+<FONT color="green">530</FONT>          ) throws IOException {<a name="line.530"></a>
+<FONT color="green">531</FONT>        String user = conf.get(<a name="line.531"></a>
+<FONT color="green">532</FONT>            HADOOP_HTTP_STATIC_USER, DEFAULT_HADOOP_HTTP_STATIC_USER);<a name="line.532"></a>
+<FONT color="green">533</FONT>        if (user == null || user.length() == 0) {<a name="line.533"></a>
+<FONT color="green">534</FONT>          throw new IOException("Cannot determine UGI from request or conf");<a name="line.534"></a>
+<FONT color="green">535</FONT>        }<a name="line.535"></a>
+<FONT color="green">536</FONT>        return user;<a name="line.536"></a>
+<FONT color="green">537</FONT>      }<a name="line.537"></a>
+<FONT color="green">538</FONT>    <a name="line.538"></a>
+<FONT color="green">539</FONT>      private static InetSocketAddress getNNServiceAddress(ServletContext context,<a name="line.539"></a>
+<FONT color="green">540</FONT>          HttpServletRequest request) {<a name="line.540"></a>
+<FONT color="green">541</FONT>        String namenodeAddressInUrl = request.getParameter(NAMENODE_ADDRESS);<a name="line.541"></a>
+<FONT color="green">542</FONT>        InetSocketAddress namenodeAddress = null;<a name="line.542"></a>
+<FONT color="green">543</FONT>        if (namenodeAddressInUrl != null) {<a name="line.543"></a>
+<FONT color="green">544</FONT>          namenodeAddress = NetUtils.createSocketAddr(namenodeAddressInUrl);<a name="line.544"></a>
+<FONT color="green">545</FONT>        } else if (context != null) {<a name="line.545"></a>
+<FONT color="green">546</FONT>          namenodeAddress = NameNodeHttpServer.getNameNodeAddressFromContext(<a name="line.546"></a>
+<FONT color="green">547</FONT>              context); <a name="line.547"></a>
+<FONT color="green">548</FONT>        }<a name="line.548"></a>
+<FONT color="green">549</FONT>        if (namenodeAddress != null) {<a name="line.549"></a>
+<FONT color="green">550</FONT>          return namenodeAddress;<a name="line.550"></a>
+<FONT color="green">551</FONT>        }<a name="line.551"></a>
+<FONT color="green">552</FONT>        return null;<a name="line.552"></a>
+<FONT color="green">553</FONT>      }<a name="line.553"></a>
+<FONT color="green">554</FONT>    <a name="line.554"></a>
+<FONT color="green">555</FONT>      /** Same as getUGI(null, request, conf). */<a name="line.555"></a>
+<FONT color="green">556</FONT>      public static UserGroupInformation getUGI(HttpServletRequest request,<a name="line.556"></a>
+<FONT color="green">557</FONT>          Configuration conf) throws IOException {<a name="line.557"></a>
+<FONT color="green">558</FONT>        return getUGI(null, request, conf);<a name="line.558"></a>
+<FONT color="green">559</FONT>      }<a name="line.559"></a>
+<FONT color="green">560</FONT>      <a name="line.560"></a>
+<FONT color="green">561</FONT>      /** Same as getUGI(context, request, conf, KERBEROS_SSL, true). */<a name="line.561"></a>
+<FONT color="green">562</FONT>      public static UserGroupInformation getUGI(ServletContext context,<a name="line.562"></a>
+<FONT color="green">563</FONT>          HttpServletRequest request, Configuration conf) throws IOException {<a name="line.563"></a>
+<FONT color="green">564</FONT>        return getUGI(context, request, conf, AuthenticationMethod.KERBEROS_SSL, true);<a name="line.564"></a>
+<FONT color="green">565</FONT>      }<a name="line.565"></a>
+<FONT color="green">566</FONT>    <a name="line.566"></a>
+<FONT color="green">567</FONT>      /**<a name="line.567"></a>
+<FONT color="green">568</FONT>       * Get {@link UserGroupInformation} and possibly the delegation token out of<a name="line.568"></a>
+<FONT color="green">569</FONT>       * the request.<a name="line.569"></a>
+<FONT color="green">570</FONT>       * @param context the ServletContext that is serving this request.<a name="line.570"></a>
+<FONT color="green">571</FONT>       * @param request the http request<a name="line.571"></a>
+<FONT color="green">572</FONT>       * @param conf configuration<a name="line.572"></a>
+<FONT color="green">573</FONT>       * @param secureAuthMethod the AuthenticationMethod used in secure mode.<a name="line.573"></a>
+<FONT color="green">574</FONT>       * @param tryUgiParameter Should it try the ugi parameter?<a name="line.574"></a>
+<FONT color="green">575</FONT>       * @return a new user from the request<a name="line.575"></a>
+<FONT color="green">576</FONT>       * @throws AccessControlException if the request has no token<a name="line.576"></a>
+<FONT color="green">577</FONT>       */<a name="line.577"></a>
+<FONT color="green">578</FONT>      public static UserGroupInformation getUGI(ServletContext context,<a name="line.578"></a>
+<FONT color="green">579</FONT>          HttpServletRequest request, Configuration conf,<a name="line.579"></a>
+<FONT color="green">580</FONT>          final AuthenticationMethod secureAuthMethod,<a name="line.580"></a>
+<FONT color="green">581</FONT>          final boolean tryUgiParameter) throws IOException {<a name="line.581"></a>
+<FONT color="green">582</FONT>        UserGroupInformation ugi = null;<a name="line.582"></a>
+<FONT color="green">583</FONT>        final String usernameFromQuery = getUsernameFromQuery(request, tryUgiParameter);<a name="line.583"></a>
+<FONT color="green">584</FONT>        final String doAsUserFromQuery = request.getParameter(DoAsParam.NAME);<a name="line.584"></a>
+<FONT color="green">585</FONT>        final String remoteUser;<a name="line.585"></a>
+<FONT color="green">586</FONT>       <a name="line.586"></a>
+<FONT color="green">587</FONT>        if (UserGroupInformation.isSecurityEnabled()) {<a name="line.587"></a>
+<FONT color="green">588</FONT>          remoteUser = request.getRemoteUser();<a name="line.588"></a>
+<FONT color="green">589</FONT>          final String tokenString = request.getParameter(DELEGATION_PARAMETER_NAME);<a name="line.589"></a>
+<FONT color="green">590</FONT>          if (tokenString != null) {<a name="line.590"></a>
+<FONT color="green">591</FONT>            // Token-based connections need only verify the effective user, and<a name="line.591"></a>
+<FONT color="green">592</FONT>            // disallow proxying to different user.  Proxy authorization checks<a name="line.592"></a>
+<FONT color="green">593</FONT>            // are not required since the checks apply to issuing a token.<a name="line.593"></a>
+<FONT color="green">594</FONT>            ugi = getTokenUGI(context, request, tokenString, conf);<a name="line.594"></a>
+<FONT color="green">595</FONT>            checkUsername(ugi.getShortUserName(), usernameFromQuery);<a name="line.595"></a>
+<FONT color="green">596</FONT>            checkUsername(ugi.getShortUserName(), doAsUserFromQuery);<a name="line.596"></a>
+<FONT color="green">597</FONT>          } else if (remoteUser == null) {<a name="line.597"></a>
+<FONT color="green">598</FONT>            throw new IOException(<a name="line.598"></a>
+<FONT color="green">599</FONT>                "Security enabled but user not authenticated by filter");<a name="line.599"></a>
+<FONT color="green">600</FONT>          }<a name="line.600"></a>
+<FONT color="green">601</FONT>        } else {<a name="line.601"></a>
+<FONT color="green">602</FONT>          // Security's not on, pull from url or use default web user<a name="line.602"></a>
+<FONT color="green">603</FONT>          remoteUser = (usernameFromQuery == null)<a name="line.603"></a>
+<FONT color="green">604</FONT>              ? getDefaultWebUserName(conf) // not specified in request<a name="line.604"></a>
+<FONT color="green">605</FONT>              : usernameFromQuery;<a name="line.605"></a>
+<FONT color="green">606</FONT>        }<a name="line.606"></a>
+<FONT color="green">607</FONT>    <a name="line.607"></a>
+<FONT color="green">608</FONT>        if (ugi == null) { // security is off, or there's no token<a name="line.608"></a>
+<FONT color="green">609</FONT>          ugi = UserGroupInformation.createRemoteUser(remoteUser);<a name="line.609"></a>
+<FONT color="green">610</FONT>          checkUsername(ugi.getShortUserName(), usernameFromQuery);<a name="line.610"></a>
+<FONT color="green">611</FONT>          if (UserGroupInformation.isSecurityEnabled()) {<a name="line.611"></a>
+<FONT color="green">612</FONT>            // This is not necessarily true, could have been auth'ed by user-facing<a name="line.612"></a>
+<FONT color="green">613</FONT>            // filter<a name="line.613"></a>
+<FONT color="green">614</FONT>            ugi.setAuthenticationMethod(secureAuthMethod);<a name="line.614"></a>
+<FONT color="green">615</FONT>          }<a name="line.615"></a>
+<FONT color="green">616</FONT>          if (doAsUserFromQuery != null) {<a name="line.616"></a>
+<FONT color="green">617</FONT>            // create and attempt to authorize a proxy user<a name="line.617"></a>
+<FONT color="green">618</FONT>            ugi = UserGroupInformation.createProxyUser(doAsUserFromQuery, ugi);<a name="line.618"></a>
+<FONT color="green">619</FONT>            ProxyUsers.authorize(ugi, request.getRemoteAddr(), conf);<a name="line.619"></a>
+<FONT color="green">620</FONT>          }<a name="line.620"></a>
+<FONT color="green">621</FONT>        }<a name="line.621"></a>
+<FONT color="green">622</FONT>        <a name="line.622"></a>
+<FONT color="green">623</FONT>        if(LOG.isDebugEnabled())<a name="line.623"></a>
+<FONT color="green">624</FONT>          LOG.debug("getUGI is returning: " + ugi.getShortUserName());<a name="line.624"></a>
+<FONT color="green">625</FONT>        return ugi;<a name="line.625"></a>
+<FONT color="green">626</FONT>      }<a name="line.626"></a>
+<FONT color="green">627</FONT>    <a name="line.627"></a>
+<FONT color="green">628</FONT>      private static UserGroupInformation getTokenUGI(ServletContext context,<a name="line.628"></a>
+<FONT color="green">629</FONT>                                                      HttpServletRequest request,<a name="line.629"></a>
+<FONT color="green">630</FONT>                                                      String tokenString,<a name="line.630"></a>
+<FONT color="green">631</FONT>                                                      Configuration conf)<a name="line.631"></a>
+<FONT color="green">632</FONT>                                                          throws IOException {<a name="line.632"></a>
+<FONT color="green">633</FONT>        final Token&lt;DelegationTokenIdentifier&gt; token =<a name="line.633"></a>
+<FONT color="green">634</FONT>            new Token&lt;DelegationTokenIdentifier&gt;();<a name="line.634"></a>
+<FONT color="green">635</FONT>        token.decodeFromUrlString(tokenString);<a name="line.635"></a>
+<FONT color="green">636</FONT>        InetSocketAddress serviceAddress = getNNServiceAddress(context, request);<a name="line.636"></a>
+<FONT color="green">637</FONT>        if (serviceAddress != null) {<a name="line.637"></a>
+<FONT color="green">638</FONT>          SecurityUtil.setTokenService(token, serviceAddress);<a name="line.638"></a>
+<FONT color="green">639</FONT>          token.setKind(DelegationTokenIdentifier.HDFS_DELEGATION_KIND);<a name="line.639"></a>
+<FONT color="green">640</FONT>        }<a name="line.640"></a>
+<FONT color="green">641</FONT>    <a name="line.641"></a>
+<FONT color="green">642</FONT>        ByteArrayInputStream buf =<a name="line.642"></a>
+<FONT color="green">643</FONT>            new ByteArrayInputStream(token.getIdentifier());<a name="line.643"></a>
+<FONT color="green">644</FONT>        DataInputStream in = new DataInputStream(buf);<a name="line.644"></a>
+<FONT color="green">645</FONT>        DelegationTokenIdentifier id = new DelegationTokenIdentifier();<a name="line.645"></a>
+<FONT color="green">646</FONT>        id.readFields(in);<a name="line.646"></a>
+<FONT color="green">647</FONT>        if (context != null) {<a name="line.647"></a>
+<FONT color="green">648</FONT>          final NameNode nn = NameNodeHttpServer.getNameNodeFromContext(context);<a name="line.648"></a>
+<FONT color="green">649</FONT>          if (nn != null) {<a name="line.649"></a>
+<FONT color="green">650</FONT>            // Verify the token.<a name="line.650"></a>
+<FONT color="green">651</FONT>            nn.getNamesystem().verifyToken(id, token.getPassword());<a name="line.651"></a>
+<FONT color="green">652</FONT>          }<a name="line.652"></a>
+<FONT color="green">653</FONT>        }<a name="line.653"></a>
+<FONT color="green">654</FONT>        UserGroupInformation ugi = id.getUser();<a name="line.654"></a>
+<FONT color="green">655</FONT>        ugi.addToken(token);<a name="line.655"></a>
+<FONT color="green">656</FONT>        return ugi;<a name="line.656"></a>
+<FONT color="green">657</FONT>      }<a name="line.657"></a>
+<FONT color="green">658</FONT>    <a name="line.658"></a>
+<FONT color="green">659</FONT>      /**<a name="line.659"></a>
+<FONT color="green">660</FONT>       * Expected user name should be a short name.<a name="line.660"></a>
+<FONT color="green">661</FONT>       */<a name="line.661"></a>
+<FONT color="green">662</FONT>      private static void checkUsername(final String expected, final String name<a name="line.662"></a>
+<FONT color="green">663</FONT>          ) throws IOException {<a name="line.663"></a>
+<FONT color="green">664</FONT>        if (expected == null &amp;&amp; name != null) {<a name="line.664"></a>
+<FONT color="green">665</FONT>          throw new IOException("Usernames not matched: expecting null but name="<a name="line.665"></a>
+<FONT color="green">666</FONT>              + name);<a name="line.666"></a>
+<FONT color="green">667</FONT>        }<a name="line.667"></a>
+<FONT color="green">668</FONT>        if (name == null) { //name is optional, null is okay<a name="line.668"></a>
+<FONT color="green">669</FONT>          return;<a name="line.669"></a>
+<FONT color="green">670</FONT>        }<a name="line.670"></a>
+<FONT color="green">671</FONT>        KerberosName u = new KerberosName(name);<a name="line.671"></a>
+<FONT color="green">672</FONT>        String shortName = u.getShortName();<a name="line.672"></a>
+<FONT color="green">673</FONT>        if (!shortName.equals(expected)) {<a name="line.673"></a>
+<FONT color="green">674</FONT>          throw new IOException("Usernames not matched: name=" + shortName<a name="line.674"></a>
+<FONT color="green">675</FONT>              + " != expected=" + expected);<a name="line.675"></a>
+<FONT color="green">676</FONT>        }<a name="line.676"></a>
+<FONT color="green">677</FONT>      }<a name="line.677"></a>
+<FONT color="green">678</FONT>    <a name="line.678"></a>
+<FONT color="green">679</FONT>      private static String getUsernameFromQuery(final HttpServletRequest request,<a name="line.679"></a>
+<FONT color="green">680</FONT>          final boolean tryUgiParameter) {<a name="line.680"></a>
+<FONT color="green">681</FONT>        String username = request.getParameter(UserParam.NAME);<a name="line.681"></a>
+<FONT color="green">682</FONT>        if (username == null &amp;&amp; tryUgiParameter) {<a name="line.682"></a>
+<FONT color="green">683</FONT>          //try ugi parameter<a name="line.683"></a>
+<FONT color="green">684</FONT>          final String ugiStr = request.getParameter("ugi");<a name="line.684"></a>
+<FONT color="green">685</FONT>          if (ugiStr != null) {<a name="line.685"></a>
+<FONT color="green">686</FONT>            username = ugiStr.split(",")[0];<a name="line.686"></a>
+<FONT color="green">687</FONT>          }<a name="line.687"></a>
+<FONT color="green">688</FONT>        }<a name="line.688"></a>
+<FONT color="green">689</FONT>        return username;<a name="line.689"></a>
+<FONT color="green">690</FONT>      }<a name="line.690"></a>
+<FONT color="green">691</FONT>    <a name="line.691"></a>
+<FONT color="green">692</FONT>      /**<a name="line.692"></a>
+<FONT color="green">693</FONT>       * Returns the url parameter for the given token string.<a name="line.693"></a>
+<FONT color="green">694</FONT>       * @param tokenString<a name="line.694"></a>
+<FONT color="green">695</FONT>       * @return url parameter<a name="line.695"></a>
+<FONT color="green">696</FONT>       */<a name="line.696"></a>
+<FONT color="green">697</FONT>      public static String getDelegationTokenUrlParam(String tokenString) {<a name="line.697"></a>
+<FONT color="green">698</FONT>        if (tokenString == null ) {<a name="line.698"></a>
+<FONT color="green">699</FONT>          return "";<a name="line.699"></a>
+<FONT color="green">700</FONT>        }<a name="line.700"></a>
+<FONT color="green">701</FONT>        if (UserGroupInformation.isSecurityEnabled()) {<a name="line.701"></a>
+<FONT color="green">702</FONT>          return SET_DELEGATION + tokenString;<a name="line.702"></a>
+<FONT color="green">703</FONT>        } else {<a name="line.703"></a>
+<FONT color="green">704</FONT>          return "";<a name="line.704"></a>
+<FONT color="green">705</FONT>        }<a name="line.705"></a>
+<FONT color="green">706</FONT>      }<a name="line.706"></a>
+<FONT color="green">707</FONT>    <a name="line.707"></a>
+<FONT color="green">708</FONT>      /**<a name="line.708"></a>
+<FONT color="green">709</FONT>       * Returns the url parameter for the given string, prefixed with<a name="line.709"></a>
+<FONT color="green">710</FONT>       * paramSeparator.<a name="line.710"></a>
+<FONT color="green">711</FONT>       * <a name="line.711"></a>
+<FONT color="green">712</FONT>       * @param name parameter name<a name="line.712"></a>
+<FONT color="green">713</FONT>       * @param val parameter value<a name="line.713"></a>
+<FONT color="green">714</FONT>       * @param paramSeparator URL parameter prefix, i.e. either '?' or '&amp;'<a name="line.714"></a>
+<FONT color="green">715</FONT>       * @return url parameter<a name="line.715"></a>
+<FONT color="green">716</FONT>       */<a name="line.716"></a>
+<FONT color="green">717</FONT>      public static String getUrlParam(String name, String val, String paramSeparator) {<a name="line.717"></a>
+<FONT color="green">718</FONT>        return val == null ? "" : paramSeparator + name + "=" + val;<a name="line.718"></a>
+<FONT color="green">719</FONT>      }<a name="line.719"></a>
+<FONT color="green">720</FONT>      <a name="line.720"></a>
+<FONT color="green">721</FONT>      /**<a name="line.721"></a>
+<FONT color="green">722</FONT>       * Returns the url parameter for the given string, prefixed with '?' if<a name="line.722"></a>
+<FONT color="green">723</FONT>       * firstParam is true, prefixed with '&amp;' if firstParam is false.<a name="line.723"></a>
+<FONT color="green">724</FONT>       * <a name="line.724"></a>
+<FONT color="green">725</FONT>       * @param name parameter name<a name="line.725"></a>
+<FONT color="green">726</FONT>       * @param val parameter value<a name="line.726"></a>
+<FONT color="green">727</FONT>       * @param firstParam true if this is the first parameter in the list, false otherwise<a name="line.727"></a>
+<FONT color="green">728</FONT>       * @return url parameter<a name="line.728"></a>
+<FONT color="green">729</FONT>       */<a name="line.729"></a>
+<FONT color="green">730</FONT>      public static String getUrlParam(String name, String val, boolean firstParam) {<a name="line.730"></a>
+<FONT color="green">731</FONT>        return getUrlParam(name, val, firstParam ? "?" : "&amp;");<a name="line.731"></a>
+<FONT color="green">732</FONT>      }<a name="line.732"></a>
+<FONT color="green">733</FONT>      <a name="line.733"></a>
+<FONT color="green">734</FONT>      /**<a name="line.734"></a>
+<FONT color="green">735</FONT>       * Returns the url parameter for the given string, prefixed with '&amp;'.<a name="line.735"></a>
+<FONT color="green">736</FONT>       * <a name="line.736"></a>
+<FONT color="green">737</FONT>       * @param name parameter name<a name="line.737"></a>
+<FONT color="green">738</FONT>       * @param val parameter value<a name="line.738"></a>
+<FONT color="green">739</FONT>       * @return url parameter<a name="line.739"></a>
+<FONT color="green">740</FONT>       */<a name="line.740"></a>
+<FONT color="green">741</FONT>      public static String getUrlParam(String name, String val) {<a name="line.741"></a>
+<FONT color="green">742</FONT>        return getUrlParam(name, val, false);<a name="line.742"></a>
+<FONT color="green">743</FONT>      }<a name="line.743"></a>
+<FONT color="green">744</FONT>    }<a name="line.744"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>

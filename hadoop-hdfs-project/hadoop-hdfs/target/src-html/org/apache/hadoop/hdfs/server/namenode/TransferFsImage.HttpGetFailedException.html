@@ -1,0 +1,492 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    /**<a name="line.1"></a>
+<FONT color="green">002</FONT>     * Licensed to the Apache Software Foundation (ASF) under one<a name="line.2"></a>
+<FONT color="green">003</FONT>     * or more contributor license agreements.  See the NOTICE file<a name="line.3"></a>
+<FONT color="green">004</FONT>     * distributed with this work for additional information<a name="line.4"></a>
+<FONT color="green">005</FONT>     * regarding copyright ownership.  The ASF licenses this file<a name="line.5"></a>
+<FONT color="green">006</FONT>     * to you under the Apache License, Version 2.0 (the<a name="line.6"></a>
+<FONT color="green">007</FONT>     * "License"); you may not use this file except in compliance<a name="line.7"></a>
+<FONT color="green">008</FONT>     * with the License.  You may obtain a copy of the License at<a name="line.8"></a>
+<FONT color="green">009</FONT>     *<a name="line.9"></a>
+<FONT color="green">010</FONT>     *     http://www.apache.org/licenses/LICENSE-2.0<a name="line.10"></a>
+<FONT color="green">011</FONT>     *<a name="line.11"></a>
+<FONT color="green">012</FONT>     * Unless required by applicable law or agreed to in writing, software<a name="line.12"></a>
+<FONT color="green">013</FONT>     * distributed under the License is distributed on an "AS IS" BASIS,<a name="line.13"></a>
+<FONT color="green">014</FONT>     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.14"></a>
+<FONT color="green">015</FONT>     * See the License for the specific language governing permissions and<a name="line.15"></a>
+<FONT color="green">016</FONT>     * limitations under the License.<a name="line.16"></a>
+<FONT color="green">017</FONT>     */<a name="line.17"></a>
+<FONT color="green">018</FONT>    package org.apache.hadoop.hdfs.server.namenode;<a name="line.18"></a>
+<FONT color="green">019</FONT>    <a name="line.19"></a>
+<FONT color="green">020</FONT>    import java.io.File;<a name="line.20"></a>
+<FONT color="green">021</FONT>    import java.io.FileInputStream;<a name="line.21"></a>
+<FONT color="green">022</FONT>    import java.io.FileOutputStream;<a name="line.22"></a>
+<FONT color="green">023</FONT>    import java.io.IOException;<a name="line.23"></a>
+<FONT color="green">024</FONT>    import java.io.InputStream;<a name="line.24"></a>
+<FONT color="green">025</FONT>    import java.net.HttpURLConnection;<a name="line.25"></a>
+<FONT color="green">026</FONT>    import java.net.InetSocketAddress;<a name="line.26"></a>
+<FONT color="green">027</FONT>    import java.net.URL;<a name="line.27"></a>
+<FONT color="green">028</FONT>    import java.security.DigestInputStream;<a name="line.28"></a>
+<FONT color="green">029</FONT>    import java.security.MessageDigest;<a name="line.29"></a>
+<FONT color="green">030</FONT>    import java.util.ArrayList;<a name="line.30"></a>
+<FONT color="green">031</FONT>    import java.util.List;<a name="line.31"></a>
+<FONT color="green">032</FONT>    <a name="line.32"></a>
+<FONT color="green">033</FONT>    import javax.servlet.ServletOutputStream;<a name="line.33"></a>
+<FONT color="green">034</FONT>    import javax.servlet.ServletResponse;<a name="line.34"></a>
+<FONT color="green">035</FONT>    import javax.servlet.http.HttpServletResponse;<a name="line.35"></a>
+<FONT color="green">036</FONT>    <a name="line.36"></a>
+<FONT color="green">037</FONT>    import org.apache.commons.logging.Log;<a name="line.37"></a>
+<FONT color="green">038</FONT>    import org.apache.commons.logging.LogFactory;<a name="line.38"></a>
+<FONT color="green">039</FONT>    import org.apache.hadoop.classification.InterfaceAudience;<a name="line.39"></a>
+<FONT color="green">040</FONT>    import org.apache.hadoop.conf.Configuration;<a name="line.40"></a>
+<FONT color="green">041</FONT>    import org.apache.hadoop.fs.FileUtil;<a name="line.41"></a>
+<FONT color="green">042</FONT>    import org.apache.hadoop.http.HttpConfig;<a name="line.42"></a>
+<FONT color="green">043</FONT>    import org.apache.hadoop.security.UserGroupInformation;<a name="line.43"></a>
+<FONT color="green">044</FONT>    import org.apache.hadoop.security.authentication.client.AuthenticationException;<a name="line.44"></a>
+<FONT color="green">045</FONT>    import org.apache.hadoop.util.Time;<a name="line.45"></a>
+<FONT color="green">046</FONT>    import org.apache.hadoop.hdfs.DFSConfigKeys;<a name="line.46"></a>
+<FONT color="green">047</FONT>    import org.apache.hadoop.hdfs.HdfsConfiguration;<a name="line.47"></a>
+<FONT color="green">048</FONT>    import org.apache.hadoop.hdfs.protocol.HdfsConstants;<a name="line.48"></a>
+<FONT color="green">049</FONT>    import org.apache.hadoop.hdfs.server.common.Storage;<a name="line.49"></a>
+<FONT color="green">050</FONT>    import org.apache.hadoop.hdfs.server.common.Storage.StorageDirectory;<a name="line.50"></a>
+<FONT color="green">051</FONT>    import org.apache.hadoop.hdfs.server.common.StorageErrorReporter;<a name="line.51"></a>
+<FONT color="green">052</FONT>    import org.apache.hadoop.hdfs.server.namenode.NNStorage.NameNodeDirType;<a name="line.52"></a>
+<FONT color="green">053</FONT>    import org.apache.hadoop.hdfs.server.protocol.RemoteEditLog;<a name="line.53"></a>
+<FONT color="green">054</FONT>    import org.apache.hadoop.hdfs.util.DataTransferThrottler;<a name="line.54"></a>
+<FONT color="green">055</FONT>    import org.apache.hadoop.hdfs.web.URLConnectionFactory;<a name="line.55"></a>
+<FONT color="green">056</FONT>    import org.apache.hadoop.io.MD5Hash;<a name="line.56"></a>
+<FONT color="green">057</FONT>    import org.apache.hadoop.security.SecurityUtil;<a name="line.57"></a>
+<FONT color="green">058</FONT>    import org.apache.hadoop.util.Time;<a name="line.58"></a>
+<FONT color="green">059</FONT>    <a name="line.59"></a>
+<FONT color="green">060</FONT>    import com.google.common.annotations.VisibleForTesting;<a name="line.60"></a>
+<FONT color="green">061</FONT>    import com.google.common.collect.Lists;<a name="line.61"></a>
+<FONT color="green">062</FONT>    <a name="line.62"></a>
+<FONT color="green">063</FONT>    <a name="line.63"></a>
+<FONT color="green">064</FONT>    /**<a name="line.64"></a>
+<FONT color="green">065</FONT>     * This class provides fetching a specified file from the NameNode.<a name="line.65"></a>
+<FONT color="green">066</FONT>     */<a name="line.66"></a>
+<FONT color="green">067</FONT>    @InterfaceAudience.Private<a name="line.67"></a>
+<FONT color="green">068</FONT>    public class TransferFsImage {<a name="line.68"></a>
+<FONT color="green">069</FONT>      <a name="line.69"></a>
+<FONT color="green">070</FONT>      public final static String CONTENT_LENGTH = "Content-Length";<a name="line.70"></a>
+<FONT color="green">071</FONT>      public final static String MD5_HEADER = "X-MD5-Digest";<a name="line.71"></a>
+<FONT color="green">072</FONT>      @VisibleForTesting<a name="line.72"></a>
+<FONT color="green">073</FONT>      static int timeout = 0;<a name="line.73"></a>
+<FONT color="green">074</FONT>      private static URLConnectionFactory connectionFactory;<a name="line.74"></a>
+<FONT color="green">075</FONT>      private static boolean isSpnegoEnabled;<a name="line.75"></a>
+<FONT color="green">076</FONT>    <a name="line.76"></a>
+<FONT color="green">077</FONT>      static {<a name="line.77"></a>
+<FONT color="green">078</FONT>        Configuration conf = new Configuration();<a name="line.78"></a>
+<FONT color="green">079</FONT>        connectionFactory = URLConnectionFactory<a name="line.79"></a>
+<FONT color="green">080</FONT>            .newDefaultURLConnectionFactory(conf);<a name="line.80"></a>
+<FONT color="green">081</FONT>        isSpnegoEnabled = UserGroupInformation.isSecurityEnabled();<a name="line.81"></a>
+<FONT color="green">082</FONT>      }<a name="line.82"></a>
+<FONT color="green">083</FONT>    <a name="line.83"></a>
+<FONT color="green">084</FONT>      private static final Log LOG = LogFactory.getLog(TransferFsImage.class);<a name="line.84"></a>
+<FONT color="green">085</FONT>      <a name="line.85"></a>
+<FONT color="green">086</FONT>      public static void downloadMostRecentImageToDirectory(URL infoServer,<a name="line.86"></a>
+<FONT color="green">087</FONT>          File dir) throws IOException {<a name="line.87"></a>
+<FONT color="green">088</FONT>        String fileId = GetImageServlet.getParamStringForMostRecentImage();<a name="line.88"></a>
+<FONT color="green">089</FONT>        getFileClient(infoServer, fileId, Lists.newArrayList(dir),<a name="line.89"></a>
+<FONT color="green">090</FONT>            null, false);<a name="line.90"></a>
+<FONT color="green">091</FONT>      }<a name="line.91"></a>
+<FONT color="green">092</FONT>    <a name="line.92"></a>
+<FONT color="green">093</FONT>      public static MD5Hash downloadImageToStorage(<a name="line.93"></a>
+<FONT color="green">094</FONT>          URL fsName, long imageTxId, Storage dstStorage, boolean needDigest)<a name="line.94"></a>
+<FONT color="green">095</FONT>          throws IOException {<a name="line.95"></a>
+<FONT color="green">096</FONT>        String fileid = GetImageServlet.getParamStringForImage(<a name="line.96"></a>
+<FONT color="green">097</FONT>            imageTxId, dstStorage);<a name="line.97"></a>
+<FONT color="green">098</FONT>        String fileName = NNStorage.getCheckpointImageFileName(imageTxId);<a name="line.98"></a>
+<FONT color="green">099</FONT>        <a name="line.99"></a>
+<FONT color="green">100</FONT>        List&lt;File&gt; dstFiles = dstStorage.getFiles(<a name="line.100"></a>
+<FONT color="green">101</FONT>            NameNodeDirType.IMAGE, fileName);<a name="line.101"></a>
+<FONT color="green">102</FONT>        if (dstFiles.isEmpty()) {<a name="line.102"></a>
+<FONT color="green">103</FONT>          throw new IOException("No targets in destination storage!");<a name="line.103"></a>
+<FONT color="green">104</FONT>        }<a name="line.104"></a>
+<FONT color="green">105</FONT>        <a name="line.105"></a>
+<FONT color="green">106</FONT>        MD5Hash hash = getFileClient(fsName, fileid, dstFiles, dstStorage, needDigest);<a name="line.106"></a>
+<FONT color="green">107</FONT>        LOG.info("Downloaded file " + dstFiles.get(0).getName() + " size " +<a name="line.107"></a>
+<FONT color="green">108</FONT>            dstFiles.get(0).length() + " bytes.");<a name="line.108"></a>
+<FONT color="green">109</FONT>        return hash;<a name="line.109"></a>
+<FONT color="green">110</FONT>      }<a name="line.110"></a>
+<FONT color="green">111</FONT>      <a name="line.111"></a>
+<FONT color="green">112</FONT>      static void downloadEditsToStorage(URL fsName, RemoteEditLog log,<a name="line.112"></a>
+<FONT color="green">113</FONT>          NNStorage dstStorage) throws IOException {<a name="line.113"></a>
+<FONT color="green">114</FONT>        assert log.getStartTxId() &gt; 0 &amp;&amp; log.getEndTxId() &gt; 0 :<a name="line.114"></a>
+<FONT color="green">115</FONT>          "bad log: " + log;<a name="line.115"></a>
+<FONT color="green">116</FONT>        String fileid = GetImageServlet.getParamStringForLog(<a name="line.116"></a>
+<FONT color="green">117</FONT>            log, dstStorage);<a name="line.117"></a>
+<FONT color="green">118</FONT>        String finalFileName = NNStorage.getFinalizedEditsFileName(<a name="line.118"></a>
+<FONT color="green">119</FONT>            log.getStartTxId(), log.getEndTxId());<a name="line.119"></a>
+<FONT color="green">120</FONT>    <a name="line.120"></a>
+<FONT color="green">121</FONT>        List&lt;File&gt; finalFiles = dstStorage.getFiles(NameNodeDirType.EDITS,<a name="line.121"></a>
+<FONT color="green">122</FONT>            finalFileName);<a name="line.122"></a>
+<FONT color="green">123</FONT>        assert !finalFiles.isEmpty() : "No checkpoint targets.";<a name="line.123"></a>
+<FONT color="green">124</FONT>        <a name="line.124"></a>
+<FONT color="green">125</FONT>        for (File f : finalFiles) {<a name="line.125"></a>
+<FONT color="green">126</FONT>          if (f.exists() &amp;&amp; FileUtil.canRead(f)) {<a name="line.126"></a>
+<FONT color="green">127</FONT>            LOG.info("Skipping download of remote edit log " +<a name="line.127"></a>
+<FONT color="green">128</FONT>                log + " since it already is stored locally at " + f);<a name="line.128"></a>
+<FONT color="green">129</FONT>            return;<a name="line.129"></a>
+<FONT color="green">130</FONT>          } else if (LOG.isDebugEnabled()) {<a name="line.130"></a>
+<FONT color="green">131</FONT>            LOG.debug("Dest file: " + f);<a name="line.131"></a>
+<FONT color="green">132</FONT>          }<a name="line.132"></a>
+<FONT color="green">133</FONT>        }<a name="line.133"></a>
+<FONT color="green">134</FONT>    <a name="line.134"></a>
+<FONT color="green">135</FONT>        final long milliTime = System.currentTimeMillis();<a name="line.135"></a>
+<FONT color="green">136</FONT>        String tmpFileName = NNStorage.getTemporaryEditsFileName(<a name="line.136"></a>
+<FONT color="green">137</FONT>            log.getStartTxId(), log.getEndTxId(), milliTime);<a name="line.137"></a>
+<FONT color="green">138</FONT>        List&lt;File&gt; tmpFiles = dstStorage.getFiles(NameNodeDirType.EDITS,<a name="line.138"></a>
+<FONT color="green">139</FONT>            tmpFileName);<a name="line.139"></a>
+<FONT color="green">140</FONT>        getFileClient(fsName, fileid, tmpFiles, dstStorage, false);<a name="line.140"></a>
+<FONT color="green">141</FONT>        LOG.info("Downloaded file " + tmpFiles.get(0).getName() + " size " +<a name="line.141"></a>
+<FONT color="green">142</FONT>            finalFiles.get(0).length() + " bytes.");<a name="line.142"></a>
+<FONT color="green">143</FONT>    <a name="line.143"></a>
+<FONT color="green">144</FONT>        CheckpointFaultInjector.getInstance().beforeEditsRename();<a name="line.144"></a>
+<FONT color="green">145</FONT>    <a name="line.145"></a>
+<FONT color="green">146</FONT>        for (StorageDirectory sd : dstStorage.dirIterable(NameNodeDirType.EDITS)) {<a name="line.146"></a>
+<FONT color="green">147</FONT>          File tmpFile = NNStorage.getTemporaryEditsFile(sd,<a name="line.147"></a>
+<FONT color="green">148</FONT>              log.getStartTxId(), log.getEndTxId(), milliTime);<a name="line.148"></a>
+<FONT color="green">149</FONT>          File finalizedFile = NNStorage.getFinalizedEditsFile(sd,<a name="line.149"></a>
+<FONT color="green">150</FONT>              log.getStartTxId(), log.getEndTxId());<a name="line.150"></a>
+<FONT color="green">151</FONT>          if (LOG.isDebugEnabled()) {<a name="line.151"></a>
+<FONT color="green">152</FONT>            LOG.debug("Renaming " + tmpFile + " to " + finalizedFile);<a name="line.152"></a>
+<FONT color="green">153</FONT>          }<a name="line.153"></a>
+<FONT color="green">154</FONT>          boolean success = tmpFile.renameTo(finalizedFile);<a name="line.154"></a>
+<FONT color="green">155</FONT>          if (!success) {<a name="line.155"></a>
+<FONT color="green">156</FONT>            LOG.warn("Unable to rename edits file from " + tmpFile<a name="line.156"></a>
+<FONT color="green">157</FONT>                + " to " + finalizedFile);<a name="line.157"></a>
+<FONT color="green">158</FONT>          }<a name="line.158"></a>
+<FONT color="green">159</FONT>        }<a name="line.159"></a>
+<FONT color="green">160</FONT>      }<a name="line.160"></a>
+<FONT color="green">161</FONT>     <a name="line.161"></a>
+<FONT color="green">162</FONT>      /**<a name="line.162"></a>
+<FONT color="green">163</FONT>       * Requests that the NameNode download an image from this node.<a name="line.163"></a>
+<FONT color="green">164</FONT>       *<a name="line.164"></a>
+<FONT color="green">165</FONT>       * @param fsName the http address for the remote NN<a name="line.165"></a>
+<FONT color="green">166</FONT>       * @param myNNAddress the host/port where the local node is running an<a name="line.166"></a>
+<FONT color="green">167</FONT>       *                           HTTPServer hosting GetImageServlet<a name="line.167"></a>
+<FONT color="green">168</FONT>       * @param storage the storage directory to transfer the image from<a name="line.168"></a>
+<FONT color="green">169</FONT>       * @param txid the transaction ID of the image to be uploaded<a name="line.169"></a>
+<FONT color="green">170</FONT>       */<a name="line.170"></a>
+<FONT color="green">171</FONT>      public static void uploadImageFromStorage(URL fsName,<a name="line.171"></a>
+<FONT color="green">172</FONT>          URL myNNAddress,<a name="line.172"></a>
+<FONT color="green">173</FONT>          Storage storage, long txid) throws IOException {<a name="line.173"></a>
+<FONT color="green">174</FONT>        <a name="line.174"></a>
+<FONT color="green">175</FONT>        String fileid = GetImageServlet.getParamStringToPutImage(<a name="line.175"></a>
+<FONT color="green">176</FONT>            txid, myNNAddress, storage);<a name="line.176"></a>
+<FONT color="green">177</FONT>        // this doesn't directly upload an image, but rather asks the NN<a name="line.177"></a>
+<FONT color="green">178</FONT>        // to connect back to the 2NN to download the specified image.<a name="line.178"></a>
+<FONT color="green">179</FONT>        try {<a name="line.179"></a>
+<FONT color="green">180</FONT>          TransferFsImage.getFileClient(fsName, fileid, null, null, false);<a name="line.180"></a>
+<FONT color="green">181</FONT>        } catch (HttpGetFailedException e) {<a name="line.181"></a>
+<FONT color="green">182</FONT>          if (e.getResponseCode() == HttpServletResponse.SC_CONFLICT) {<a name="line.182"></a>
+<FONT color="green">183</FONT>            // this is OK - this means that a previous attempt to upload<a name="line.183"></a>
+<FONT color="green">184</FONT>            // this checkpoint succeeded even though we thought it failed.<a name="line.184"></a>
+<FONT color="green">185</FONT>            LOG.info("Image upload with txid " + txid + <a name="line.185"></a>
+<FONT color="green">186</FONT>                " conflicted with a previous image upload to the " +<a name="line.186"></a>
+<FONT color="green">187</FONT>                "same NameNode. Continuing...", e);<a name="line.187"></a>
+<FONT color="green">188</FONT>            return;<a name="line.188"></a>
+<FONT color="green">189</FONT>          } else {<a name="line.189"></a>
+<FONT color="green">190</FONT>            throw e;<a name="line.190"></a>
+<FONT color="green">191</FONT>          }<a name="line.191"></a>
+<FONT color="green">192</FONT>        }<a name="line.192"></a>
+<FONT color="green">193</FONT>        LOG.info("Uploaded image with txid " + txid + " to namenode at " +<a name="line.193"></a>
+<FONT color="green">194</FONT>                    fsName);<a name="line.194"></a>
+<FONT color="green">195</FONT>      }<a name="line.195"></a>
+<FONT color="green">196</FONT>    <a name="line.196"></a>
+<FONT color="green">197</FONT>      <a name="line.197"></a>
+<FONT color="green">198</FONT>      /**<a name="line.198"></a>
+<FONT color="green">199</FONT>       * A server-side method to respond to a getfile http request<a name="line.199"></a>
+<FONT color="green">200</FONT>       * Copies the contents of the local file into the output stream.<a name="line.200"></a>
+<FONT color="green">201</FONT>       */<a name="line.201"></a>
+<FONT color="green">202</FONT>      public static void getFileServer(ServletResponse response, File localfile,<a name="line.202"></a>
+<FONT color="green">203</FONT>          FileInputStream infile,<a name="line.203"></a>
+<FONT color="green">204</FONT>          DataTransferThrottler throttler) <a name="line.204"></a>
+<FONT color="green">205</FONT>        throws IOException {<a name="line.205"></a>
+<FONT color="green">206</FONT>        byte buf[] = new byte[HdfsConstants.IO_FILE_BUFFER_SIZE];<a name="line.206"></a>
+<FONT color="green">207</FONT>        ServletOutputStream out = null;<a name="line.207"></a>
+<FONT color="green">208</FONT>        try {<a name="line.208"></a>
+<FONT color="green">209</FONT>          CheckpointFaultInjector.getInstance()<a name="line.209"></a>
+<FONT color="green">210</FONT>              .aboutToSendFile(localfile);<a name="line.210"></a>
+<FONT color="green">211</FONT>          out = response.getOutputStream();<a name="line.211"></a>
+<FONT color="green">212</FONT>    <a name="line.212"></a>
+<FONT color="green">213</FONT>          if (CheckpointFaultInjector.getInstance().<a name="line.213"></a>
+<FONT color="green">214</FONT>                shouldSendShortFile(localfile)) {<a name="line.214"></a>
+<FONT color="green">215</FONT>              // Test sending image shorter than localfile<a name="line.215"></a>
+<FONT color="green">216</FONT>              long len = localfile.length();<a name="line.216"></a>
+<FONT color="green">217</FONT>              buf = new byte[(int)Math.min(len/2, HdfsConstants.IO_FILE_BUFFER_SIZE)];<a name="line.217"></a>
+<FONT color="green">218</FONT>              // This will read at most half of the image<a name="line.218"></a>
+<FONT color="green">219</FONT>              // and the rest of the image will be sent over the wire<a name="line.219"></a>
+<FONT color="green">220</FONT>              infile.read(buf);<a name="line.220"></a>
+<FONT color="green">221</FONT>          }<a name="line.221"></a>
+<FONT color="green">222</FONT>          int num = 1;<a name="line.222"></a>
+<FONT color="green">223</FONT>          while (num &gt; 0) {<a name="line.223"></a>
+<FONT color="green">224</FONT>            num = infile.read(buf);<a name="line.224"></a>
+<FONT color="green">225</FONT>            if (num &lt;= 0) {<a name="line.225"></a>
+<FONT color="green">226</FONT>              break;<a name="line.226"></a>
+<FONT color="green">227</FONT>            }<a name="line.227"></a>
+<FONT color="green">228</FONT>            if (CheckpointFaultInjector.getInstance()<a name="line.228"></a>
+<FONT color="green">229</FONT>                  .shouldCorruptAByte(localfile)) {<a name="line.229"></a>
+<FONT color="green">230</FONT>              // Simulate a corrupted byte on the wire<a name="line.230"></a>
+<FONT color="green">231</FONT>              LOG.warn("SIMULATING A CORRUPT BYTE IN IMAGE TRANSFER!");<a name="line.231"></a>
+<FONT color="green">232</FONT>              buf[0]++;<a name="line.232"></a>
+<FONT color="green">233</FONT>            }<a name="line.233"></a>
+<FONT color="green">234</FONT>            <a name="line.234"></a>
+<FONT color="green">235</FONT>            out.write(buf, 0, num);<a name="line.235"></a>
+<FONT color="green">236</FONT>            if (throttler != null) {<a name="line.236"></a>
+<FONT color="green">237</FONT>              throttler.throttle(num);<a name="line.237"></a>
+<FONT color="green">238</FONT>            }<a name="line.238"></a>
+<FONT color="green">239</FONT>          }<a name="line.239"></a>
+<FONT color="green">240</FONT>        } finally {<a name="line.240"></a>
+<FONT color="green">241</FONT>          if (out != null) {<a name="line.241"></a>
+<FONT color="green">242</FONT>            out.close();<a name="line.242"></a>
+<FONT color="green">243</FONT>          }<a name="line.243"></a>
+<FONT color="green">244</FONT>        }<a name="line.244"></a>
+<FONT color="green">245</FONT>      }<a name="line.245"></a>
+<FONT color="green">246</FONT>    <a name="line.246"></a>
+<FONT color="green">247</FONT>      /**<a name="line.247"></a>
+<FONT color="green">248</FONT>       * Client-side Method to fetch file from a server<a name="line.248"></a>
+<FONT color="green">249</FONT>       * Copies the response from the URL to a list of local files.<a name="line.249"></a>
+<FONT color="green">250</FONT>       * @param dstStorage if an error occurs writing to one of the files,<a name="line.250"></a>
+<FONT color="green">251</FONT>       *                   this storage object will be notified. <a name="line.251"></a>
+<FONT color="green">252</FONT>       * @Return a digest of the received file if getChecksum is true<a name="line.252"></a>
+<FONT color="green">253</FONT>       */<a name="line.253"></a>
+<FONT color="green">254</FONT>      static MD5Hash getFileClient(URL infoServer,<a name="line.254"></a>
+<FONT color="green">255</FONT>          String queryString, List&lt;File&gt; localPaths,<a name="line.255"></a>
+<FONT color="green">256</FONT>          Storage dstStorage, boolean getChecksum) throws IOException {<a name="line.256"></a>
+<FONT color="green">257</FONT>        URL url = new URL(infoServer, "/getimage?" + queryString);<a name="line.257"></a>
+<FONT color="green">258</FONT>        LOG.info("Opening connection to " + url);<a name="line.258"></a>
+<FONT color="green">259</FONT>        return doGetUrl(url, localPaths, dstStorage, getChecksum);<a name="line.259"></a>
+<FONT color="green">260</FONT>      }<a name="line.260"></a>
+<FONT color="green">261</FONT>      <a name="line.261"></a>
+<FONT color="green">262</FONT>      public static MD5Hash doGetUrl(URL url, List&lt;File&gt; localPaths,<a name="line.262"></a>
+<FONT color="green">263</FONT>          Storage dstStorage, boolean getChecksum) throws IOException {<a name="line.263"></a>
+<FONT color="green">264</FONT>        long startTime = Time.monotonicNow();<a name="line.264"></a>
+<FONT color="green">265</FONT>        HttpURLConnection connection;<a name="line.265"></a>
+<FONT color="green">266</FONT>        try {<a name="line.266"></a>
+<FONT color="green">267</FONT>          connection = (HttpURLConnection)<a name="line.267"></a>
+<FONT color="green">268</FONT>            connectionFactory.openConnection(url, isSpnegoEnabled);<a name="line.268"></a>
+<FONT color="green">269</FONT>        } catch (AuthenticationException e) {<a name="line.269"></a>
+<FONT color="green">270</FONT>          throw new IOException(e);<a name="line.270"></a>
+<FONT color="green">271</FONT>        }<a name="line.271"></a>
+<FONT color="green">272</FONT>    <a name="line.272"></a>
+<FONT color="green">273</FONT>        if (timeout &lt;= 0) {<a name="line.273"></a>
+<FONT color="green">274</FONT>          Configuration conf = new HdfsConfiguration();<a name="line.274"></a>
+<FONT color="green">275</FONT>          timeout = conf.getInt(DFSConfigKeys.DFS_IMAGE_TRANSFER_TIMEOUT_KEY,<a name="line.275"></a>
+<FONT color="green">276</FONT>              DFSConfigKeys.DFS_IMAGE_TRANSFER_TIMEOUT_DEFAULT);<a name="line.276"></a>
+<FONT color="green">277</FONT>        }<a name="line.277"></a>
+<FONT color="green">278</FONT>    <a name="line.278"></a>
+<FONT color="green">279</FONT>        if (timeout &gt; 0) {<a name="line.279"></a>
+<FONT color="green">280</FONT>          connection.setConnectTimeout(timeout);<a name="line.280"></a>
+<FONT color="green">281</FONT>          connection.setReadTimeout(timeout);<a name="line.281"></a>
+<FONT color="green">282</FONT>        }<a name="line.282"></a>
+<FONT color="green">283</FONT>    <a name="line.283"></a>
+<FONT color="green">284</FONT>        if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {<a name="line.284"></a>
+<FONT color="green">285</FONT>          throw new HttpGetFailedException(<a name="line.285"></a>
+<FONT color="green">286</FONT>              "Image transfer servlet at " + url +<a name="line.286"></a>
+<FONT color="green">287</FONT>              " failed with status code " + connection.getResponseCode() +<a name="line.287"></a>
+<FONT color="green">288</FONT>              "\nResponse message:\n" + connection.getResponseMessage(),<a name="line.288"></a>
+<FONT color="green">289</FONT>              connection);<a name="line.289"></a>
+<FONT color="green">290</FONT>        }<a name="line.290"></a>
+<FONT color="green">291</FONT>        <a name="line.291"></a>
+<FONT color="green">292</FONT>        long advertisedSize;<a name="line.292"></a>
+<FONT color="green">293</FONT>        String contentLength = connection.getHeaderField(CONTENT_LENGTH);<a name="line.293"></a>
+<FONT color="green">294</FONT>        if (contentLength != null) {<a name="line.294"></a>
+<FONT color="green">295</FONT>          advertisedSize = Long.parseLong(contentLength);<a name="line.295"></a>
+<FONT color="green">296</FONT>        } else {<a name="line.296"></a>
+<FONT color="green">297</FONT>          throw new IOException(CONTENT_LENGTH + " header is not provided " +<a name="line.297"></a>
+<FONT color="green">298</FONT>                                "by the namenode when trying to fetch " + url);<a name="line.298"></a>
+<FONT color="green">299</FONT>        }<a name="line.299"></a>
+<FONT color="green">300</FONT>        <a name="line.300"></a>
+<FONT color="green">301</FONT>        if (localPaths != null) {<a name="line.301"></a>
+<FONT color="green">302</FONT>          String fsImageName = connection.getHeaderField(<a name="line.302"></a>
+<FONT color="green">303</FONT>              GetImageServlet.HADOOP_IMAGE_EDITS_HEADER);<a name="line.303"></a>
+<FONT color="green">304</FONT>          // If the local paths refer to directories, use the server-provided header<a name="line.304"></a>
+<FONT color="green">305</FONT>          // as the filename within that directory<a name="line.305"></a>
+<FONT color="green">306</FONT>          List&lt;File&gt; newLocalPaths = new ArrayList&lt;File&gt;();<a name="line.306"></a>
+<FONT color="green">307</FONT>          for (File localPath : localPaths) {<a name="line.307"></a>
+<FONT color="green">308</FONT>            if (localPath.isDirectory()) {<a name="line.308"></a>
+<FONT color="green">309</FONT>              if (fsImageName == null) {<a name="line.309"></a>
+<FONT color="green">310</FONT>                throw new IOException("No filename header provided by server");<a name="line.310"></a>
+<FONT color="green">311</FONT>              }<a name="line.311"></a>
+<FONT color="green">312</FONT>              newLocalPaths.add(new File(localPath, fsImageName));<a name="line.312"></a>
+<FONT color="green">313</FONT>            } else {<a name="line.313"></a>
+<FONT color="green">314</FONT>              newLocalPaths.add(localPath);<a name="line.314"></a>
+<FONT color="green">315</FONT>            }<a name="line.315"></a>
+<FONT color="green">316</FONT>          }<a name="line.316"></a>
+<FONT color="green">317</FONT>          localPaths = newLocalPaths;<a name="line.317"></a>
+<FONT color="green">318</FONT>        }<a name="line.318"></a>
+<FONT color="green">319</FONT>        <a name="line.319"></a>
+<FONT color="green">320</FONT>        MD5Hash advertisedDigest = parseMD5Header(connection);<a name="line.320"></a>
+<FONT color="green">321</FONT>    <a name="line.321"></a>
+<FONT color="green">322</FONT>        long received = 0;<a name="line.322"></a>
+<FONT color="green">323</FONT>        InputStream stream = connection.getInputStream();<a name="line.323"></a>
+<FONT color="green">324</FONT>        MessageDigest digester = null;<a name="line.324"></a>
+<FONT color="green">325</FONT>        if (getChecksum) {<a name="line.325"></a>
+<FONT color="green">326</FONT>          digester = MD5Hash.getDigester();<a name="line.326"></a>
+<FONT color="green">327</FONT>          stream = new DigestInputStream(stream, digester);<a name="line.327"></a>
+<FONT color="green">328</FONT>        }<a name="line.328"></a>
+<FONT color="green">329</FONT>        boolean finishedReceiving = false;<a name="line.329"></a>
+<FONT color="green">330</FONT>    <a name="line.330"></a>
+<FONT color="green">331</FONT>        List&lt;FileOutputStream&gt; outputStreams = Lists.newArrayList();<a name="line.331"></a>
+<FONT color="green">332</FONT>    <a name="line.332"></a>
+<FONT color="green">333</FONT>        try {<a name="line.333"></a>
+<FONT color="green">334</FONT>          if (localPaths != null) {<a name="line.334"></a>
+<FONT color="green">335</FONT>            for (File f : localPaths) {<a name="line.335"></a>
+<FONT color="green">336</FONT>              try {<a name="line.336"></a>
+<FONT color="green">337</FONT>                if (f.exists()) {<a name="line.337"></a>
+<FONT color="green">338</FONT>                  LOG.warn("Overwriting existing file " + f<a name="line.338"></a>
+<FONT color="green">339</FONT>                      + " with file downloaded from " + url);<a name="line.339"></a>
+<FONT color="green">340</FONT>                }<a name="line.340"></a>
+<FONT color="green">341</FONT>                outputStreams.add(new FileOutputStream(f));<a name="line.341"></a>
+<FONT color="green">342</FONT>              } catch (IOException ioe) {<a name="line.342"></a>
+<FONT color="green">343</FONT>                LOG.warn("Unable to download file " + f, ioe);<a name="line.343"></a>
+<FONT color="green">344</FONT>                // This will be null if we're downloading the fsimage to a file<a name="line.344"></a>
+<FONT color="green">345</FONT>                // outside of an NNStorage directory.<a name="line.345"></a>
+<FONT color="green">346</FONT>                if (dstStorage != null &amp;&amp;<a name="line.346"></a>
+<FONT color="green">347</FONT>                    (dstStorage instanceof StorageErrorReporter)) {<a name="line.347"></a>
+<FONT color="green">348</FONT>                  ((StorageErrorReporter)dstStorage).reportErrorOnFile(f);<a name="line.348"></a>
+<FONT color="green">349</FONT>                }<a name="line.349"></a>
+<FONT color="green">350</FONT>              }<a name="line.350"></a>
+<FONT color="green">351</FONT>            }<a name="line.351"></a>
+<FONT color="green">352</FONT>            <a name="line.352"></a>
+<FONT color="green">353</FONT>            if (outputStreams.isEmpty()) {<a name="line.353"></a>
+<FONT color="green">354</FONT>              throw new IOException(<a name="line.354"></a>
+<FONT color="green">355</FONT>                  "Unable to download to any storage directory");<a name="line.355"></a>
+<FONT color="green">356</FONT>            }<a name="line.356"></a>
+<FONT color="green">357</FONT>          }<a name="line.357"></a>
+<FONT color="green">358</FONT>          <a name="line.358"></a>
+<FONT color="green">359</FONT>          int num = 1;<a name="line.359"></a>
+<FONT color="green">360</FONT>          byte[] buf = new byte[HdfsConstants.IO_FILE_BUFFER_SIZE];<a name="line.360"></a>
+<FONT color="green">361</FONT>          while (num &gt; 0) {<a name="line.361"></a>
+<FONT color="green">362</FONT>            num = stream.read(buf);<a name="line.362"></a>
+<FONT color="green">363</FONT>            if (num &gt; 0) {<a name="line.363"></a>
+<FONT color="green">364</FONT>              received += num;<a name="line.364"></a>
+<FONT color="green">365</FONT>              for (FileOutputStream fos : outputStreams) {<a name="line.365"></a>
+<FONT color="green">366</FONT>                fos.write(buf, 0, num);<a name="line.366"></a>
+<FONT color="green">367</FONT>              }<a name="line.367"></a>
+<FONT color="green">368</FONT>            }<a name="line.368"></a>
+<FONT color="green">369</FONT>          }<a name="line.369"></a>
+<FONT color="green">370</FONT>          finishedReceiving = true;<a name="line.370"></a>
+<FONT color="green">371</FONT>        } finally {<a name="line.371"></a>
+<FONT color="green">372</FONT>          stream.close();<a name="line.372"></a>
+<FONT color="green">373</FONT>          for (FileOutputStream fos : outputStreams) {<a name="line.373"></a>
+<FONT color="green">374</FONT>            fos.getChannel().force(true);<a name="line.374"></a>
+<FONT color="green">375</FONT>            fos.close();<a name="line.375"></a>
+<FONT color="green">376</FONT>          }<a name="line.376"></a>
+<FONT color="green">377</FONT>          if (finishedReceiving &amp;&amp; received != advertisedSize) {<a name="line.377"></a>
+<FONT color="green">378</FONT>            // only throw this exception if we think we read all of it on our end<a name="line.378"></a>
+<FONT color="green">379</FONT>            // -- otherwise a client-side IOException would be masked by this<a name="line.379"></a>
+<FONT color="green">380</FONT>            // exception that makes it look like a server-side problem!<a name="line.380"></a>
+<FONT color="green">381</FONT>            throw new IOException("File " + url + " received length " + received +<a name="line.381"></a>
+<FONT color="green">382</FONT>                                  " is not of the advertised size " +<a name="line.382"></a>
+<FONT color="green">383</FONT>                                  advertisedSize);<a name="line.383"></a>
+<FONT color="green">384</FONT>          }<a name="line.384"></a>
+<FONT color="green">385</FONT>        }<a name="line.385"></a>
+<FONT color="green">386</FONT>        double xferSec = Math.max(<a name="line.386"></a>
+<FONT color="green">387</FONT>            ((float)(Time.monotonicNow() - startTime)) / 1000.0, 0.001);<a name="line.387"></a>
+<FONT color="green">388</FONT>        long xferKb = received / 1024;<a name="line.388"></a>
+<FONT color="green">389</FONT>        LOG.info(String.format("Transfer took %.2fs at %.2f KB/s",<a name="line.389"></a>
+<FONT color="green">390</FONT>            xferSec, xferKb / xferSec));<a name="line.390"></a>
+<FONT color="green">391</FONT>    <a name="line.391"></a>
+<FONT color="green">392</FONT>        if (digester != null) {<a name="line.392"></a>
+<FONT color="green">393</FONT>          MD5Hash computedDigest = new MD5Hash(digester.digest());<a name="line.393"></a>
+<FONT color="green">394</FONT>          <a name="line.394"></a>
+<FONT color="green">395</FONT>          if (advertisedDigest != null &amp;&amp;<a name="line.395"></a>
+<FONT color="green">396</FONT>              !computedDigest.equals(advertisedDigest)) {<a name="line.396"></a>
+<FONT color="green">397</FONT>            throw new IOException("File " + url + " computed digest " +<a name="line.397"></a>
+<FONT color="green">398</FONT>                computedDigest + " does not match advertised digest " + <a name="line.398"></a>
+<FONT color="green">399</FONT>                advertisedDigest);<a name="line.399"></a>
+<FONT color="green">400</FONT>          }<a name="line.400"></a>
+<FONT color="green">401</FONT>          return computedDigest;<a name="line.401"></a>
+<FONT color="green">402</FONT>        } else {<a name="line.402"></a>
+<FONT color="green">403</FONT>          return null;<a name="line.403"></a>
+<FONT color="green">404</FONT>        }    <a name="line.404"></a>
+<FONT color="green">405</FONT>      }<a name="line.405"></a>
+<FONT color="green">406</FONT>    <a name="line.406"></a>
+<FONT color="green">407</FONT>      private static MD5Hash parseMD5Header(HttpURLConnection connection) {<a name="line.407"></a>
+<FONT color="green">408</FONT>        String header = connection.getHeaderField(MD5_HEADER);<a name="line.408"></a>
+<FONT color="green">409</FONT>        return (header != null) ? new MD5Hash(header) : null;<a name="line.409"></a>
+<FONT color="green">410</FONT>      }<a name="line.410"></a>
+<FONT color="green">411</FONT>      <a name="line.411"></a>
+<FONT color="green">412</FONT>      public static class HttpGetFailedException extends IOException {<a name="line.412"></a>
+<FONT color="green">413</FONT>        private static final long serialVersionUID = 1L;<a name="line.413"></a>
+<FONT color="green">414</FONT>        private final int responseCode;<a name="line.414"></a>
+<FONT color="green">415</FONT>    <a name="line.415"></a>
+<FONT color="green">416</FONT>        HttpGetFailedException(String msg, HttpURLConnection connection) throws IOException {<a name="line.416"></a>
+<FONT color="green">417</FONT>          super(msg);<a name="line.417"></a>
+<FONT color="green">418</FONT>          this.responseCode = connection.getResponseCode();<a name="line.418"></a>
+<FONT color="green">419</FONT>        }<a name="line.419"></a>
+<FONT color="green">420</FONT>        <a name="line.420"></a>
+<FONT color="green">421</FONT>        public int getResponseCode() {<a name="line.421"></a>
+<FONT color="green">422</FONT>          return responseCode;<a name="line.422"></a>
+<FONT color="green">423</FONT>        }<a name="line.423"></a>
+<FONT color="green">424</FONT>      }<a name="line.424"></a>
+<FONT color="green">425</FONT>    <a name="line.425"></a>
+<FONT color="green">426</FONT>    }<a name="line.426"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>

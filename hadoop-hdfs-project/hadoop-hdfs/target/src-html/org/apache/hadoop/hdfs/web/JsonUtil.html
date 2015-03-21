@@ -1,0 +1,685 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    /**<a name="line.1"></a>
+<FONT color="green">002</FONT>     * Licensed to the Apache Software Foundation (ASF) under one<a name="line.2"></a>
+<FONT color="green">003</FONT>     * or more contributor license agreements.  See the NOTICE file<a name="line.3"></a>
+<FONT color="green">004</FONT>     * distributed with this work for additional information<a name="line.4"></a>
+<FONT color="green">005</FONT>     * regarding copyright ownership.  The ASF licenses this file<a name="line.5"></a>
+<FONT color="green">006</FONT>     * to you under the Apache License, Version 2.0 (the<a name="line.6"></a>
+<FONT color="green">007</FONT>     * "License"); you may not use this file except in compliance<a name="line.7"></a>
+<FONT color="green">008</FONT>     * with the License.  You may obtain a copy of the License at<a name="line.8"></a>
+<FONT color="green">009</FONT>     *<a name="line.9"></a>
+<FONT color="green">010</FONT>     *     http://www.apache.org/licenses/LICENSE-2.0<a name="line.10"></a>
+<FONT color="green">011</FONT>     *<a name="line.11"></a>
+<FONT color="green">012</FONT>     * Unless required by applicable law or agreed to in writing, software<a name="line.12"></a>
+<FONT color="green">013</FONT>     * distributed under the License is distributed on an "AS IS" BASIS,<a name="line.13"></a>
+<FONT color="green">014</FONT>     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.14"></a>
+<FONT color="green">015</FONT>     * See the License for the specific language governing permissions and<a name="line.15"></a>
+<FONT color="green">016</FONT>     * limitations under the License.<a name="line.16"></a>
+<FONT color="green">017</FONT>     */<a name="line.17"></a>
+<FONT color="green">018</FONT>    package org.apache.hadoop.hdfs.web;<a name="line.18"></a>
+<FONT color="green">019</FONT>    <a name="line.19"></a>
+<FONT color="green">020</FONT>    import org.apache.hadoop.fs.*;<a name="line.20"></a>
+<FONT color="green">021</FONT>    import org.apache.hadoop.fs.permission.FsPermission;<a name="line.21"></a>
+<FONT color="green">022</FONT>    import org.apache.hadoop.hdfs.DFSUtil;<a name="line.22"></a>
+<FONT color="green">023</FONT>    import org.apache.hadoop.hdfs.protocol.*;<a name="line.23"></a>
+<FONT color="green">024</FONT>    import org.apache.hadoop.hdfs.protocol.DatanodeInfo.AdminStates;<a name="line.24"></a>
+<FONT color="green">025</FONT>    import org.apache.hadoop.hdfs.security.token.block.BlockTokenIdentifier;<a name="line.25"></a>
+<FONT color="green">026</FONT>    import org.apache.hadoop.hdfs.security.token.delegation.DelegationTokenIdentifier;<a name="line.26"></a>
+<FONT color="green">027</FONT>    import org.apache.hadoop.hdfs.server.namenode.INodeId;<a name="line.27"></a>
+<FONT color="green">028</FONT>    import org.apache.hadoop.ipc.RemoteException;<a name="line.28"></a>
+<FONT color="green">029</FONT>    import org.apache.hadoop.security.token.Token;<a name="line.29"></a>
+<FONT color="green">030</FONT>    import org.apache.hadoop.security.token.TokenIdentifier;<a name="line.30"></a>
+<FONT color="green">031</FONT>    import org.apache.hadoop.util.DataChecksum;<a name="line.31"></a>
+<FONT color="green">032</FONT>    import org.apache.hadoop.util.StringUtils;<a name="line.32"></a>
+<FONT color="green">033</FONT>    import org.mortbay.util.ajax.JSON;<a name="line.33"></a>
+<FONT color="green">034</FONT>    <a name="line.34"></a>
+<FONT color="green">035</FONT>    import java.io.ByteArrayInputStream;<a name="line.35"></a>
+<FONT color="green">036</FONT>    import java.io.DataInputStream;<a name="line.36"></a>
+<FONT color="green">037</FONT>    import java.io.IOException;<a name="line.37"></a>
+<FONT color="green">038</FONT>    import java.util.*;<a name="line.38"></a>
+<FONT color="green">039</FONT>    <a name="line.39"></a>
+<FONT color="green">040</FONT>    /** JSON Utilities */<a name="line.40"></a>
+<FONT color="green">041</FONT>    public class JsonUtil {<a name="line.41"></a>
+<FONT color="green">042</FONT>      private static final Object[] EMPTY_OBJECT_ARRAY = {};<a name="line.42"></a>
+<FONT color="green">043</FONT>      private static final DatanodeInfo[] EMPTY_DATANODE_INFO_ARRAY = {};<a name="line.43"></a>
+<FONT color="green">044</FONT>    <a name="line.44"></a>
+<FONT color="green">045</FONT>      /** Convert a token object to a Json string. */<a name="line.45"></a>
+<FONT color="green">046</FONT>      public static String toJsonString(final Token&lt;? extends TokenIdentifier&gt; token<a name="line.46"></a>
+<FONT color="green">047</FONT>          ) throws IOException {<a name="line.47"></a>
+<FONT color="green">048</FONT>        return toJsonString(Token.class, toJsonMap(token));<a name="line.48"></a>
+<FONT color="green">049</FONT>      }<a name="line.49"></a>
+<FONT color="green">050</FONT>    <a name="line.50"></a>
+<FONT color="green">051</FONT>      private static Map&lt;String, Object&gt; toJsonMap(<a name="line.51"></a>
+<FONT color="green">052</FONT>          final Token&lt;? extends TokenIdentifier&gt; token) throws IOException {<a name="line.52"></a>
+<FONT color="green">053</FONT>        if (token == null) {<a name="line.53"></a>
+<FONT color="green">054</FONT>          return null;<a name="line.54"></a>
+<FONT color="green">055</FONT>        }<a name="line.55"></a>
+<FONT color="green">056</FONT>    <a name="line.56"></a>
+<FONT color="green">057</FONT>        final Map&lt;String, Object&gt; m = new TreeMap&lt;String, Object&gt;();<a name="line.57"></a>
+<FONT color="green">058</FONT>        m.put("urlString", token.encodeToUrlString());<a name="line.58"></a>
+<FONT color="green">059</FONT>        return m;<a name="line.59"></a>
+<FONT color="green">060</FONT>      }<a name="line.60"></a>
+<FONT color="green">061</FONT>    <a name="line.61"></a>
+<FONT color="green">062</FONT>      /** Convert a Json map to a Token. */<a name="line.62"></a>
+<FONT color="green">063</FONT>      public static Token&lt;? extends TokenIdentifier&gt; toToken(<a name="line.63"></a>
+<FONT color="green">064</FONT>          final Map&lt;?, ?&gt; m) throws IOException {<a name="line.64"></a>
+<FONT color="green">065</FONT>        if (m == null) {<a name="line.65"></a>
+<FONT color="green">066</FONT>          return null;<a name="line.66"></a>
+<FONT color="green">067</FONT>        }<a name="line.67"></a>
+<FONT color="green">068</FONT>    <a name="line.68"></a>
+<FONT color="green">069</FONT>        final Token&lt;DelegationTokenIdentifier&gt; token<a name="line.69"></a>
+<FONT color="green">070</FONT>            = new Token&lt;DelegationTokenIdentifier&gt;();<a name="line.70"></a>
+<FONT color="green">071</FONT>        token.decodeFromUrlString((String)m.get("urlString"));<a name="line.71"></a>
+<FONT color="green">072</FONT>        return token;<a name="line.72"></a>
+<FONT color="green">073</FONT>      }<a name="line.73"></a>
+<FONT color="green">074</FONT>    <a name="line.74"></a>
+<FONT color="green">075</FONT>      /** Convert a Json map to a Token of DelegationTokenIdentifier. */<a name="line.75"></a>
+<FONT color="green">076</FONT>      @SuppressWarnings("unchecked")<a name="line.76"></a>
+<FONT color="green">077</FONT>      public static Token&lt;DelegationTokenIdentifier&gt; toDelegationToken(<a name="line.77"></a>
+<FONT color="green">078</FONT>          final Map&lt;?, ?&gt; json) throws IOException {<a name="line.78"></a>
+<FONT color="green">079</FONT>        final Map&lt;?, ?&gt; m = (Map&lt;?, ?&gt;)json.get(Token.class.getSimpleName());<a name="line.79"></a>
+<FONT color="green">080</FONT>        return (Token&lt;DelegationTokenIdentifier&gt;)toToken(m);<a name="line.80"></a>
+<FONT color="green">081</FONT>      }<a name="line.81"></a>
+<FONT color="green">082</FONT>    <a name="line.82"></a>
+<FONT color="green">083</FONT>      /** Convert a Json map to a Token of BlockTokenIdentifier. */<a name="line.83"></a>
+<FONT color="green">084</FONT>      @SuppressWarnings("unchecked")<a name="line.84"></a>
+<FONT color="green">085</FONT>      private static Token&lt;BlockTokenIdentifier&gt; toBlockToken(<a name="line.85"></a>
+<FONT color="green">086</FONT>          final Map&lt;?, ?&gt; m) throws IOException {<a name="line.86"></a>
+<FONT color="green">087</FONT>        return (Token&lt;BlockTokenIdentifier&gt;)toToken(m);<a name="line.87"></a>
+<FONT color="green">088</FONT>      }<a name="line.88"></a>
+<FONT color="green">089</FONT>    <a name="line.89"></a>
+<FONT color="green">090</FONT>      /** Convert a Token[] to a JSON array. */<a name="line.90"></a>
+<FONT color="green">091</FONT>      private static Object[] toJsonArray(final Token&lt;? extends TokenIdentifier&gt;[] array<a name="line.91"></a>
+<FONT color="green">092</FONT>          ) throws IOException {<a name="line.92"></a>
+<FONT color="green">093</FONT>        if (array == null) {<a name="line.93"></a>
+<FONT color="green">094</FONT>          return null;<a name="line.94"></a>
+<FONT color="green">095</FONT>        } else if (array.length == 0) {<a name="line.95"></a>
+<FONT color="green">096</FONT>          return EMPTY_OBJECT_ARRAY;<a name="line.96"></a>
+<FONT color="green">097</FONT>        } else {<a name="line.97"></a>
+<FONT color="green">098</FONT>          final Object[] a = new Object[array.length];<a name="line.98"></a>
+<FONT color="green">099</FONT>          for(int i = 0; i &lt; array.length; i++) {<a name="line.99"></a>
+<FONT color="green">100</FONT>            a[i] = toJsonMap(array[i]);<a name="line.100"></a>
+<FONT color="green">101</FONT>          }<a name="line.101"></a>
+<FONT color="green">102</FONT>          return a;<a name="line.102"></a>
+<FONT color="green">103</FONT>        }<a name="line.103"></a>
+<FONT color="green">104</FONT>      }<a name="line.104"></a>
+<FONT color="green">105</FONT>    <a name="line.105"></a>
+<FONT color="green">106</FONT>      /** Convert a token object to a JSON string. */<a name="line.106"></a>
+<FONT color="green">107</FONT>      public static String toJsonString(final Token&lt;? extends TokenIdentifier&gt;[] tokens<a name="line.107"></a>
+<FONT color="green">108</FONT>          ) throws IOException {<a name="line.108"></a>
+<FONT color="green">109</FONT>        if (tokens == null) {<a name="line.109"></a>
+<FONT color="green">110</FONT>          return null;<a name="line.110"></a>
+<FONT color="green">111</FONT>        }<a name="line.111"></a>
+<FONT color="green">112</FONT>    <a name="line.112"></a>
+<FONT color="green">113</FONT>        final Map&lt;String, Object&gt; m = new TreeMap&lt;String, Object&gt;();<a name="line.113"></a>
+<FONT color="green">114</FONT>        m.put(Token.class.getSimpleName(), toJsonArray(tokens));<a name="line.114"></a>
+<FONT color="green">115</FONT>        return toJsonString(Token.class.getSimpleName() + "s", m);<a name="line.115"></a>
+<FONT color="green">116</FONT>      }<a name="line.116"></a>
+<FONT color="green">117</FONT>    <a name="line.117"></a>
+<FONT color="green">118</FONT>      /** Convert an Object[] to a List&lt;Token&lt;?&gt;&gt;.  */<a name="line.118"></a>
+<FONT color="green">119</FONT>      private static List&lt;Token&lt;?&gt;&gt; toTokenList(final Object[] objects) throws IOException {<a name="line.119"></a>
+<FONT color="green">120</FONT>        if (objects == null) {<a name="line.120"></a>
+<FONT color="green">121</FONT>          return null;<a name="line.121"></a>
+<FONT color="green">122</FONT>        } else if (objects.length == 0) {<a name="line.122"></a>
+<FONT color="green">123</FONT>          return Collections.emptyList();<a name="line.123"></a>
+<FONT color="green">124</FONT>        } else {<a name="line.124"></a>
+<FONT color="green">125</FONT>          final List&lt;Token&lt;?&gt;&gt; list = new ArrayList&lt;Token&lt;?&gt;&gt;(objects.length);<a name="line.125"></a>
+<FONT color="green">126</FONT>          for(int i = 0; i &lt; objects.length; i++) {<a name="line.126"></a>
+<FONT color="green">127</FONT>            list.add(toToken((Map&lt;?, ?&gt;)objects[i]));<a name="line.127"></a>
+<FONT color="green">128</FONT>          }<a name="line.128"></a>
+<FONT color="green">129</FONT>          return list;<a name="line.129"></a>
+<FONT color="green">130</FONT>        }<a name="line.130"></a>
+<FONT color="green">131</FONT>      }<a name="line.131"></a>
+<FONT color="green">132</FONT>    <a name="line.132"></a>
+<FONT color="green">133</FONT>      /** Convert a JSON map to a List&lt;Token&lt;?&gt;&gt;. */<a name="line.133"></a>
+<FONT color="green">134</FONT>      public static List&lt;Token&lt;?&gt;&gt; toTokenList(final Map&lt;?, ?&gt; json) throws IOException {<a name="line.134"></a>
+<FONT color="green">135</FONT>        if (json == null) {<a name="line.135"></a>
+<FONT color="green">136</FONT>          return null;<a name="line.136"></a>
+<FONT color="green">137</FONT>        }<a name="line.137"></a>
+<FONT color="green">138</FONT>    <a name="line.138"></a>
+<FONT color="green">139</FONT>        final Map&lt;?, ?&gt; m = (Map&lt;?, ?&gt;)json.get(Token.class.getSimpleName() + "s");<a name="line.139"></a>
+<FONT color="green">140</FONT>        return toTokenList((Object[])m.get(Token.class.getSimpleName()));<a name="line.140"></a>
+<FONT color="green">141</FONT>      }<a name="line.141"></a>
+<FONT color="green">142</FONT>    <a name="line.142"></a>
+<FONT color="green">143</FONT>      /** Convert an exception object to a Json string. */<a name="line.143"></a>
+<FONT color="green">144</FONT>      public static String toJsonString(final Exception e) {<a name="line.144"></a>
+<FONT color="green">145</FONT>        final Map&lt;String, Object&gt; m = new TreeMap&lt;String, Object&gt;();<a name="line.145"></a>
+<FONT color="green">146</FONT>        m.put("exception", e.getClass().getSimpleName());<a name="line.146"></a>
+<FONT color="green">147</FONT>        m.put("message", e.getMessage());<a name="line.147"></a>
+<FONT color="green">148</FONT>        m.put("javaClassName", e.getClass().getName());<a name="line.148"></a>
+<FONT color="green">149</FONT>        return toJsonString(RemoteException.class, m);<a name="line.149"></a>
+<FONT color="green">150</FONT>      }<a name="line.150"></a>
+<FONT color="green">151</FONT>    <a name="line.151"></a>
+<FONT color="green">152</FONT>      /** Convert a Json map to a RemoteException. */<a name="line.152"></a>
+<FONT color="green">153</FONT>      public static RemoteException toRemoteException(final Map&lt;?, ?&gt; json) {<a name="line.153"></a>
+<FONT color="green">154</FONT>        final Map&lt;?, ?&gt; m = (Map&lt;?, ?&gt;)json.get(RemoteException.class.getSimpleName());<a name="line.154"></a>
+<FONT color="green">155</FONT>        final String message = (String)m.get("message");<a name="line.155"></a>
+<FONT color="green">156</FONT>        final String javaClassName = (String)m.get("javaClassName");<a name="line.156"></a>
+<FONT color="green">157</FONT>        return new RemoteException(javaClassName, message);<a name="line.157"></a>
+<FONT color="green">158</FONT>      }<a name="line.158"></a>
+<FONT color="green">159</FONT>    <a name="line.159"></a>
+<FONT color="green">160</FONT>      private static String toJsonString(final Class&lt;?&gt; clazz, final Object value) {<a name="line.160"></a>
+<FONT color="green">161</FONT>        return toJsonString(clazz.getSimpleName(), value);<a name="line.161"></a>
+<FONT color="green">162</FONT>      }<a name="line.162"></a>
+<FONT color="green">163</FONT>    <a name="line.163"></a>
+<FONT color="green">164</FONT>      /** Convert a key-value pair to a Json string. */<a name="line.164"></a>
+<FONT color="green">165</FONT>      public static String toJsonString(final String key, final Object value) {<a name="line.165"></a>
+<FONT color="green">166</FONT>        final Map&lt;String, Object&gt; m = new TreeMap&lt;String, Object&gt;();<a name="line.166"></a>
+<FONT color="green">167</FONT>        m.put(key, value);<a name="line.167"></a>
+<FONT color="green">168</FONT>        return JSON.toString(m);<a name="line.168"></a>
+<FONT color="green">169</FONT>      }<a name="line.169"></a>
+<FONT color="green">170</FONT>    <a name="line.170"></a>
+<FONT color="green">171</FONT>      /** Convert a FsPermission object to a string. */<a name="line.171"></a>
+<FONT color="green">172</FONT>      private static String toString(final FsPermission permission) {<a name="line.172"></a>
+<FONT color="green">173</FONT>        return String.format("%o", permission.toShort());<a name="line.173"></a>
+<FONT color="green">174</FONT>      }<a name="line.174"></a>
+<FONT color="green">175</FONT>    <a name="line.175"></a>
+<FONT color="green">176</FONT>      /** Convert a string to a FsPermission object. */<a name="line.176"></a>
+<FONT color="green">177</FONT>      private static FsPermission toFsPermission(final String s) {<a name="line.177"></a>
+<FONT color="green">178</FONT>        return new FsPermission(Short.parseShort(s, 8));<a name="line.178"></a>
+<FONT color="green">179</FONT>      }<a name="line.179"></a>
+<FONT color="green">180</FONT>    <a name="line.180"></a>
+<FONT color="green">181</FONT>      static enum PathType {<a name="line.181"></a>
+<FONT color="green">182</FONT>        FILE, DIRECTORY, SYMLINK;<a name="line.182"></a>
+<FONT color="green">183</FONT>        <a name="line.183"></a>
+<FONT color="green">184</FONT>        static PathType valueOf(HdfsFileStatus status) {<a name="line.184"></a>
+<FONT color="green">185</FONT>          return status.isDir()? DIRECTORY: status.isSymlink()? SYMLINK: FILE;<a name="line.185"></a>
+<FONT color="green">186</FONT>        }<a name="line.186"></a>
+<FONT color="green">187</FONT>      }<a name="line.187"></a>
+<FONT color="green">188</FONT>    <a name="line.188"></a>
+<FONT color="green">189</FONT>      /** Convert a HdfsFileStatus object to a Json string. */<a name="line.189"></a>
+<FONT color="green">190</FONT>      public static String toJsonString(final HdfsFileStatus status,<a name="line.190"></a>
+<FONT color="green">191</FONT>          boolean includeType) {<a name="line.191"></a>
+<FONT color="green">192</FONT>        if (status == null) {<a name="line.192"></a>
+<FONT color="green">193</FONT>          return null;<a name="line.193"></a>
+<FONT color="green">194</FONT>        }<a name="line.194"></a>
+<FONT color="green">195</FONT>        final Map&lt;String, Object&gt; m = new TreeMap&lt;String, Object&gt;();<a name="line.195"></a>
+<FONT color="green">196</FONT>        m.put("pathSuffix", status.getLocalName());<a name="line.196"></a>
+<FONT color="green">197</FONT>        m.put("type", PathType.valueOf(status));<a name="line.197"></a>
+<FONT color="green">198</FONT>        if (status.isSymlink()) {<a name="line.198"></a>
+<FONT color="green">199</FONT>          m.put("symlink", status.getSymlink());<a name="line.199"></a>
+<FONT color="green">200</FONT>        }<a name="line.200"></a>
+<FONT color="green">201</FONT>    <a name="line.201"></a>
+<FONT color="green">202</FONT>        m.put("length", status.getLen());<a name="line.202"></a>
+<FONT color="green">203</FONT>        m.put("owner", status.getOwner());<a name="line.203"></a>
+<FONT color="green">204</FONT>        m.put("group", status.getGroup());<a name="line.204"></a>
+<FONT color="green">205</FONT>        m.put("permission", toString(status.getPermission()));<a name="line.205"></a>
+<FONT color="green">206</FONT>        m.put("accessTime", status.getAccessTime());<a name="line.206"></a>
+<FONT color="green">207</FONT>        m.put("modificationTime", status.getModificationTime());<a name="line.207"></a>
+<FONT color="green">208</FONT>        m.put("blockSize", status.getBlockSize());<a name="line.208"></a>
+<FONT color="green">209</FONT>        m.put("replication", status.getReplication());<a name="line.209"></a>
+<FONT color="green">210</FONT>        m.put("fileId", status.getFileId());<a name="line.210"></a>
+<FONT color="green">211</FONT>        m.put("childrenNum", status.getChildrenNum());<a name="line.211"></a>
+<FONT color="green">212</FONT>        return includeType ? toJsonString(FileStatus.class, m): JSON.toString(m);<a name="line.212"></a>
+<FONT color="green">213</FONT>      }<a name="line.213"></a>
+<FONT color="green">214</FONT>    <a name="line.214"></a>
+<FONT color="green">215</FONT>      /** Convert a Json map to a HdfsFileStatus object. */<a name="line.215"></a>
+<FONT color="green">216</FONT>      public static HdfsFileStatus toFileStatus(final Map&lt;?, ?&gt; json, boolean includesType) {<a name="line.216"></a>
+<FONT color="green">217</FONT>        if (json == null) {<a name="line.217"></a>
+<FONT color="green">218</FONT>          return null;<a name="line.218"></a>
+<FONT color="green">219</FONT>        }<a name="line.219"></a>
+<FONT color="green">220</FONT>    <a name="line.220"></a>
+<FONT color="green">221</FONT>        final Map&lt;?, ?&gt; m = includesType ? <a name="line.221"></a>
+<FONT color="green">222</FONT>            (Map&lt;?, ?&gt;)json.get(FileStatus.class.getSimpleName()) : json;<a name="line.222"></a>
+<FONT color="green">223</FONT>        final String localName = (String) m.get("pathSuffix");<a name="line.223"></a>
+<FONT color="green">224</FONT>        final PathType type = PathType.valueOf((String) m.get("type"));<a name="line.224"></a>
+<FONT color="green">225</FONT>        final byte[] symlink = type != PathType.SYMLINK? null<a name="line.225"></a>
+<FONT color="green">226</FONT>            : DFSUtil.string2Bytes((String)m.get("symlink"));<a name="line.226"></a>
+<FONT color="green">227</FONT>    <a name="line.227"></a>
+<FONT color="green">228</FONT>        final long len = (Long) m.get("length");<a name="line.228"></a>
+<FONT color="green">229</FONT>        final String owner = (String) m.get("owner");<a name="line.229"></a>
+<FONT color="green">230</FONT>        final String group = (String) m.get("group");<a name="line.230"></a>
+<FONT color="green">231</FONT>        final FsPermission permission = toFsPermission((String) m.get("permission"));<a name="line.231"></a>
+<FONT color="green">232</FONT>        final long aTime = (Long) m.get("accessTime");<a name="line.232"></a>
+<FONT color="green">233</FONT>        final long mTime = (Long) m.get("modificationTime");<a name="line.233"></a>
+<FONT color="green">234</FONT>        final long blockSize = (Long) m.get("blockSize");<a name="line.234"></a>
+<FONT color="green">235</FONT>        final short replication = (short) (long) (Long) m.get("replication");<a name="line.235"></a>
+<FONT color="green">236</FONT>        final long fileId = m.containsKey("fileId") ? (Long) m.get("fileId")<a name="line.236"></a>
+<FONT color="green">237</FONT>            : INodeId.GRANDFATHER_INODE_ID;<a name="line.237"></a>
+<FONT color="green">238</FONT>        Long childrenNumLong = (Long) m.get("childrenNum");<a name="line.238"></a>
+<FONT color="green">239</FONT>        final int childrenNum = (childrenNumLong == null) ? -1<a name="line.239"></a>
+<FONT color="green">240</FONT>                : childrenNumLong.intValue();<a name="line.240"></a>
+<FONT color="green">241</FONT>        return new HdfsFileStatus(len, type == PathType.DIRECTORY, replication,<a name="line.241"></a>
+<FONT color="green">242</FONT>            blockSize, mTime, aTime, permission, owner, group,<a name="line.242"></a>
+<FONT color="green">243</FONT>            symlink, DFSUtil.string2Bytes(localName), fileId, childrenNum);<a name="line.243"></a>
+<FONT color="green">244</FONT>      }<a name="line.244"></a>
+<FONT color="green">245</FONT>    <a name="line.245"></a>
+<FONT color="green">246</FONT>      /** Convert an ExtendedBlock to a Json map. */<a name="line.246"></a>
+<FONT color="green">247</FONT>      private static Map&lt;String, Object&gt; toJsonMap(final ExtendedBlock extendedblock) {<a name="line.247"></a>
+<FONT color="green">248</FONT>        if (extendedblock == null) {<a name="line.248"></a>
+<FONT color="green">249</FONT>          return null;<a name="line.249"></a>
+<FONT color="green">250</FONT>        }<a name="line.250"></a>
+<FONT color="green">251</FONT>    <a name="line.251"></a>
+<FONT color="green">252</FONT>        final Map&lt;String, Object&gt; m = new TreeMap&lt;String, Object&gt;();<a name="line.252"></a>
+<FONT color="green">253</FONT>        m.put("blockPoolId", extendedblock.getBlockPoolId());<a name="line.253"></a>
+<FONT color="green">254</FONT>        m.put("blockId", extendedblock.getBlockId());<a name="line.254"></a>
+<FONT color="green">255</FONT>        m.put("numBytes", extendedblock.getNumBytes());<a name="line.255"></a>
+<FONT color="green">256</FONT>        m.put("generationStamp", extendedblock.getGenerationStamp());<a name="line.256"></a>
+<FONT color="green">257</FONT>        return m;<a name="line.257"></a>
+<FONT color="green">258</FONT>      }<a name="line.258"></a>
+<FONT color="green">259</FONT>    <a name="line.259"></a>
+<FONT color="green">260</FONT>      /** Convert a Json map to an ExtendedBlock object. */<a name="line.260"></a>
+<FONT color="green">261</FONT>      private static ExtendedBlock toExtendedBlock(final Map&lt;?, ?&gt; m) {<a name="line.261"></a>
+<FONT color="green">262</FONT>        if (m == null) {<a name="line.262"></a>
+<FONT color="green">263</FONT>          return null;<a name="line.263"></a>
+<FONT color="green">264</FONT>        }<a name="line.264"></a>
+<FONT color="green">265</FONT>        <a name="line.265"></a>
+<FONT color="green">266</FONT>        final String blockPoolId = (String)m.get("blockPoolId");<a name="line.266"></a>
+<FONT color="green">267</FONT>        final long blockId = (Long)m.get("blockId");<a name="line.267"></a>
+<FONT color="green">268</FONT>        final long numBytes = (Long)m.get("numBytes");<a name="line.268"></a>
+<FONT color="green">269</FONT>        final long generationStamp = (Long)m.get("generationStamp");<a name="line.269"></a>
+<FONT color="green">270</FONT>        return new ExtendedBlock(blockPoolId, blockId, numBytes, generationStamp);<a name="line.270"></a>
+<FONT color="green">271</FONT>      }<a name="line.271"></a>
+<FONT color="green">272</FONT>      <a name="line.272"></a>
+<FONT color="green">273</FONT>      /** Convert a DatanodeInfo to a Json map. */<a name="line.273"></a>
+<FONT color="green">274</FONT>      static Map&lt;String, Object&gt; toJsonMap(final DatanodeInfo datanodeinfo) {<a name="line.274"></a>
+<FONT color="green">275</FONT>        if (datanodeinfo == null) {<a name="line.275"></a>
+<FONT color="green">276</FONT>          return null;<a name="line.276"></a>
+<FONT color="green">277</FONT>        }<a name="line.277"></a>
+<FONT color="green">278</FONT>    <a name="line.278"></a>
+<FONT color="green">279</FONT>        // TODO: Fix storageID<a name="line.279"></a>
+<FONT color="green">280</FONT>        final Map&lt;String, Object&gt; m = new TreeMap&lt;String, Object&gt;();<a name="line.280"></a>
+<FONT color="green">281</FONT>        m.put("ipAddr", datanodeinfo.getIpAddr());<a name="line.281"></a>
+<FONT color="green">282</FONT>        // 'name' is equivalent to ipAddr:xferPort. Older clients (1.x, 0.23.x) <a name="line.282"></a>
+<FONT color="green">283</FONT>        // expects this instead of the two fields.<a name="line.283"></a>
+<FONT color="green">284</FONT>        m.put("name", datanodeinfo.getXferAddr());<a name="line.284"></a>
+<FONT color="green">285</FONT>        m.put("hostName", datanodeinfo.getHostName());<a name="line.285"></a>
+<FONT color="green">286</FONT>        m.put("storageID", datanodeinfo.getDatanodeUuid());<a name="line.286"></a>
+<FONT color="green">287</FONT>        m.put("xferPort", datanodeinfo.getXferPort());<a name="line.287"></a>
+<FONT color="green">288</FONT>        m.put("infoPort", datanodeinfo.getInfoPort());<a name="line.288"></a>
+<FONT color="green">289</FONT>        m.put("infoSecurePort", datanodeinfo.getInfoSecurePort());<a name="line.289"></a>
+<FONT color="green">290</FONT>        m.put("ipcPort", datanodeinfo.getIpcPort());<a name="line.290"></a>
+<FONT color="green">291</FONT>    <a name="line.291"></a>
+<FONT color="green">292</FONT>        m.put("capacity", datanodeinfo.getCapacity());<a name="line.292"></a>
+<FONT color="green">293</FONT>        m.put("dfsUsed", datanodeinfo.getDfsUsed());<a name="line.293"></a>
+<FONT color="green">294</FONT>        m.put("remaining", datanodeinfo.getRemaining());<a name="line.294"></a>
+<FONT color="green">295</FONT>        m.put("blockPoolUsed", datanodeinfo.getBlockPoolUsed());<a name="line.295"></a>
+<FONT color="green">296</FONT>        m.put("cacheCapacity", datanodeinfo.getCacheCapacity());<a name="line.296"></a>
+<FONT color="green">297</FONT>        m.put("cacheUsed", datanodeinfo.getCacheUsed());<a name="line.297"></a>
+<FONT color="green">298</FONT>        m.put("lastUpdate", datanodeinfo.getLastUpdate());<a name="line.298"></a>
+<FONT color="green">299</FONT>        m.put("xceiverCount", datanodeinfo.getXceiverCount());<a name="line.299"></a>
+<FONT color="green">300</FONT>        m.put("networkLocation", datanodeinfo.getNetworkLocation());<a name="line.300"></a>
+<FONT color="green">301</FONT>        m.put("adminState", datanodeinfo.getAdminState().name());<a name="line.301"></a>
+<FONT color="green">302</FONT>        return m;<a name="line.302"></a>
+<FONT color="green">303</FONT>      }<a name="line.303"></a>
+<FONT color="green">304</FONT>    <a name="line.304"></a>
+<FONT color="green">305</FONT>      private static int getInt(Map&lt;?, ?&gt; m, String key, final int defaultValue) {<a name="line.305"></a>
+<FONT color="green">306</FONT>        Object value = m.get(key);<a name="line.306"></a>
+<FONT color="green">307</FONT>        if (value == null) {<a name="line.307"></a>
+<FONT color="green">308</FONT>          return defaultValue;<a name="line.308"></a>
+<FONT color="green">309</FONT>        }<a name="line.309"></a>
+<FONT color="green">310</FONT>        return (int) (long) (Long) value;<a name="line.310"></a>
+<FONT color="green">311</FONT>      }<a name="line.311"></a>
+<FONT color="green">312</FONT>    <a name="line.312"></a>
+<FONT color="green">313</FONT>      private static long getLong(Map&lt;?, ?&gt; m, String key, final long defaultValue) {<a name="line.313"></a>
+<FONT color="green">314</FONT>        Object value = m.get(key);<a name="line.314"></a>
+<FONT color="green">315</FONT>        if (value == null) {<a name="line.315"></a>
+<FONT color="green">316</FONT>          return defaultValue;<a name="line.316"></a>
+<FONT color="green">317</FONT>        }<a name="line.317"></a>
+<FONT color="green">318</FONT>        return (long) (Long) value;<a name="line.318"></a>
+<FONT color="green">319</FONT>      }<a name="line.319"></a>
+<FONT color="green">320</FONT>    <a name="line.320"></a>
+<FONT color="green">321</FONT>      private static String getString(Map&lt;?, ?&gt; m, String key,<a name="line.321"></a>
+<FONT color="green">322</FONT>          final String defaultValue) {<a name="line.322"></a>
+<FONT color="green">323</FONT>        Object value = m.get(key);<a name="line.323"></a>
+<FONT color="green">324</FONT>        if (value == null) {<a name="line.324"></a>
+<FONT color="green">325</FONT>          return defaultValue;<a name="line.325"></a>
+<FONT color="green">326</FONT>        }<a name="line.326"></a>
+<FONT color="green">327</FONT>        return (String) value;<a name="line.327"></a>
+<FONT color="green">328</FONT>      }<a name="line.328"></a>
+<FONT color="green">329</FONT>    <a name="line.329"></a>
+<FONT color="green">330</FONT>      /** Convert a Json map to an DatanodeInfo object. */<a name="line.330"></a>
+<FONT color="green">331</FONT>      static DatanodeInfo toDatanodeInfo(final Map&lt;?, ?&gt; m)<a name="line.331"></a>
+<FONT color="green">332</FONT>          throws IOException {<a name="line.332"></a>
+<FONT color="green">333</FONT>        if (m == null) {<a name="line.333"></a>
+<FONT color="green">334</FONT>          return null;<a name="line.334"></a>
+<FONT color="green">335</FONT>        }<a name="line.335"></a>
+<FONT color="green">336</FONT>    <a name="line.336"></a>
+<FONT color="green">337</FONT>        // ipAddr and xferPort are the critical fields for accessing data.<a name="line.337"></a>
+<FONT color="green">338</FONT>        // If any one of the two is missing, an exception needs to be thrown.<a name="line.338"></a>
+<FONT color="green">339</FONT>    <a name="line.339"></a>
+<FONT color="green">340</FONT>        // Handle the case of old servers (1.x, 0.23.x) sending 'name' instead<a name="line.340"></a>
+<FONT color="green">341</FONT>        // of ipAddr and xferPort.<a name="line.341"></a>
+<FONT color="green">342</FONT>        Object tmpValue = m.get("ipAddr");<a name="line.342"></a>
+<FONT color="green">343</FONT>        String ipAddr = (tmpValue == null) ? null : (String)tmpValue;<a name="line.343"></a>
+<FONT color="green">344</FONT>        tmpValue = m.get("xferPort");<a name="line.344"></a>
+<FONT color="green">345</FONT>        int xferPort = (tmpValue == null) ? -1 : (int)(long)(Long)tmpValue;<a name="line.345"></a>
+<FONT color="green">346</FONT>        if (ipAddr == null) {<a name="line.346"></a>
+<FONT color="green">347</FONT>          tmpValue = m.get("name");<a name="line.347"></a>
+<FONT color="green">348</FONT>          if (tmpValue != null) {<a name="line.348"></a>
+<FONT color="green">349</FONT>            String name = (String)tmpValue;<a name="line.349"></a>
+<FONT color="green">350</FONT>            int colonIdx = name.indexOf(':');<a name="line.350"></a>
+<FONT color="green">351</FONT>            if (colonIdx &gt; 0) {<a name="line.351"></a>
+<FONT color="green">352</FONT>              ipAddr = name.substring(0, colonIdx);<a name="line.352"></a>
+<FONT color="green">353</FONT>              xferPort = Integer.parseInt(name.substring(colonIdx +1));<a name="line.353"></a>
+<FONT color="green">354</FONT>            } else {<a name="line.354"></a>
+<FONT color="green">355</FONT>              throw new IOException(<a name="line.355"></a>
+<FONT color="green">356</FONT>                  "Invalid value in server response: name=[" + name + "]");<a name="line.356"></a>
+<FONT color="green">357</FONT>            }<a name="line.357"></a>
+<FONT color="green">358</FONT>          } else {<a name="line.358"></a>
+<FONT color="green">359</FONT>            throw new IOException(<a name="line.359"></a>
+<FONT color="green">360</FONT>                "Missing both 'ipAddr' and 'name' in server response.");<a name="line.360"></a>
+<FONT color="green">361</FONT>          }<a name="line.361"></a>
+<FONT color="green">362</FONT>          // ipAddr is non-null &amp; non-empty string at this point.<a name="line.362"></a>
+<FONT color="green">363</FONT>        }<a name="line.363"></a>
+<FONT color="green">364</FONT>    <a name="line.364"></a>
+<FONT color="green">365</FONT>        // Check the validity of xferPort.<a name="line.365"></a>
+<FONT color="green">366</FONT>        if (xferPort == -1) {<a name="line.366"></a>
+<FONT color="green">367</FONT>          throw new IOException(<a name="line.367"></a>
+<FONT color="green">368</FONT>              "Invalid or missing 'xferPort' in server response.");<a name="line.368"></a>
+<FONT color="green">369</FONT>        }<a name="line.369"></a>
+<FONT color="green">370</FONT>    <a name="line.370"></a>
+<FONT color="green">371</FONT>        // TODO: Fix storageID<a name="line.371"></a>
+<FONT color="green">372</FONT>        return new DatanodeInfo(<a name="line.372"></a>
+<FONT color="green">373</FONT>            ipAddr,<a name="line.373"></a>
+<FONT color="green">374</FONT>            (String)m.get("hostName"),<a name="line.374"></a>
+<FONT color="green">375</FONT>            (String)m.get("storageID"),<a name="line.375"></a>
+<FONT color="green">376</FONT>            xferPort,<a name="line.376"></a>
+<FONT color="green">377</FONT>            (int)(long)(Long)m.get("infoPort"),<a name="line.377"></a>
+<FONT color="green">378</FONT>            getInt(m, "infoSecurePort", 0),<a name="line.378"></a>
+<FONT color="green">379</FONT>            (int)(long)(Long)m.get("ipcPort"),<a name="line.379"></a>
+<FONT color="green">380</FONT>    <a name="line.380"></a>
+<FONT color="green">381</FONT>            getLong(m, "capacity", 0l),<a name="line.381"></a>
+<FONT color="green">382</FONT>            getLong(m, "dfsUsed", 0l),<a name="line.382"></a>
+<FONT color="green">383</FONT>            getLong(m, "remaining", 0l),<a name="line.383"></a>
+<FONT color="green">384</FONT>            getLong(m, "blockPoolUsed", 0l),<a name="line.384"></a>
+<FONT color="green">385</FONT>            getLong(m, "cacheCapacity", 0l),<a name="line.385"></a>
+<FONT color="green">386</FONT>            getLong(m, "cacheUsed", 0l),<a name="line.386"></a>
+<FONT color="green">387</FONT>            getLong(m, "lastUpdate", 0l),<a name="line.387"></a>
+<FONT color="green">388</FONT>            getInt(m, "xceiverCount", 0),<a name="line.388"></a>
+<FONT color="green">389</FONT>            getString(m, "networkLocation", ""),<a name="line.389"></a>
+<FONT color="green">390</FONT>            AdminStates.valueOf(getString(m, "adminState", "NORMAL")));<a name="line.390"></a>
+<FONT color="green">391</FONT>      }<a name="line.391"></a>
+<FONT color="green">392</FONT>    <a name="line.392"></a>
+<FONT color="green">393</FONT>      /** Convert a DatanodeInfo[] to a Json array. */<a name="line.393"></a>
+<FONT color="green">394</FONT>      private static Object[] toJsonArray(final DatanodeInfo[] array) {<a name="line.394"></a>
+<FONT color="green">395</FONT>        if (array == null) {<a name="line.395"></a>
+<FONT color="green">396</FONT>          return null;<a name="line.396"></a>
+<FONT color="green">397</FONT>        } else if (array.length == 0) {<a name="line.397"></a>
+<FONT color="green">398</FONT>          return EMPTY_OBJECT_ARRAY;<a name="line.398"></a>
+<FONT color="green">399</FONT>        } else {<a name="line.399"></a>
+<FONT color="green">400</FONT>          final Object[] a = new Object[array.length];<a name="line.400"></a>
+<FONT color="green">401</FONT>          for(int i = 0; i &lt; array.length; i++) {<a name="line.401"></a>
+<FONT color="green">402</FONT>            a[i] = toJsonMap(array[i]);<a name="line.402"></a>
+<FONT color="green">403</FONT>          }<a name="line.403"></a>
+<FONT color="green">404</FONT>          return a;<a name="line.404"></a>
+<FONT color="green">405</FONT>        }<a name="line.405"></a>
+<FONT color="green">406</FONT>      }<a name="line.406"></a>
+<FONT color="green">407</FONT>    <a name="line.407"></a>
+<FONT color="green">408</FONT>      /** Convert an Object[] to a DatanodeInfo[]. */<a name="line.408"></a>
+<FONT color="green">409</FONT>      private static DatanodeInfo[] toDatanodeInfoArray(final Object[] objects) <a name="line.409"></a>
+<FONT color="green">410</FONT>          throws IOException {<a name="line.410"></a>
+<FONT color="green">411</FONT>        if (objects == null) {<a name="line.411"></a>
+<FONT color="green">412</FONT>          return null;<a name="line.412"></a>
+<FONT color="green">413</FONT>        } else if (objects.length == 0) {<a name="line.413"></a>
+<FONT color="green">414</FONT>          return EMPTY_DATANODE_INFO_ARRAY;<a name="line.414"></a>
+<FONT color="green">415</FONT>        } else {<a name="line.415"></a>
+<FONT color="green">416</FONT>          final DatanodeInfo[] array = new DatanodeInfo[objects.length];<a name="line.416"></a>
+<FONT color="green">417</FONT>          for(int i = 0; i &lt; array.length; i++) {<a name="line.417"></a>
+<FONT color="green">418</FONT>            array[i] = toDatanodeInfo((Map&lt;?, ?&gt;) objects[i]);<a name="line.418"></a>
+<FONT color="green">419</FONT>          }<a name="line.419"></a>
+<FONT color="green">420</FONT>          return array;<a name="line.420"></a>
+<FONT color="green">421</FONT>        }<a name="line.421"></a>
+<FONT color="green">422</FONT>      }<a name="line.422"></a>
+<FONT color="green">423</FONT>      <a name="line.423"></a>
+<FONT color="green">424</FONT>      /** Convert a LocatedBlock to a Json map. */<a name="line.424"></a>
+<FONT color="green">425</FONT>      private static Map&lt;String, Object&gt; toJsonMap(final LocatedBlock locatedblock<a name="line.425"></a>
+<FONT color="green">426</FONT>          ) throws IOException {<a name="line.426"></a>
+<FONT color="green">427</FONT>        if (locatedblock == null) {<a name="line.427"></a>
+<FONT color="green">428</FONT>          return null;<a name="line.428"></a>
+<FONT color="green">429</FONT>        }<a name="line.429"></a>
+<FONT color="green">430</FONT>     <a name="line.430"></a>
+<FONT color="green">431</FONT>        final Map&lt;String, Object&gt; m = new TreeMap&lt;String, Object&gt;();<a name="line.431"></a>
+<FONT color="green">432</FONT>        m.put("blockToken", toJsonMap(locatedblock.getBlockToken()));<a name="line.432"></a>
+<FONT color="green">433</FONT>        m.put("isCorrupt", locatedblock.isCorrupt());<a name="line.433"></a>
+<FONT color="green">434</FONT>        m.put("startOffset", locatedblock.getStartOffset());<a name="line.434"></a>
+<FONT color="green">435</FONT>        m.put("block", toJsonMap(locatedblock.getBlock()));<a name="line.435"></a>
+<FONT color="green">436</FONT>        m.put("locations", toJsonArray(locatedblock.getLocations()));<a name="line.436"></a>
+<FONT color="green">437</FONT>        m.put("cachedLocations", toJsonArray(locatedblock.getCachedLocations()));<a name="line.437"></a>
+<FONT color="green">438</FONT>        return m;<a name="line.438"></a>
+<FONT color="green">439</FONT>      }<a name="line.439"></a>
+<FONT color="green">440</FONT>    <a name="line.440"></a>
+<FONT color="green">441</FONT>      /** Convert a Json map to LocatedBlock. */<a name="line.441"></a>
+<FONT color="green">442</FONT>      private static LocatedBlock toLocatedBlock(final Map&lt;?, ?&gt; m) throws IOException {<a name="line.442"></a>
+<FONT color="green">443</FONT>        if (m == null) {<a name="line.443"></a>
+<FONT color="green">444</FONT>          return null;<a name="line.444"></a>
+<FONT color="green">445</FONT>        }<a name="line.445"></a>
+<FONT color="green">446</FONT>    <a name="line.446"></a>
+<FONT color="green">447</FONT>        final ExtendedBlock b = toExtendedBlock((Map&lt;?, ?&gt;)m.get("block"));<a name="line.447"></a>
+<FONT color="green">448</FONT>        final DatanodeInfo[] locations = toDatanodeInfoArray(<a name="line.448"></a>
+<FONT color="green">449</FONT>            (Object[])m.get("locations"));<a name="line.449"></a>
+<FONT color="green">450</FONT>        final long startOffset = (Long)m.get("startOffset");<a name="line.450"></a>
+<FONT color="green">451</FONT>        final boolean isCorrupt = (Boolean)m.get("isCorrupt");<a name="line.451"></a>
+<FONT color="green">452</FONT>        final DatanodeInfo[] cachedLocations = toDatanodeInfoArray(<a name="line.452"></a>
+<FONT color="green">453</FONT>            (Object[])m.get("cachedLocations"));<a name="line.453"></a>
+<FONT color="green">454</FONT>    <a name="line.454"></a>
+<FONT color="green">455</FONT>        final LocatedBlock locatedblock = new LocatedBlock(b, locations,<a name="line.455"></a>
+<FONT color="green">456</FONT>            null, null, startOffset, isCorrupt, cachedLocations);<a name="line.456"></a>
+<FONT color="green">457</FONT>        locatedblock.setBlockToken(toBlockToken((Map&lt;?, ?&gt;)m.get("blockToken")));<a name="line.457"></a>
+<FONT color="green">458</FONT>        return locatedblock;<a name="line.458"></a>
+<FONT color="green">459</FONT>      }<a name="line.459"></a>
+<FONT color="green">460</FONT>    <a name="line.460"></a>
+<FONT color="green">461</FONT>      /** Convert a LocatedBlock[] to a Json array. */<a name="line.461"></a>
+<FONT color="green">462</FONT>      private static Object[] toJsonArray(final List&lt;LocatedBlock&gt; array<a name="line.462"></a>
+<FONT color="green">463</FONT>          ) throws IOException {<a name="line.463"></a>
+<FONT color="green">464</FONT>        if (array == null) {<a name="line.464"></a>
+<FONT color="green">465</FONT>          return null;<a name="line.465"></a>
+<FONT color="green">466</FONT>        } else if (array.size() == 0) {<a name="line.466"></a>
+<FONT color="green">467</FONT>          return EMPTY_OBJECT_ARRAY;<a name="line.467"></a>
+<FONT color="green">468</FONT>        } else {<a name="line.468"></a>
+<FONT color="green">469</FONT>          final Object[] a = new Object[array.size()];<a name="line.469"></a>
+<FONT color="green">470</FONT>          for(int i = 0; i &lt; array.size(); i++) {<a name="line.470"></a>
+<FONT color="green">471</FONT>            a[i] = toJsonMap(array.get(i));<a name="line.471"></a>
+<FONT color="green">472</FONT>          }<a name="line.472"></a>
+<FONT color="green">473</FONT>          return a;<a name="line.473"></a>
+<FONT color="green">474</FONT>        }<a name="line.474"></a>
+<FONT color="green">475</FONT>      }<a name="line.475"></a>
+<FONT color="green">476</FONT>    <a name="line.476"></a>
+<FONT color="green">477</FONT>      /** Convert an Object[] to a List of LocatedBlock. */<a name="line.477"></a>
+<FONT color="green">478</FONT>      private static List&lt;LocatedBlock&gt; toLocatedBlockList(final Object[] objects<a name="line.478"></a>
+<FONT color="green">479</FONT>          ) throws IOException {<a name="line.479"></a>
+<FONT color="green">480</FONT>        if (objects == null) {<a name="line.480"></a>
+<FONT color="green">481</FONT>          return null;<a name="line.481"></a>
+<FONT color="green">482</FONT>        } else if (objects.length == 0) {<a name="line.482"></a>
+<FONT color="green">483</FONT>          return Collections.emptyList();<a name="line.483"></a>
+<FONT color="green">484</FONT>        } else {<a name="line.484"></a>
+<FONT color="green">485</FONT>          final List&lt;LocatedBlock&gt; list = new ArrayList&lt;LocatedBlock&gt;(objects.length);<a name="line.485"></a>
+<FONT color="green">486</FONT>          for(int i = 0; i &lt; objects.length; i++) {<a name="line.486"></a>
+<FONT color="green">487</FONT>            list.add(toLocatedBlock((Map&lt;?, ?&gt;)objects[i]));<a name="line.487"></a>
+<FONT color="green">488</FONT>          }<a name="line.488"></a>
+<FONT color="green">489</FONT>          return list;<a name="line.489"></a>
+<FONT color="green">490</FONT>        }<a name="line.490"></a>
+<FONT color="green">491</FONT>      }<a name="line.491"></a>
+<FONT color="green">492</FONT>    <a name="line.492"></a>
+<FONT color="green">493</FONT>      /** Convert LocatedBlocks to a Json string. */<a name="line.493"></a>
+<FONT color="green">494</FONT>      public static String toJsonString(final LocatedBlocks locatedblocks<a name="line.494"></a>
+<FONT color="green">495</FONT>          ) throws IOException {<a name="line.495"></a>
+<FONT color="green">496</FONT>        if (locatedblocks == null) {<a name="line.496"></a>
+<FONT color="green">497</FONT>          return null;<a name="line.497"></a>
+<FONT color="green">498</FONT>        }<a name="line.498"></a>
+<FONT color="green">499</FONT>    <a name="line.499"></a>
+<FONT color="green">500</FONT>        final Map&lt;String, Object&gt; m = new TreeMap&lt;String, Object&gt;();<a name="line.500"></a>
+<FONT color="green">501</FONT>        m.put("fileLength", locatedblocks.getFileLength());<a name="line.501"></a>
+<FONT color="green">502</FONT>        m.put("isUnderConstruction", locatedblocks.isUnderConstruction());<a name="line.502"></a>
+<FONT color="green">503</FONT>    <a name="line.503"></a>
+<FONT color="green">504</FONT>        m.put("locatedBlocks", toJsonArray(locatedblocks.getLocatedBlocks()));<a name="line.504"></a>
+<FONT color="green">505</FONT>        m.put("lastLocatedBlock", toJsonMap(locatedblocks.getLastLocatedBlock()));<a name="line.505"></a>
+<FONT color="green">506</FONT>        m.put("isLastBlockComplete", locatedblocks.isLastBlockComplete());<a name="line.506"></a>
+<FONT color="green">507</FONT>        return toJsonString(LocatedBlocks.class, m);<a name="line.507"></a>
+<FONT color="green">508</FONT>      }<a name="line.508"></a>
+<FONT color="green">509</FONT>    <a name="line.509"></a>
+<FONT color="green">510</FONT>      /** Convert a Json map to LocatedBlock. */<a name="line.510"></a>
+<FONT color="green">511</FONT>      public static LocatedBlocks toLocatedBlocks(final Map&lt;?, ?&gt; json<a name="line.511"></a>
+<FONT color="green">512</FONT>          ) throws IOException {<a name="line.512"></a>
+<FONT color="green">513</FONT>        if (json == null) {<a name="line.513"></a>
+<FONT color="green">514</FONT>          return null;<a name="line.514"></a>
+<FONT color="green">515</FONT>        }<a name="line.515"></a>
+<FONT color="green">516</FONT>    <a name="line.516"></a>
+<FONT color="green">517</FONT>        final Map&lt;?, ?&gt; m = (Map&lt;?, ?&gt;)json.get(LocatedBlocks.class.getSimpleName());<a name="line.517"></a>
+<FONT color="green">518</FONT>        final long fileLength = (Long)m.get("fileLength");<a name="line.518"></a>
+<FONT color="green">519</FONT>        final boolean isUnderConstruction = (Boolean)m.get("isUnderConstruction");<a name="line.519"></a>
+<FONT color="green">520</FONT>        final List&lt;LocatedBlock&gt; locatedBlocks = toLocatedBlockList(<a name="line.520"></a>
+<FONT color="green">521</FONT>            (Object[])m.get("locatedBlocks"));<a name="line.521"></a>
+<FONT color="green">522</FONT>        final LocatedBlock lastLocatedBlock = toLocatedBlock(<a name="line.522"></a>
+<FONT color="green">523</FONT>            (Map&lt;?, ?&gt;)m.get("lastLocatedBlock"));<a name="line.523"></a>
+<FONT color="green">524</FONT>        final boolean isLastBlockComplete = (Boolean)m.get("isLastBlockComplete");<a name="line.524"></a>
+<FONT color="green">525</FONT>        return new LocatedBlocks(fileLength, isUnderConstruction, locatedBlocks,<a name="line.525"></a>
+<FONT color="green">526</FONT>            lastLocatedBlock, isLastBlockComplete);<a name="line.526"></a>
+<FONT color="green">527</FONT>      }<a name="line.527"></a>
+<FONT color="green">528</FONT>    <a name="line.528"></a>
+<FONT color="green">529</FONT>      /** Convert a ContentSummary to a Json string. */<a name="line.529"></a>
+<FONT color="green">530</FONT>      public static String toJsonString(final ContentSummary contentsummary) {<a name="line.530"></a>
+<FONT color="green">531</FONT>        if (contentsummary == null) {<a name="line.531"></a>
+<FONT color="green">532</FONT>          return null;<a name="line.532"></a>
+<FONT color="green">533</FONT>        }<a name="line.533"></a>
+<FONT color="green">534</FONT>    <a name="line.534"></a>
+<FONT color="green">535</FONT>        final Map&lt;String, Object&gt; m = new TreeMap&lt;String, Object&gt;();<a name="line.535"></a>
+<FONT color="green">536</FONT>        m.put("length", contentsummary.getLength());<a name="line.536"></a>
+<FONT color="green">537</FONT>        m.put("fileCount", contentsummary.getFileCount());<a name="line.537"></a>
+<FONT color="green">538</FONT>        m.put("directoryCount", contentsummary.getDirectoryCount());<a name="line.538"></a>
+<FONT color="green">539</FONT>        m.put("quota", contentsummary.getQuota());<a name="line.539"></a>
+<FONT color="green">540</FONT>        m.put("spaceConsumed", contentsummary.getSpaceConsumed());<a name="line.540"></a>
+<FONT color="green">541</FONT>        m.put("spaceQuota", contentsummary.getSpaceQuota());<a name="line.541"></a>
+<FONT color="green">542</FONT>        return toJsonString(ContentSummary.class, m);<a name="line.542"></a>
+<FONT color="green">543</FONT>      }<a name="line.543"></a>
+<FONT color="green">544</FONT>    <a name="line.544"></a>
+<FONT color="green">545</FONT>      /** Convert a Json map to a ContentSummary. */<a name="line.545"></a>
+<FONT color="green">546</FONT>      public static ContentSummary toContentSummary(final Map&lt;?, ?&gt; json) {<a name="line.546"></a>
+<FONT color="green">547</FONT>        if (json == null) {<a name="line.547"></a>
+<FONT color="green">548</FONT>          return null;<a name="line.548"></a>
+<FONT color="green">549</FONT>        }<a name="line.549"></a>
+<FONT color="green">550</FONT>    <a name="line.550"></a>
+<FONT color="green">551</FONT>        final Map&lt;?, ?&gt; m = (Map&lt;?, ?&gt;)json.get(ContentSummary.class.getSimpleName());<a name="line.551"></a>
+<FONT color="green">552</FONT>        final long length = (Long)m.get("length");<a name="line.552"></a>
+<FONT color="green">553</FONT>        final long fileCount = (Long)m.get("fileCount");<a name="line.553"></a>
+<FONT color="green">554</FONT>        final long directoryCount = (Long)m.get("directoryCount");<a name="line.554"></a>
+<FONT color="green">555</FONT>        final long quota = (Long)m.get("quota");<a name="line.555"></a>
+<FONT color="green">556</FONT>        final long spaceConsumed = (Long)m.get("spaceConsumed");<a name="line.556"></a>
+<FONT color="green">557</FONT>        final long spaceQuota = (Long)m.get("spaceQuota");<a name="line.557"></a>
+<FONT color="green">558</FONT>    <a name="line.558"></a>
+<FONT color="green">559</FONT>        return new ContentSummary(length, fileCount, directoryCount,<a name="line.559"></a>
+<FONT color="green">560</FONT>            quota, spaceConsumed, spaceQuota);<a name="line.560"></a>
+<FONT color="green">561</FONT>      }<a name="line.561"></a>
+<FONT color="green">562</FONT>    <a name="line.562"></a>
+<FONT color="green">563</FONT>      /** Convert a MD5MD5CRC32FileChecksum to a Json string. */<a name="line.563"></a>
+<FONT color="green">564</FONT>      public static String toJsonString(final MD5MD5CRC32FileChecksum checksum) {<a name="line.564"></a>
+<FONT color="green">565</FONT>        if (checksum == null) {<a name="line.565"></a>
+<FONT color="green">566</FONT>          return null;<a name="line.566"></a>
+<FONT color="green">567</FONT>        }<a name="line.567"></a>
+<FONT color="green">568</FONT>    <a name="line.568"></a>
+<FONT color="green">569</FONT>        final Map&lt;String, Object&gt; m = new TreeMap&lt;String, Object&gt;();<a name="line.569"></a>
+<FONT color="green">570</FONT>        m.put("algorithm", checksum.getAlgorithmName());<a name="line.570"></a>
+<FONT color="green">571</FONT>        m.put("length", checksum.getLength());<a name="line.571"></a>
+<FONT color="green">572</FONT>        m.put("bytes", StringUtils.byteToHexString(checksum.getBytes()));<a name="line.572"></a>
+<FONT color="green">573</FONT>        return toJsonString(FileChecksum.class, m);<a name="line.573"></a>
+<FONT color="green">574</FONT>      }<a name="line.574"></a>
+<FONT color="green">575</FONT>    <a name="line.575"></a>
+<FONT color="green">576</FONT>      /** Convert a Json map to a MD5MD5CRC32FileChecksum. */<a name="line.576"></a>
+<FONT color="green">577</FONT>      public static MD5MD5CRC32FileChecksum toMD5MD5CRC32FileChecksum(<a name="line.577"></a>
+<FONT color="green">578</FONT>          final Map&lt;?, ?&gt; json) throws IOException {<a name="line.578"></a>
+<FONT color="green">579</FONT>        if (json == null) {<a name="line.579"></a>
+<FONT color="green">580</FONT>          return null;<a name="line.580"></a>
+<FONT color="green">581</FONT>        }<a name="line.581"></a>
+<FONT color="green">582</FONT>    <a name="line.582"></a>
+<FONT color="green">583</FONT>        final Map&lt;?, ?&gt; m = (Map&lt;?, ?&gt;)json.get(FileChecksum.class.getSimpleName());<a name="line.583"></a>
+<FONT color="green">584</FONT>        final String algorithm = (String)m.get("algorithm");<a name="line.584"></a>
+<FONT color="green">585</FONT>        final int length = (int)(long)(Long)m.get("length");<a name="line.585"></a>
+<FONT color="green">586</FONT>        final byte[] bytes = StringUtils.hexStringToByte((String)m.get("bytes"));<a name="line.586"></a>
+<FONT color="green">587</FONT>    <a name="line.587"></a>
+<FONT color="green">588</FONT>        final DataInputStream in = new DataInputStream(new ByteArrayInputStream(bytes));<a name="line.588"></a>
+<FONT color="green">589</FONT>        final DataChecksum.Type crcType = <a name="line.589"></a>
+<FONT color="green">590</FONT>            MD5MD5CRC32FileChecksum.getCrcTypeFromAlgorithmName(algorithm);<a name="line.590"></a>
+<FONT color="green">591</FONT>        final MD5MD5CRC32FileChecksum checksum;<a name="line.591"></a>
+<FONT color="green">592</FONT>    <a name="line.592"></a>
+<FONT color="green">593</FONT>        // Recreate what DFSClient would have returned.<a name="line.593"></a>
+<FONT color="green">594</FONT>        switch(crcType) {<a name="line.594"></a>
+<FONT color="green">595</FONT>          case CRC32:<a name="line.595"></a>
+<FONT color="green">596</FONT>            checksum = new MD5MD5CRC32GzipFileChecksum();<a name="line.596"></a>
+<FONT color="green">597</FONT>            break;<a name="line.597"></a>
+<FONT color="green">598</FONT>          case CRC32C:<a name="line.598"></a>
+<FONT color="green">599</FONT>            checksum = new MD5MD5CRC32CastagnoliFileChecksum();<a name="line.599"></a>
+<FONT color="green">600</FONT>            break;<a name="line.600"></a>
+<FONT color="green">601</FONT>          default:<a name="line.601"></a>
+<FONT color="green">602</FONT>            throw new IOException("Unknown algorithm: " + algorithm);<a name="line.602"></a>
+<FONT color="green">603</FONT>        }<a name="line.603"></a>
+<FONT color="green">604</FONT>        checksum.readFields(in);<a name="line.604"></a>
+<FONT color="green">605</FONT>    <a name="line.605"></a>
+<FONT color="green">606</FONT>        //check algorithm name<a name="line.606"></a>
+<FONT color="green">607</FONT>        if (!checksum.getAlgorithmName().equals(algorithm)) {<a name="line.607"></a>
+<FONT color="green">608</FONT>          throw new IOException("Algorithm not matched. Expected " + algorithm<a name="line.608"></a>
+<FONT color="green">609</FONT>              + ", Received " + checksum.getAlgorithmName());<a name="line.609"></a>
+<FONT color="green">610</FONT>        }<a name="line.610"></a>
+<FONT color="green">611</FONT>        //check length<a name="line.611"></a>
+<FONT color="green">612</FONT>        if (length != checksum.getLength()) {<a name="line.612"></a>
+<FONT color="green">613</FONT>          throw new IOException("Length not matched: length=" + length<a name="line.613"></a>
+<FONT color="green">614</FONT>              + ", checksum.getLength()=" + checksum.getLength());<a name="line.614"></a>
+<FONT color="green">615</FONT>        }<a name="line.615"></a>
+<FONT color="green">616</FONT>    <a name="line.616"></a>
+<FONT color="green">617</FONT>        return checksum;<a name="line.617"></a>
+<FONT color="green">618</FONT>      }<a name="line.618"></a>
+<FONT color="green">619</FONT>    }<a name="line.619"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>

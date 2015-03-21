@@ -1,0 +1,2 @@
+/usr/bin/ar cr libposix_util.a  CMakeFiles/posix_util.dir/main/native/util/posix_util.c.o
+/usr/bin/ranlib libposix_util.a

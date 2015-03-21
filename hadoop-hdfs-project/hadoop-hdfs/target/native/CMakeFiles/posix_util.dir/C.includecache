@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-hdfs-project/hadoop-hdfs/src/main/native/util/posix_util.c
+util/posix_util.h
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-hdfs-project/hadoop-hdfs/src/main/native/util/util/posix_util.h
+dirent.h
+-
+errno.h
+-
+pthread.h
+-
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+sys/stat.h
+-
+sys/types.h
+-
+unistd.h
+-
+limits.h
+-
+
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-hdfs-project/hadoop-hdfs/src/main/native/util/posix_util.h
+

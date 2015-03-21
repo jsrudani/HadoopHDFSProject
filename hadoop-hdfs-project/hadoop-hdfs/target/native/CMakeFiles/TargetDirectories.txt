@@ -1,0 +1,10 @@
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-hdfs-project/hadoop-hdfs/target/native/CMakeFiles/hdfs.dir
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-hdfs-project/hadoop-hdfs/target/native/CMakeFiles/hdfs_static.dir
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-hdfs-project/hadoop-hdfs/target/native/CMakeFiles/native_mini_dfs.dir
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-hdfs-project/hadoop-hdfs/target/native/CMakeFiles/posix_util.dir
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-hdfs-project/hadoop-hdfs/target/native/CMakeFiles/test_libhdfs_ops.dir
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-hdfs-project/hadoop-hdfs/target/native/CMakeFiles/test_libhdfs_read.dir
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-hdfs-project/hadoop-hdfs/target/native/CMakeFiles/test_libhdfs_threaded.dir
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-hdfs-project/hadoop-hdfs/target/native/CMakeFiles/test_libhdfs_write.dir
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-hdfs-project/hadoop-hdfs/target/native/CMakeFiles/test_libhdfs_zerocopy.dir
+/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-hdfs-project/hadoop-hdfs/target/native/CMakeFiles/test_native_mini_dfs.dir

@@ -1,0 +1,1044 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    /**<a name="line.1"></a>
+<FONT color="green">002</FONT>     * Licensed to the Apache Software Foundation (ASF) under one<a name="line.2"></a>
+<FONT color="green">003</FONT>     * or more contributor license agreements.  See the NOTICE file<a name="line.3"></a>
+<FONT color="green">004</FONT>     * distributed with this work for additional information<a name="line.4"></a>
+<FONT color="green">005</FONT>     * regarding copyright ownership.  The ASF licenses this file<a name="line.5"></a>
+<FONT color="green">006</FONT>     * to you under the Apache License, Version 2.0 (the<a name="line.6"></a>
+<FONT color="green">007</FONT>     * "License"); you may not use this file except in compliance<a name="line.7"></a>
+<FONT color="green">008</FONT>     * with the License.  You may obtain a copy of the License at<a name="line.8"></a>
+<FONT color="green">009</FONT>     *<a name="line.9"></a>
+<FONT color="green">010</FONT>     *     http://www.apache.org/licenses/LICENSE-2.0<a name="line.10"></a>
+<FONT color="green">011</FONT>     *<a name="line.11"></a>
+<FONT color="green">012</FONT>     * Unless required by applicable law or agreed to in writing, software<a name="line.12"></a>
+<FONT color="green">013</FONT>     * distributed under the License is distributed on an "AS IS" BASIS,<a name="line.13"></a>
+<FONT color="green">014</FONT>     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.14"></a>
+<FONT color="green">015</FONT>     * See the License for the specific language governing permissions and<a name="line.15"></a>
+<FONT color="green">016</FONT>     * limitations under the License.<a name="line.16"></a>
+<FONT color="green">017</FONT>     */<a name="line.17"></a>
+<FONT color="green">018</FONT>    package org.apache.hadoop.hdfs.server.namenode.snapshot;<a name="line.18"></a>
+<FONT color="green">019</FONT>    <a name="line.19"></a>
+<FONT color="green">020</FONT>    import java.io.DataOutput;<a name="line.20"></a>
+<FONT color="green">021</FONT>    import java.io.IOException;<a name="line.21"></a>
+<FONT color="green">022</FONT>    import java.util.ArrayDeque;<a name="line.22"></a>
+<FONT color="green">023</FONT>    import java.util.ArrayList;<a name="line.23"></a>
+<FONT color="green">024</FONT>    import java.util.Collections;<a name="line.24"></a>
+<FONT color="green">025</FONT>    import java.util.Deque;<a name="line.25"></a>
+<FONT color="green">026</FONT>    import java.util.HashMap;<a name="line.26"></a>
+<FONT color="green">027</FONT>    import java.util.Iterator;<a name="line.27"></a>
+<FONT color="green">028</FONT>    import java.util.List;<a name="line.28"></a>
+<FONT color="green">029</FONT>    import java.util.Map;<a name="line.29"></a>
+<FONT color="green">030</FONT>    <a name="line.30"></a>
+<FONT color="green">031</FONT>    import org.apache.hadoop.hdfs.protocol.QuotaExceededException;<a name="line.31"></a>
+<FONT color="green">032</FONT>    import org.apache.hadoop.hdfs.protocol.SnapshotDiffReport.DiffReportEntry;<a name="line.32"></a>
+<FONT color="green">033</FONT>    import org.apache.hadoop.hdfs.protocol.SnapshotDiffReport.DiffType;<a name="line.33"></a>
+<FONT color="green">034</FONT>    import org.apache.hadoop.hdfs.server.namenode.Content;<a name="line.34"></a>
+<FONT color="green">035</FONT>    import org.apache.hadoop.hdfs.server.namenode.ContentSummaryComputationContext;<a name="line.35"></a>
+<FONT color="green">036</FONT>    import org.apache.hadoop.hdfs.server.namenode.FSImageSerialization;<a name="line.36"></a>
+<FONT color="green">037</FONT>    import org.apache.hadoop.hdfs.server.namenode.INode;<a name="line.37"></a>
+<FONT color="green">038</FONT>    import org.apache.hadoop.hdfs.server.namenode.INodeDirectory;<a name="line.38"></a>
+<FONT color="green">039</FONT>    import org.apache.hadoop.hdfs.server.namenode.INodeDirectoryAttributes;<a name="line.39"></a>
+<FONT color="green">040</FONT>    import org.apache.hadoop.hdfs.server.namenode.INodeDirectoryWithQuota;<a name="line.40"></a>
+<FONT color="green">041</FONT>    import org.apache.hadoop.hdfs.server.namenode.INodeFile;<a name="line.41"></a>
+<FONT color="green">042</FONT>    import org.apache.hadoop.hdfs.server.namenode.INodeMap;<a name="line.42"></a>
+<FONT color="green">043</FONT>    import org.apache.hadoop.hdfs.server.namenode.INodeReference;<a name="line.43"></a>
+<FONT color="green">044</FONT>    import org.apache.hadoop.hdfs.server.namenode.Quota;<a name="line.44"></a>
+<FONT color="green">045</FONT>    import org.apache.hadoop.hdfs.server.namenode.snapshot.SnapshotFSImageFormat.ReferenceMap;<a name="line.45"></a>
+<FONT color="green">046</FONT>    import org.apache.hadoop.hdfs.util.Diff;<a name="line.46"></a>
+<FONT color="green">047</FONT>    import org.apache.hadoop.hdfs.util.Diff.Container;<a name="line.47"></a>
+<FONT color="green">048</FONT>    import org.apache.hadoop.hdfs.util.Diff.ListType;<a name="line.48"></a>
+<FONT color="green">049</FONT>    import org.apache.hadoop.hdfs.util.Diff.UndoInfo;<a name="line.49"></a>
+<FONT color="green">050</FONT>    import org.apache.hadoop.hdfs.util.ReadOnlyList;<a name="line.50"></a>
+<FONT color="green">051</FONT>    <a name="line.51"></a>
+<FONT color="green">052</FONT>    import com.google.common.base.Preconditions;<a name="line.52"></a>
+<FONT color="green">053</FONT>    <a name="line.53"></a>
+<FONT color="green">054</FONT>    /**<a name="line.54"></a>
+<FONT color="green">055</FONT>     * The directory with snapshots. It maintains a list of snapshot diffs for<a name="line.55"></a>
+<FONT color="green">056</FONT>     * storing snapshot data. When there are modifications to the directory, the old<a name="line.56"></a>
+<FONT color="green">057</FONT>     * data is stored in the latest snapshot, if there is any.<a name="line.57"></a>
+<FONT color="green">058</FONT>     */<a name="line.58"></a>
+<FONT color="green">059</FONT>    public class INodeDirectoryWithSnapshot extends INodeDirectoryWithQuota {<a name="line.59"></a>
+<FONT color="green">060</FONT>      /**<a name="line.60"></a>
+<FONT color="green">061</FONT>       * The difference between the current state and a previous snapshot<a name="line.61"></a>
+<FONT color="green">062</FONT>       * of the children list of an INodeDirectory.<a name="line.62"></a>
+<FONT color="green">063</FONT>       */<a name="line.63"></a>
+<FONT color="green">064</FONT>      static class ChildrenDiff extends Diff&lt;byte[], INode&gt; {<a name="line.64"></a>
+<FONT color="green">065</FONT>        ChildrenDiff() {}<a name="line.65"></a>
+<FONT color="green">066</FONT>        <a name="line.66"></a>
+<FONT color="green">067</FONT>        private ChildrenDiff(final List&lt;INode&gt; created, final List&lt;INode&gt; deleted) {<a name="line.67"></a>
+<FONT color="green">068</FONT>          super(created, deleted);<a name="line.68"></a>
+<FONT color="green">069</FONT>        }<a name="line.69"></a>
+<FONT color="green">070</FONT>    <a name="line.70"></a>
+<FONT color="green">071</FONT>        /**<a name="line.71"></a>
+<FONT color="green">072</FONT>         * Replace the given child from the created/deleted list.<a name="line.72"></a>
+<FONT color="green">073</FONT>         * @return true if the child is replaced; false if the child is not found.<a name="line.73"></a>
+<FONT color="green">074</FONT>         */<a name="line.74"></a>
+<FONT color="green">075</FONT>        private final boolean replace(final ListType type,<a name="line.75"></a>
+<FONT color="green">076</FONT>            final INode oldChild, final INode newChild) {<a name="line.76"></a>
+<FONT color="green">077</FONT>          final List&lt;INode&gt; list = getList(type); <a name="line.77"></a>
+<FONT color="green">078</FONT>          final int i = search(list, oldChild.getLocalNameBytes());<a name="line.78"></a>
+<FONT color="green">079</FONT>          if (i &lt; 0 || list.get(i).getId() != oldChild.getId()) {<a name="line.79"></a>
+<FONT color="green">080</FONT>            return false;<a name="line.80"></a>
+<FONT color="green">081</FONT>          }<a name="line.81"></a>
+<FONT color="green">082</FONT>    <a name="line.82"></a>
+<FONT color="green">083</FONT>          final INode removed = list.set(i, newChild);<a name="line.83"></a>
+<FONT color="green">084</FONT>          Preconditions.checkState(removed == oldChild);<a name="line.84"></a>
+<FONT color="green">085</FONT>          return true;<a name="line.85"></a>
+<FONT color="green">086</FONT>        }<a name="line.86"></a>
+<FONT color="green">087</FONT>    <a name="line.87"></a>
+<FONT color="green">088</FONT>        private final boolean removeChild(ListType type, final INode child) {<a name="line.88"></a>
+<FONT color="green">089</FONT>          final List&lt;INode&gt; list = getList(type);<a name="line.89"></a>
+<FONT color="green">090</FONT>          final int i = searchIndex(type, child.getLocalNameBytes());<a name="line.90"></a>
+<FONT color="green">091</FONT>          if (i &gt;= 0 &amp;&amp; list.get(i) == child) {<a name="line.91"></a>
+<FONT color="green">092</FONT>            list.remove(i);<a name="line.92"></a>
+<FONT color="green">093</FONT>            return true;<a name="line.93"></a>
+<FONT color="green">094</FONT>          }<a name="line.94"></a>
+<FONT color="green">095</FONT>          return false;<a name="line.95"></a>
+<FONT color="green">096</FONT>        }<a name="line.96"></a>
+<FONT color="green">097</FONT>        <a name="line.97"></a>
+<FONT color="green">098</FONT>        /** clear the created list */<a name="line.98"></a>
+<FONT color="green">099</FONT>        private Quota.Counts destroyCreatedList(<a name="line.99"></a>
+<FONT color="green">100</FONT>            final INodeDirectoryWithSnapshot currentINode,<a name="line.100"></a>
+<FONT color="green">101</FONT>            final BlocksMapUpdateInfo collectedBlocks,<a name="line.101"></a>
+<FONT color="green">102</FONT>            final List&lt;INode&gt; removedINodes) {<a name="line.102"></a>
+<FONT color="green">103</FONT>          Quota.Counts counts = Quota.Counts.newInstance();<a name="line.103"></a>
+<FONT color="green">104</FONT>          final List&lt;INode&gt; createdList = getList(ListType.CREATED);<a name="line.104"></a>
+<FONT color="green">105</FONT>          for (INode c : createdList) {<a name="line.105"></a>
+<FONT color="green">106</FONT>            c.computeQuotaUsage(counts, true);<a name="line.106"></a>
+<FONT color="green">107</FONT>            c.destroyAndCollectBlocks(collectedBlocks, removedINodes);<a name="line.107"></a>
+<FONT color="green">108</FONT>            // c should be contained in the children list, remove it<a name="line.108"></a>
+<FONT color="green">109</FONT>            currentINode.removeChild(c);<a name="line.109"></a>
+<FONT color="green">110</FONT>          }<a name="line.110"></a>
+<FONT color="green">111</FONT>          createdList.clear();<a name="line.111"></a>
+<FONT color="green">112</FONT>          return counts;<a name="line.112"></a>
+<FONT color="green">113</FONT>        }<a name="line.113"></a>
+<FONT color="green">114</FONT>        <a name="line.114"></a>
+<FONT color="green">115</FONT>        /** clear the deleted list */<a name="line.115"></a>
+<FONT color="green">116</FONT>        private Quota.Counts destroyDeletedList(<a name="line.116"></a>
+<FONT color="green">117</FONT>            final BlocksMapUpdateInfo collectedBlocks,<a name="line.117"></a>
+<FONT color="green">118</FONT>            final List&lt;INode&gt; removedINodes) {<a name="line.118"></a>
+<FONT color="green">119</FONT>          Quota.Counts counts = Quota.Counts.newInstance();<a name="line.119"></a>
+<FONT color="green">120</FONT>          final List&lt;INode&gt; deletedList = getList(ListType.DELETED);<a name="line.120"></a>
+<FONT color="green">121</FONT>          for (INode d : deletedList) {<a name="line.121"></a>
+<FONT color="green">122</FONT>            d.computeQuotaUsage(counts, false);<a name="line.122"></a>
+<FONT color="green">123</FONT>            d.destroyAndCollectBlocks(collectedBlocks, removedINodes);<a name="line.123"></a>
+<FONT color="green">124</FONT>          }<a name="line.124"></a>
+<FONT color="green">125</FONT>          deletedList.clear();<a name="line.125"></a>
+<FONT color="green">126</FONT>          return counts;<a name="line.126"></a>
+<FONT color="green">127</FONT>        }<a name="line.127"></a>
+<FONT color="green">128</FONT>        <a name="line.128"></a>
+<FONT color="green">129</FONT>        /** Serialize {@link #created} */<a name="line.129"></a>
+<FONT color="green">130</FONT>        private void writeCreated(DataOutput out) throws IOException {<a name="line.130"></a>
+<FONT color="green">131</FONT>          final List&lt;INode&gt; created = getList(ListType.CREATED);<a name="line.131"></a>
+<FONT color="green">132</FONT>          out.writeInt(created.size());<a name="line.132"></a>
+<FONT color="green">133</FONT>          for (INode node : created) {<a name="line.133"></a>
+<FONT color="green">134</FONT>            // For INode in created list, we only need to record its local name <a name="line.134"></a>
+<FONT color="green">135</FONT>            byte[] name = node.getLocalNameBytes();<a name="line.135"></a>
+<FONT color="green">136</FONT>            out.writeShort(name.length);<a name="line.136"></a>
+<FONT color="green">137</FONT>            out.write(name);<a name="line.137"></a>
+<FONT color="green">138</FONT>          }<a name="line.138"></a>
+<FONT color="green">139</FONT>        }<a name="line.139"></a>
+<FONT color="green">140</FONT>        <a name="line.140"></a>
+<FONT color="green">141</FONT>        /** Serialize {@link #deleted} */<a name="line.141"></a>
+<FONT color="green">142</FONT>        private void writeDeleted(DataOutput out,<a name="line.142"></a>
+<FONT color="green">143</FONT>            ReferenceMap referenceMap) throws IOException {<a name="line.143"></a>
+<FONT color="green">144</FONT>          final List&lt;INode&gt; deleted = getList(ListType.DELETED);<a name="line.144"></a>
+<FONT color="green">145</FONT>          out.writeInt(deleted.size());<a name="line.145"></a>
+<FONT color="green">146</FONT>          for (INode node : deleted) {<a name="line.146"></a>
+<FONT color="green">147</FONT>            FSImageSerialization.saveINode2Image(node, out, true, referenceMap);<a name="line.147"></a>
+<FONT color="green">148</FONT>          }<a name="line.148"></a>
+<FONT color="green">149</FONT>        }<a name="line.149"></a>
+<FONT color="green">150</FONT>        <a name="line.150"></a>
+<FONT color="green">151</FONT>        /** Serialize to out */<a name="line.151"></a>
+<FONT color="green">152</FONT>        private void write(DataOutput out, ReferenceMap referenceMap<a name="line.152"></a>
+<FONT color="green">153</FONT>            ) throws IOException {<a name="line.153"></a>
+<FONT color="green">154</FONT>          writeCreated(out);<a name="line.154"></a>
+<FONT color="green">155</FONT>          writeDeleted(out, referenceMap);    <a name="line.155"></a>
+<FONT color="green">156</FONT>        }<a name="line.156"></a>
+<FONT color="green">157</FONT>    <a name="line.157"></a>
+<FONT color="green">158</FONT>        /** Get the list of INodeDirectory contained in the deleted list */<a name="line.158"></a>
+<FONT color="green">159</FONT>        private void getDirsInDeleted(List&lt;INodeDirectory&gt; dirList) {<a name="line.159"></a>
+<FONT color="green">160</FONT>          for (INode node : getList(ListType.DELETED)) {<a name="line.160"></a>
+<FONT color="green">161</FONT>            if (node.isDirectory()) {<a name="line.161"></a>
+<FONT color="green">162</FONT>              dirList.add(node.asDirectory());<a name="line.162"></a>
+<FONT color="green">163</FONT>            }<a name="line.163"></a>
+<FONT color="green">164</FONT>          }<a name="line.164"></a>
+<FONT color="green">165</FONT>        }<a name="line.165"></a>
+<FONT color="green">166</FONT>        <a name="line.166"></a>
+<FONT color="green">167</FONT>        /**<a name="line.167"></a>
+<FONT color="green">168</FONT>         * Interpret the diff and generate a list of {@link DiffReportEntry}.<a name="line.168"></a>
+<FONT color="green">169</FONT>         * @param parentPath The relative path of the parent.<a name="line.169"></a>
+<FONT color="green">170</FONT>         * @param parent The directory that the diff belongs to.<a name="line.170"></a>
+<FONT color="green">171</FONT>         * @param fromEarlier True indicates {@code diff=later-earlier}, <a name="line.171"></a>
+<FONT color="green">172</FONT>         *                    False indicates {@code diff=earlier-later}<a name="line.172"></a>
+<FONT color="green">173</FONT>         * @return A list of {@link DiffReportEntry} as the diff report.<a name="line.173"></a>
+<FONT color="green">174</FONT>         */<a name="line.174"></a>
+<FONT color="green">175</FONT>        public List&lt;DiffReportEntry&gt; generateReport(byte[][] parentPath,<a name="line.175"></a>
+<FONT color="green">176</FONT>            INodeDirectoryWithSnapshot parent, boolean fromEarlier) {<a name="line.176"></a>
+<FONT color="green">177</FONT>          List&lt;DiffReportEntry&gt; cList = new ArrayList&lt;DiffReportEntry&gt;();<a name="line.177"></a>
+<FONT color="green">178</FONT>          List&lt;DiffReportEntry&gt; dList = new ArrayList&lt;DiffReportEntry&gt;();<a name="line.178"></a>
+<FONT color="green">179</FONT>          int c = 0, d = 0;<a name="line.179"></a>
+<FONT color="green">180</FONT>          List&lt;INode&gt; created = getList(ListType.CREATED);<a name="line.180"></a>
+<FONT color="green">181</FONT>          List&lt;INode&gt; deleted = getList(ListType.DELETED);<a name="line.181"></a>
+<FONT color="green">182</FONT>          byte[][] fullPath = new byte[parentPath.length + 1][];<a name="line.182"></a>
+<FONT color="green">183</FONT>          System.arraycopy(parentPath, 0, fullPath, 0, parentPath.length);<a name="line.183"></a>
+<FONT color="green">184</FONT>          for (; c &lt; created.size() &amp;&amp; d &lt; deleted.size(); ) {<a name="line.184"></a>
+<FONT color="green">185</FONT>            INode cnode = created.get(c);<a name="line.185"></a>
+<FONT color="green">186</FONT>            INode dnode = deleted.get(d);<a name="line.186"></a>
+<FONT color="green">187</FONT>            if (cnode.compareTo(dnode.getLocalNameBytes()) == 0) {<a name="line.187"></a>
+<FONT color="green">188</FONT>              fullPath[fullPath.length - 1] = cnode.getLocalNameBytes();<a name="line.188"></a>
+<FONT color="green">189</FONT>              // must be the case: delete first and then create an inode with the<a name="line.189"></a>
+<FONT color="green">190</FONT>              // same name<a name="line.190"></a>
+<FONT color="green">191</FONT>              cList.add(new DiffReportEntry(DiffType.CREATE, fullPath));<a name="line.191"></a>
+<FONT color="green">192</FONT>              dList.add(new DiffReportEntry(DiffType.DELETE, fullPath));<a name="line.192"></a>
+<FONT color="green">193</FONT>              c++;<a name="line.193"></a>
+<FONT color="green">194</FONT>              d++;<a name="line.194"></a>
+<FONT color="green">195</FONT>            } else if (cnode.compareTo(dnode.getLocalNameBytes()) &lt; 0) {<a name="line.195"></a>
+<FONT color="green">196</FONT>              fullPath[fullPath.length - 1] = cnode.getLocalNameBytes();<a name="line.196"></a>
+<FONT color="green">197</FONT>              cList.add(new DiffReportEntry(fromEarlier ? DiffType.CREATE<a name="line.197"></a>
+<FONT color="green">198</FONT>                  : DiffType.DELETE, fullPath));<a name="line.198"></a>
+<FONT color="green">199</FONT>              c++;<a name="line.199"></a>
+<FONT color="green">200</FONT>            } else {<a name="line.200"></a>
+<FONT color="green">201</FONT>              fullPath[fullPath.length - 1] = dnode.getLocalNameBytes();<a name="line.201"></a>
+<FONT color="green">202</FONT>              dList.add(new DiffReportEntry(fromEarlier ? DiffType.DELETE<a name="line.202"></a>
+<FONT color="green">203</FONT>                  : DiffType.CREATE, fullPath));<a name="line.203"></a>
+<FONT color="green">204</FONT>              d++;<a name="line.204"></a>
+<FONT color="green">205</FONT>            }<a name="line.205"></a>
+<FONT color="green">206</FONT>          }<a name="line.206"></a>
+<FONT color="green">207</FONT>          for (; d &lt; deleted.size(); d++) {<a name="line.207"></a>
+<FONT color="green">208</FONT>            fullPath[fullPath.length - 1] = deleted.get(d).getLocalNameBytes();<a name="line.208"></a>
+<FONT color="green">209</FONT>            dList.add(new DiffReportEntry(fromEarlier ? DiffType.DELETE<a name="line.209"></a>
+<FONT color="green">210</FONT>                : DiffType.CREATE, fullPath));<a name="line.210"></a>
+<FONT color="green">211</FONT>          }<a name="line.211"></a>
+<FONT color="green">212</FONT>          for (; c &lt; created.size(); c++) {<a name="line.212"></a>
+<FONT color="green">213</FONT>            fullPath[fullPath.length - 1] = created.get(c).getLocalNameBytes();<a name="line.213"></a>
+<FONT color="green">214</FONT>            cList.add(new DiffReportEntry(fromEarlier ? DiffType.CREATE<a name="line.214"></a>
+<FONT color="green">215</FONT>                : DiffType.DELETE, fullPath));<a name="line.215"></a>
+<FONT color="green">216</FONT>          }<a name="line.216"></a>
+<FONT color="green">217</FONT>          dList.addAll(cList);<a name="line.217"></a>
+<FONT color="green">218</FONT>          return dList;<a name="line.218"></a>
+<FONT color="green">219</FONT>        }<a name="line.219"></a>
+<FONT color="green">220</FONT>      }<a name="line.220"></a>
+<FONT color="green">221</FONT>      <a name="line.221"></a>
+<FONT color="green">222</FONT>      /**<a name="line.222"></a>
+<FONT color="green">223</FONT>       * The difference of an {@link INodeDirectory} between two snapshots.<a name="line.223"></a>
+<FONT color="green">224</FONT>       */<a name="line.224"></a>
+<FONT color="green">225</FONT>      public static class DirectoryDiff extends<a name="line.225"></a>
+<FONT color="green">226</FONT>          AbstractINodeDiff&lt;INodeDirectory, INodeDirectoryAttributes, DirectoryDiff&gt; {<a name="line.226"></a>
+<FONT color="green">227</FONT>        /** The size of the children list at snapshot creation time. */<a name="line.227"></a>
+<FONT color="green">228</FONT>        private final int childrenSize;<a name="line.228"></a>
+<FONT color="green">229</FONT>        /** The children list diff. */<a name="line.229"></a>
+<FONT color="green">230</FONT>        private final ChildrenDiff diff;<a name="line.230"></a>
+<FONT color="green">231</FONT>    <a name="line.231"></a>
+<FONT color="green">232</FONT>        private DirectoryDiff(Snapshot snapshot, INodeDirectory dir) {<a name="line.232"></a>
+<FONT color="green">233</FONT>          super(snapshot, null, null);<a name="line.233"></a>
+<FONT color="green">234</FONT>    <a name="line.234"></a>
+<FONT color="green">235</FONT>          this.childrenSize = dir.getChildrenList(null).size();<a name="line.235"></a>
+<FONT color="green">236</FONT>          this.diff = new ChildrenDiff();<a name="line.236"></a>
+<FONT color="green">237</FONT>        }<a name="line.237"></a>
+<FONT color="green">238</FONT>    <a name="line.238"></a>
+<FONT color="green">239</FONT>        /** Constructor used by FSImage loading */<a name="line.239"></a>
+<FONT color="green">240</FONT>        DirectoryDiff(Snapshot snapshot, INodeDirectoryAttributes snapshotINode,<a name="line.240"></a>
+<FONT color="green">241</FONT>            DirectoryDiff posteriorDiff, int childrenSize,<a name="line.241"></a>
+<FONT color="green">242</FONT>            List&lt;INode&gt; createdList, List&lt;INode&gt; deletedList) {<a name="line.242"></a>
+<FONT color="green">243</FONT>          super(snapshot, snapshotINode, posteriorDiff);<a name="line.243"></a>
+<FONT color="green">244</FONT>          this.childrenSize = childrenSize;<a name="line.244"></a>
+<FONT color="green">245</FONT>          this.diff = new ChildrenDiff(createdList, deletedList);<a name="line.245"></a>
+<FONT color="green">246</FONT>        }<a name="line.246"></a>
+<FONT color="green">247</FONT>        <a name="line.247"></a>
+<FONT color="green">248</FONT>        ChildrenDiff getChildrenDiff() {<a name="line.248"></a>
+<FONT color="green">249</FONT>          return diff;<a name="line.249"></a>
+<FONT color="green">250</FONT>        }<a name="line.250"></a>
+<FONT color="green">251</FONT>        <a name="line.251"></a>
+<FONT color="green">252</FONT>        /** Is the inode the root of the snapshot? */<a name="line.252"></a>
+<FONT color="green">253</FONT>        boolean isSnapshotRoot() {<a name="line.253"></a>
+<FONT color="green">254</FONT>          return snapshotINode == snapshot.getRoot();<a name="line.254"></a>
+<FONT color="green">255</FONT>        }<a name="line.255"></a>
+<FONT color="green">256</FONT>        <a name="line.256"></a>
+<FONT color="green">257</FONT>        @Override<a name="line.257"></a>
+<FONT color="green">258</FONT>        Quota.Counts combinePosteriorAndCollectBlocks(<a name="line.258"></a>
+<FONT color="green">259</FONT>            final INodeDirectory currentDir, final DirectoryDiff posterior,<a name="line.259"></a>
+<FONT color="green">260</FONT>            final BlocksMapUpdateInfo collectedBlocks,<a name="line.260"></a>
+<FONT color="green">261</FONT>            final List&lt;INode&gt; removedINodes) {<a name="line.261"></a>
+<FONT color="green">262</FONT>          final Quota.Counts counts = Quota.Counts.newInstance();<a name="line.262"></a>
+<FONT color="green">263</FONT>          diff.combinePosterior(posterior.diff, new Diff.Processor&lt;INode&gt;() {<a name="line.263"></a>
+<FONT color="green">264</FONT>            /** Collect blocks for deleted files. */<a name="line.264"></a>
+<FONT color="green">265</FONT>            @Override<a name="line.265"></a>
+<FONT color="green">266</FONT>            public void process(INode inode) {<a name="line.266"></a>
+<FONT color="green">267</FONT>              if (inode != null) {<a name="line.267"></a>
+<FONT color="green">268</FONT>                inode.computeQuotaUsage(counts, false);<a name="line.268"></a>
+<FONT color="green">269</FONT>                inode.destroyAndCollectBlocks(collectedBlocks, removedINodes);<a name="line.269"></a>
+<FONT color="green">270</FONT>              }<a name="line.270"></a>
+<FONT color="green">271</FONT>            }<a name="line.271"></a>
+<FONT color="green">272</FONT>          });<a name="line.272"></a>
+<FONT color="green">273</FONT>          return counts;<a name="line.273"></a>
+<FONT color="green">274</FONT>        }<a name="line.274"></a>
+<FONT color="green">275</FONT>    <a name="line.275"></a>
+<FONT color="green">276</FONT>        /**<a name="line.276"></a>
+<FONT color="green">277</FONT>         * @return The children list of a directory in a snapshot.<a name="line.277"></a>
+<FONT color="green">278</FONT>         *         Since the snapshot is read-only, the logical view of the list is<a name="line.278"></a>
+<FONT color="green">279</FONT>         *         never changed although the internal data structure may mutate.<a name="line.279"></a>
+<FONT color="green">280</FONT>         */<a name="line.280"></a>
+<FONT color="green">281</FONT>        ReadOnlyList&lt;INode&gt; getChildrenList(final INodeDirectory currentDir) {<a name="line.281"></a>
+<FONT color="green">282</FONT>          return new ReadOnlyList&lt;INode&gt;() {<a name="line.282"></a>
+<FONT color="green">283</FONT>            private List&lt;INode&gt; children = null;<a name="line.283"></a>
+<FONT color="green">284</FONT>    <a name="line.284"></a>
+<FONT color="green">285</FONT>            private List&lt;INode&gt; initChildren() {<a name="line.285"></a>
+<FONT color="green">286</FONT>              if (children == null) {<a name="line.286"></a>
+<FONT color="green">287</FONT>                final ChildrenDiff combined = new ChildrenDiff();<a name="line.287"></a>
+<FONT color="green">288</FONT>                for(DirectoryDiff d = DirectoryDiff.this; d != null; d = d.getPosterior()) {<a name="line.288"></a>
+<FONT color="green">289</FONT>                  combined.combinePosterior(d.diff, null);<a name="line.289"></a>
+<FONT color="green">290</FONT>                }<a name="line.290"></a>
+<FONT color="green">291</FONT>                children = combined.apply2Current(ReadOnlyList.Util.asList(<a name="line.291"></a>
+<FONT color="green">292</FONT>                    currentDir.getChildrenList(null)));<a name="line.292"></a>
+<FONT color="green">293</FONT>              }<a name="line.293"></a>
+<FONT color="green">294</FONT>              return children;<a name="line.294"></a>
+<FONT color="green">295</FONT>            }<a name="line.295"></a>
+<FONT color="green">296</FONT>    <a name="line.296"></a>
+<FONT color="green">297</FONT>            @Override<a name="line.297"></a>
+<FONT color="green">298</FONT>            public Iterator&lt;INode&gt; iterator() {<a name="line.298"></a>
+<FONT color="green">299</FONT>              return initChildren().iterator();<a name="line.299"></a>
+<FONT color="green">300</FONT>            }<a name="line.300"></a>
+<FONT color="green">301</FONT>        <a name="line.301"></a>
+<FONT color="green">302</FONT>            @Override<a name="line.302"></a>
+<FONT color="green">303</FONT>            public boolean isEmpty() {<a name="line.303"></a>
+<FONT color="green">304</FONT>              return childrenSize == 0;<a name="line.304"></a>
+<FONT color="green">305</FONT>            }<a name="line.305"></a>
+<FONT color="green">306</FONT>        <a name="line.306"></a>
+<FONT color="green">307</FONT>            @Override<a name="line.307"></a>
+<FONT color="green">308</FONT>            public int size() {<a name="line.308"></a>
+<FONT color="green">309</FONT>              return childrenSize;<a name="line.309"></a>
+<FONT color="green">310</FONT>            }<a name="line.310"></a>
+<FONT color="green">311</FONT>        <a name="line.311"></a>
+<FONT color="green">312</FONT>            @Override<a name="line.312"></a>
+<FONT color="green">313</FONT>            public INode get(int i) {<a name="line.313"></a>
+<FONT color="green">314</FONT>              return initChildren().get(i);<a name="line.314"></a>
+<FONT color="green">315</FONT>            }<a name="line.315"></a>
+<FONT color="green">316</FONT>          };<a name="line.316"></a>
+<FONT color="green">317</FONT>        }<a name="line.317"></a>
+<FONT color="green">318</FONT>    <a name="line.318"></a>
+<FONT color="green">319</FONT>        /** @return the child with the given name. */<a name="line.319"></a>
+<FONT color="green">320</FONT>        INode getChild(byte[] name, boolean checkPosterior,<a name="line.320"></a>
+<FONT color="green">321</FONT>            INodeDirectory currentDir) {<a name="line.321"></a>
+<FONT color="green">322</FONT>          for(DirectoryDiff d = this; ; d = d.getPosterior()) {<a name="line.322"></a>
+<FONT color="green">323</FONT>            final Container&lt;INode&gt; returned = d.diff.accessPrevious(name);<a name="line.323"></a>
+<FONT color="green">324</FONT>            if (returned != null) {<a name="line.324"></a>
+<FONT color="green">325</FONT>              // the diff is able to determine the inode<a name="line.325"></a>
+<FONT color="green">326</FONT>              return returned.getElement(); <a name="line.326"></a>
+<FONT color="green">327</FONT>            } else if (!checkPosterior) {<a name="line.327"></a>
+<FONT color="green">328</FONT>              // Since checkPosterior is false, return null, i.e. not found.   <a name="line.328"></a>
+<FONT color="green">329</FONT>              return null;<a name="line.329"></a>
+<FONT color="green">330</FONT>            } else if (d.getPosterior() == null) {<a name="line.330"></a>
+<FONT color="green">331</FONT>              // no more posterior diff, get from current inode.<a name="line.331"></a>
+<FONT color="green">332</FONT>              return currentDir.getChild(name, null);<a name="line.332"></a>
+<FONT color="green">333</FONT>            }<a name="line.333"></a>
+<FONT color="green">334</FONT>          }<a name="line.334"></a>
+<FONT color="green">335</FONT>        }<a name="line.335"></a>
+<FONT color="green">336</FONT>        <a name="line.336"></a>
+<FONT color="green">337</FONT>        @Override<a name="line.337"></a>
+<FONT color="green">338</FONT>        public String toString() {<a name="line.338"></a>
+<FONT color="green">339</FONT>          return super.toString() + " childrenSize=" + childrenSize + ", " + diff;<a name="line.339"></a>
+<FONT color="green">340</FONT>        }<a name="line.340"></a>
+<FONT color="green">341</FONT>        <a name="line.341"></a>
+<FONT color="green">342</FONT>        @Override<a name="line.342"></a>
+<FONT color="green">343</FONT>        void write(DataOutput out, ReferenceMap referenceMap) throws IOException {<a name="line.343"></a>
+<FONT color="green">344</FONT>          writeSnapshot(out);<a name="line.344"></a>
+<FONT color="green">345</FONT>          out.writeInt(childrenSize);<a name="line.345"></a>
+<FONT color="green">346</FONT>    <a name="line.346"></a>
+<FONT color="green">347</FONT>          // write snapshotINode<a name="line.347"></a>
+<FONT color="green">348</FONT>          if (isSnapshotRoot()) {<a name="line.348"></a>
+<FONT color="green">349</FONT>            out.writeBoolean(true);<a name="line.349"></a>
+<FONT color="green">350</FONT>          } else {<a name="line.350"></a>
+<FONT color="green">351</FONT>            out.writeBoolean(false);<a name="line.351"></a>
+<FONT color="green">352</FONT>            if (snapshotINode != null) {<a name="line.352"></a>
+<FONT color="green">353</FONT>              out.writeBoolean(true);<a name="line.353"></a>
+<FONT color="green">354</FONT>              FSImageSerialization.writeINodeDirectoryAttributes(snapshotINode, out);<a name="line.354"></a>
+<FONT color="green">355</FONT>            } else {<a name="line.355"></a>
+<FONT color="green">356</FONT>              out.writeBoolean(false);<a name="line.356"></a>
+<FONT color="green">357</FONT>            }<a name="line.357"></a>
+<FONT color="green">358</FONT>          }<a name="line.358"></a>
+<FONT color="green">359</FONT>          // Write diff. Node need to write poseriorDiff, since diffs is a list.<a name="line.359"></a>
+<FONT color="green">360</FONT>          diff.write(out, referenceMap);<a name="line.360"></a>
+<FONT color="green">361</FONT>        }<a name="line.361"></a>
+<FONT color="green">362</FONT>    <a name="line.362"></a>
+<FONT color="green">363</FONT>        @Override<a name="line.363"></a>
+<FONT color="green">364</FONT>        Quota.Counts destroyDiffAndCollectBlocks(INodeDirectory currentINode,<a name="line.364"></a>
+<FONT color="green">365</FONT>            BlocksMapUpdateInfo collectedBlocks, final List&lt;INode&gt; removedINodes) {<a name="line.365"></a>
+<FONT color="green">366</FONT>          // this diff has been deleted<a name="line.366"></a>
+<FONT color="green">367</FONT>          Quota.Counts counts = Quota.Counts.newInstance();<a name="line.367"></a>
+<FONT color="green">368</FONT>          counts.add(diff.destroyDeletedList(collectedBlocks, removedINodes));<a name="line.368"></a>
+<FONT color="green">369</FONT>          return counts;<a name="line.369"></a>
+<FONT color="green">370</FONT>        }<a name="line.370"></a>
+<FONT color="green">371</FONT>      }<a name="line.371"></a>
+<FONT color="green">372</FONT>    <a name="line.372"></a>
+<FONT color="green">373</FONT>      /** A list of directory diffs. */<a name="line.373"></a>
+<FONT color="green">374</FONT>      public static class DirectoryDiffList<a name="line.374"></a>
+<FONT color="green">375</FONT>          extends AbstractINodeDiffList&lt;INodeDirectory, INodeDirectoryAttributes, DirectoryDiff&gt; {<a name="line.375"></a>
+<FONT color="green">376</FONT>    <a name="line.376"></a>
+<FONT color="green">377</FONT>        @Override<a name="line.377"></a>
+<FONT color="green">378</FONT>        DirectoryDiff createDiff(Snapshot snapshot, INodeDirectory currentDir) {<a name="line.378"></a>
+<FONT color="green">379</FONT>          return new DirectoryDiff(snapshot, currentDir);<a name="line.379"></a>
+<FONT color="green">380</FONT>        }<a name="line.380"></a>
+<FONT color="green">381</FONT>    <a name="line.381"></a>
+<FONT color="green">382</FONT>        @Override<a name="line.382"></a>
+<FONT color="green">383</FONT>        INodeDirectoryAttributes createSnapshotCopy(INodeDirectory currentDir) {<a name="line.383"></a>
+<FONT color="green">384</FONT>          return currentDir.isQuotaSet()?<a name="line.384"></a>
+<FONT color="green">385</FONT>              new INodeDirectoryAttributes.CopyWithQuota(currentDir)<a name="line.385"></a>
+<FONT color="green">386</FONT>            : new INodeDirectoryAttributes.SnapshotCopy(currentDir);<a name="line.386"></a>
+<FONT color="green">387</FONT>        }<a name="line.387"></a>
+<FONT color="green">388</FONT>    <a name="line.388"></a>
+<FONT color="green">389</FONT>        /** Replace the given child in the created/deleted list, if there is any. */<a name="line.389"></a>
+<FONT color="green">390</FONT>        private boolean replaceChild(final ListType type, final INode oldChild,<a name="line.390"></a>
+<FONT color="green">391</FONT>            final INode newChild) {<a name="line.391"></a>
+<FONT color="green">392</FONT>          final List&lt;DirectoryDiff&gt; diffList = asList();<a name="line.392"></a>
+<FONT color="green">393</FONT>          for(int i = diffList.size() - 1; i &gt;= 0; i--) {<a name="line.393"></a>
+<FONT color="green">394</FONT>            final ChildrenDiff diff = diffList.get(i).diff;<a name="line.394"></a>
+<FONT color="green">395</FONT>            if (diff.replace(type, oldChild, newChild)) {<a name="line.395"></a>
+<FONT color="green">396</FONT>              return true;<a name="line.396"></a>
+<FONT color="green">397</FONT>            }<a name="line.397"></a>
+<FONT color="green">398</FONT>          }<a name="line.398"></a>
+<FONT color="green">399</FONT>          return false;<a name="line.399"></a>
+<FONT color="green">400</FONT>        }<a name="line.400"></a>
+<FONT color="green">401</FONT>        <a name="line.401"></a>
+<FONT color="green">402</FONT>        /** Remove the given child in the created/deleted list, if there is any. */<a name="line.402"></a>
+<FONT color="green">403</FONT>        private boolean removeChild(final ListType type, final INode child) {<a name="line.403"></a>
+<FONT color="green">404</FONT>          final List&lt;DirectoryDiff&gt; diffList = asList();<a name="line.404"></a>
+<FONT color="green">405</FONT>          for(int i = diffList.size() - 1; i &gt;= 0; i--) {<a name="line.405"></a>
+<FONT color="green">406</FONT>            final ChildrenDiff diff = diffList.get(i).diff;<a name="line.406"></a>
+<FONT color="green">407</FONT>            if (diff.removeChild(type, child)) {<a name="line.407"></a>
+<FONT color="green">408</FONT>              return true;<a name="line.408"></a>
+<FONT color="green">409</FONT>            }<a name="line.409"></a>
+<FONT color="green">410</FONT>          }<a name="line.410"></a>
+<FONT color="green">411</FONT>          return false;<a name="line.411"></a>
+<FONT color="green">412</FONT>        }<a name="line.412"></a>
+<FONT color="green">413</FONT>      }<a name="line.413"></a>
+<FONT color="green">414</FONT>    <a name="line.414"></a>
+<FONT color="green">415</FONT>      /**<a name="line.415"></a>
+<FONT color="green">416</FONT>       * Compute the difference between Snapshots.<a name="line.416"></a>
+<FONT color="green">417</FONT>       * <a name="line.417"></a>
+<FONT color="green">418</FONT>       * @param fromSnapshot Start point of the diff computation. Null indicates<a name="line.418"></a>
+<FONT color="green">419</FONT>       *          current tree.<a name="line.419"></a>
+<FONT color="green">420</FONT>       * @param toSnapshot End point of the diff computation. Null indicates current<a name="line.420"></a>
+<FONT color="green">421</FONT>       *          tree.<a name="line.421"></a>
+<FONT color="green">422</FONT>       * @param diff Used to capture the changes happening to the children. Note<a name="line.422"></a>
+<FONT color="green">423</FONT>       *          that the diff still represents (later_snapshot - earlier_snapshot)<a name="line.423"></a>
+<FONT color="green">424</FONT>       *          although toSnapshot can be before fromSnapshot.<a name="line.424"></a>
+<FONT color="green">425</FONT>       * @return Whether changes happened between the startSnapshot and endSnaphsot.<a name="line.425"></a>
+<FONT color="green">426</FONT>       */<a name="line.426"></a>
+<FONT color="green">427</FONT>      boolean computeDiffBetweenSnapshots(Snapshot fromSnapshot,<a name="line.427"></a>
+<FONT color="green">428</FONT>          Snapshot toSnapshot, ChildrenDiff diff) {<a name="line.428"></a>
+<FONT color="green">429</FONT>        Snapshot earlier = fromSnapshot;<a name="line.429"></a>
+<FONT color="green">430</FONT>        Snapshot later = toSnapshot;<a name="line.430"></a>
+<FONT color="green">431</FONT>        if (Snapshot.ID_COMPARATOR.compare(fromSnapshot, toSnapshot) &gt; 0) {<a name="line.431"></a>
+<FONT color="green">432</FONT>          earlier = toSnapshot;<a name="line.432"></a>
+<FONT color="green">433</FONT>          later = fromSnapshot;<a name="line.433"></a>
+<FONT color="green">434</FONT>        }<a name="line.434"></a>
+<FONT color="green">435</FONT>        <a name="line.435"></a>
+<FONT color="green">436</FONT>        boolean modified = diffs.changedBetweenSnapshots(earlier,<a name="line.436"></a>
+<FONT color="green">437</FONT>            later);<a name="line.437"></a>
+<FONT color="green">438</FONT>        if (!modified) {<a name="line.438"></a>
+<FONT color="green">439</FONT>          return false;<a name="line.439"></a>
+<FONT color="green">440</FONT>        }<a name="line.440"></a>
+<FONT color="green">441</FONT>        <a name="line.441"></a>
+<FONT color="green">442</FONT>        final List&lt;DirectoryDiff&gt; difflist = diffs.asList();<a name="line.442"></a>
+<FONT color="green">443</FONT>        final int size = difflist.size();<a name="line.443"></a>
+<FONT color="green">444</FONT>        int earlierDiffIndex = Collections.binarySearch(difflist, earlier.getId());<a name="line.444"></a>
+<FONT color="green">445</FONT>        int laterDiffIndex = later == null ? size : Collections<a name="line.445"></a>
+<FONT color="green">446</FONT>            .binarySearch(difflist, later.getId());<a name="line.446"></a>
+<FONT color="green">447</FONT>        earlierDiffIndex = earlierDiffIndex &lt; 0 ? (-earlierDiffIndex - 1)<a name="line.447"></a>
+<FONT color="green">448</FONT>            : earlierDiffIndex;<a name="line.448"></a>
+<FONT color="green">449</FONT>        laterDiffIndex = laterDiffIndex &lt; 0 ? (-laterDiffIndex - 1)<a name="line.449"></a>
+<FONT color="green">450</FONT>            : laterDiffIndex;<a name="line.450"></a>
+<FONT color="green">451</FONT>        <a name="line.451"></a>
+<FONT color="green">452</FONT>        boolean dirMetadataChanged = false;<a name="line.452"></a>
+<FONT color="green">453</FONT>        INodeDirectoryAttributes dirCopy = null;<a name="line.453"></a>
+<FONT color="green">454</FONT>        for (int i = earlierDiffIndex; i &lt; laterDiffIndex; i++) {<a name="line.454"></a>
+<FONT color="green">455</FONT>          DirectoryDiff sdiff = difflist.get(i);<a name="line.455"></a>
+<FONT color="green">456</FONT>          diff.combinePosterior(sdiff.diff, null);<a name="line.456"></a>
+<FONT color="green">457</FONT>          if (dirMetadataChanged == false &amp;&amp; sdiff.snapshotINode != null) {<a name="line.457"></a>
+<FONT color="green">458</FONT>            if (dirCopy == null) {<a name="line.458"></a>
+<FONT color="green">459</FONT>              dirCopy = sdiff.snapshotINode;<a name="line.459"></a>
+<FONT color="green">460</FONT>            } else if (!dirCopy.metadataEquals(sdiff.snapshotINode)) {<a name="line.460"></a>
+<FONT color="green">461</FONT>              dirMetadataChanged = true;<a name="line.461"></a>
+<FONT color="green">462</FONT>            }<a name="line.462"></a>
+<FONT color="green">463</FONT>          }<a name="line.463"></a>
+<FONT color="green">464</FONT>        }<a name="line.464"></a>
+<FONT color="green">465</FONT>    <a name="line.465"></a>
+<FONT color="green">466</FONT>        if (!diff.isEmpty() || dirMetadataChanged) {<a name="line.466"></a>
+<FONT color="green">467</FONT>          return true;<a name="line.467"></a>
+<FONT color="green">468</FONT>        } else if (dirCopy != null) {<a name="line.468"></a>
+<FONT color="green">469</FONT>          for (int i = laterDiffIndex; i &lt; size; i++) {<a name="line.469"></a>
+<FONT color="green">470</FONT>            if (!dirCopy.metadataEquals(difflist.get(i).snapshotINode)) {<a name="line.470"></a>
+<FONT color="green">471</FONT>              return true;<a name="line.471"></a>
+<FONT color="green">472</FONT>            }<a name="line.472"></a>
+<FONT color="green">473</FONT>          }<a name="line.473"></a>
+<FONT color="green">474</FONT>          return !dirCopy.metadataEquals(this);<a name="line.474"></a>
+<FONT color="green">475</FONT>        } else {<a name="line.475"></a>
+<FONT color="green">476</FONT>          return false;<a name="line.476"></a>
+<FONT color="green">477</FONT>        }<a name="line.477"></a>
+<FONT color="green">478</FONT>      }<a name="line.478"></a>
+<FONT color="green">479</FONT>    <a name="line.479"></a>
+<FONT color="green">480</FONT>      /** Diff list sorted by snapshot IDs, i.e. in chronological order. */<a name="line.480"></a>
+<FONT color="green">481</FONT>      private final DirectoryDiffList diffs;<a name="line.481"></a>
+<FONT color="green">482</FONT>    <a name="line.482"></a>
+<FONT color="green">483</FONT>      public INodeDirectoryWithSnapshot(INodeDirectory that) {<a name="line.483"></a>
+<FONT color="green">484</FONT>        this(that, true, that instanceof INodeDirectoryWithSnapshot?<a name="line.484"></a>
+<FONT color="green">485</FONT>            ((INodeDirectoryWithSnapshot)that).getDiffs(): null);<a name="line.485"></a>
+<FONT color="green">486</FONT>      }<a name="line.486"></a>
+<FONT color="green">487</FONT>    <a name="line.487"></a>
+<FONT color="green">488</FONT>      INodeDirectoryWithSnapshot(INodeDirectory that, boolean adopt,<a name="line.488"></a>
+<FONT color="green">489</FONT>          DirectoryDiffList diffs) {<a name="line.489"></a>
+<FONT color="green">490</FONT>        super(that, adopt, that.getNsQuota(), that.getDsQuota());<a name="line.490"></a>
+<FONT color="green">491</FONT>        this.diffs = diffs != null? diffs: new DirectoryDiffList();<a name="line.491"></a>
+<FONT color="green">492</FONT>      }<a name="line.492"></a>
+<FONT color="green">493</FONT>    <a name="line.493"></a>
+<FONT color="green">494</FONT>      /** @return the last snapshot. */<a name="line.494"></a>
+<FONT color="green">495</FONT>      public Snapshot getLastSnapshot() {<a name="line.495"></a>
+<FONT color="green">496</FONT>        return diffs.getLastSnapshot();<a name="line.496"></a>
+<FONT color="green">497</FONT>      }<a name="line.497"></a>
+<FONT color="green">498</FONT>    <a name="line.498"></a>
+<FONT color="green">499</FONT>      /** @return the snapshot diff list. */<a name="line.499"></a>
+<FONT color="green">500</FONT>      public DirectoryDiffList getDiffs() {<a name="line.500"></a>
+<FONT color="green">501</FONT>        return diffs;<a name="line.501"></a>
+<FONT color="green">502</FONT>      }<a name="line.502"></a>
+<FONT color="green">503</FONT>    <a name="line.503"></a>
+<FONT color="green">504</FONT>      @Override<a name="line.504"></a>
+<FONT color="green">505</FONT>      public INodeDirectoryAttributes getSnapshotINode(Snapshot snapshot) {<a name="line.505"></a>
+<FONT color="green">506</FONT>        return diffs.getSnapshotINode(snapshot, this);<a name="line.506"></a>
+<FONT color="green">507</FONT>      }<a name="line.507"></a>
+<FONT color="green">508</FONT>    <a name="line.508"></a>
+<FONT color="green">509</FONT>      @Override<a name="line.509"></a>
+<FONT color="green">510</FONT>      public INodeDirectoryWithSnapshot recordModification(final Snapshot latest,<a name="line.510"></a>
+<FONT color="green">511</FONT>          final INodeMap inodeMap) throws QuotaExceededException {<a name="line.511"></a>
+<FONT color="green">512</FONT>        if (isInLatestSnapshot(latest) &amp;&amp; !shouldRecordInSrcSnapshot(latest)) {<a name="line.512"></a>
+<FONT color="green">513</FONT>          return saveSelf2Snapshot(latest, null);<a name="line.513"></a>
+<FONT color="green">514</FONT>        }<a name="line.514"></a>
+<FONT color="green">515</FONT>        return this;<a name="line.515"></a>
+<FONT color="green">516</FONT>      }<a name="line.516"></a>
+<FONT color="green">517</FONT>    <a name="line.517"></a>
+<FONT color="green">518</FONT>      /** Save the snapshot copy to the latest snapshot. */<a name="line.518"></a>
+<FONT color="green">519</FONT>      public INodeDirectoryWithSnapshot saveSelf2Snapshot(<a name="line.519"></a>
+<FONT color="green">520</FONT>          final Snapshot latest, final INodeDirectory snapshotCopy)<a name="line.520"></a>
+<FONT color="green">521</FONT>              throws QuotaExceededException {<a name="line.521"></a>
+<FONT color="green">522</FONT>        diffs.saveSelf2Snapshot(latest, this, snapshotCopy);<a name="line.522"></a>
+<FONT color="green">523</FONT>        return this;<a name="line.523"></a>
+<FONT color="green">524</FONT>      }<a name="line.524"></a>
+<FONT color="green">525</FONT>    <a name="line.525"></a>
+<FONT color="green">526</FONT>      @Override<a name="line.526"></a>
+<FONT color="green">527</FONT>      public INode saveChild2Snapshot(final INode child, final Snapshot latest,<a name="line.527"></a>
+<FONT color="green">528</FONT>          final INode snapshotCopy, final INodeMap inodeMap)<a name="line.528"></a>
+<FONT color="green">529</FONT>          throws QuotaExceededException {<a name="line.529"></a>
+<FONT color="green">530</FONT>        Preconditions.checkArgument(!child.isDirectory(),<a name="line.530"></a>
+<FONT color="green">531</FONT>            "child is a directory, child=%s", child);<a name="line.531"></a>
+<FONT color="green">532</FONT>        if (latest == null) {<a name="line.532"></a>
+<FONT color="green">533</FONT>          return child;<a name="line.533"></a>
+<FONT color="green">534</FONT>        }<a name="line.534"></a>
+<FONT color="green">535</FONT>    <a name="line.535"></a>
+<FONT color="green">536</FONT>        final DirectoryDiff diff = diffs.checkAndAddLatestSnapshotDiff(latest, this);<a name="line.536"></a>
+<FONT color="green">537</FONT>        if (diff.getChild(child.getLocalNameBytes(), false, this) != null) {<a name="line.537"></a>
+<FONT color="green">538</FONT>          // it was already saved in the latest snapshot earlier.  <a name="line.538"></a>
+<FONT color="green">539</FONT>          return child;<a name="line.539"></a>
+<FONT color="green">540</FONT>        }<a name="line.540"></a>
+<FONT color="green">541</FONT>    <a name="line.541"></a>
+<FONT color="green">542</FONT>        diff.diff.modify(snapshotCopy, child);<a name="line.542"></a>
+<FONT color="green">543</FONT>        return child;<a name="line.543"></a>
+<FONT color="green">544</FONT>      }<a name="line.544"></a>
+<FONT color="green">545</FONT>    <a name="line.545"></a>
+<FONT color="green">546</FONT>      @Override<a name="line.546"></a>
+<FONT color="green">547</FONT>      public boolean addChild(INode inode, boolean setModTime, Snapshot latest,<a name="line.547"></a>
+<FONT color="green">548</FONT>          final INodeMap inodeMap) throws QuotaExceededException {<a name="line.548"></a>
+<FONT color="green">549</FONT>        ChildrenDiff diff = null;<a name="line.549"></a>
+<FONT color="green">550</FONT>        Integer undoInfo = null;<a name="line.550"></a>
+<FONT color="green">551</FONT>        if (isInLatestSnapshot(latest)) {<a name="line.551"></a>
+<FONT color="green">552</FONT>          diff = diffs.checkAndAddLatestSnapshotDiff(latest, this).diff;<a name="line.552"></a>
+<FONT color="green">553</FONT>          undoInfo = diff.create(inode);<a name="line.553"></a>
+<FONT color="green">554</FONT>        }<a name="line.554"></a>
+<FONT color="green">555</FONT>        final boolean added = super.addChild(inode, setModTime, null, inodeMap);<a name="line.555"></a>
+<FONT color="green">556</FONT>        if (!added &amp;&amp; undoInfo != null) {<a name="line.556"></a>
+<FONT color="green">557</FONT>          diff.undoCreate(inode, undoInfo);<a name="line.557"></a>
+<FONT color="green">558</FONT>        }<a name="line.558"></a>
+<FONT color="green">559</FONT>        return added; <a name="line.559"></a>
+<FONT color="green">560</FONT>      }<a name="line.560"></a>
+<FONT color="green">561</FONT>    <a name="line.561"></a>
+<FONT color="green">562</FONT>      @Override<a name="line.562"></a>
+<FONT color="green">563</FONT>      public boolean removeChild(INode child, Snapshot latest,<a name="line.563"></a>
+<FONT color="green">564</FONT>          final INodeMap inodeMap) throws QuotaExceededException {<a name="line.564"></a>
+<FONT color="green">565</FONT>        ChildrenDiff diff = null;<a name="line.565"></a>
+<FONT color="green">566</FONT>        UndoInfo&lt;INode&gt; undoInfo = null;<a name="line.566"></a>
+<FONT color="green">567</FONT>        // For a directory that is not a renamed node, if isInLatestSnapshot returns<a name="line.567"></a>
+<FONT color="green">568</FONT>        // false, the directory is not in the latest snapshot, thus we do not need<a name="line.568"></a>
+<FONT color="green">569</FONT>        // to record the removed child in any snapshot.<a name="line.569"></a>
+<FONT color="green">570</FONT>        // For a directory that was moved/renamed, note that if the directory is in<a name="line.570"></a>
+<FONT color="green">571</FONT>        // any of the previous snapshots, we will create a reference node for the <a name="line.571"></a>
+<FONT color="green">572</FONT>        // directory while rename, and isInLatestSnapshot will return true in that<a name="line.572"></a>
+<FONT color="green">573</FONT>        // scenario (if all previous snapshots have been deleted, isInLatestSnapshot<a name="line.573"></a>
+<FONT color="green">574</FONT>        // still returns false). Thus if isInLatestSnapshot returns false, the <a name="line.574"></a>
+<FONT color="green">575</FONT>        // directory node cannot be in any snapshot (not in current tree, nor in <a name="line.575"></a>
+<FONT color="green">576</FONT>        // previous src tree). Thus we do not need to record the removed child in <a name="line.576"></a>
+<FONT color="green">577</FONT>        // any snapshot.<a name="line.577"></a>
+<FONT color="green">578</FONT>        if (isInLatestSnapshot(latest)) {<a name="line.578"></a>
+<FONT color="green">579</FONT>          diff = diffs.checkAndAddLatestSnapshotDiff(latest, this).diff;<a name="line.579"></a>
+<FONT color="green">580</FONT>          undoInfo = diff.delete(child);<a name="line.580"></a>
+<FONT color="green">581</FONT>        }<a name="line.581"></a>
+<FONT color="green">582</FONT>        final boolean removed = removeChild(child);<a name="line.582"></a>
+<FONT color="green">583</FONT>        if (undoInfo != null) {<a name="line.583"></a>
+<FONT color="green">584</FONT>          if (!removed) {<a name="line.584"></a>
+<FONT color="green">585</FONT>            //remove failed, undo<a name="line.585"></a>
+<FONT color="green">586</FONT>            diff.undoDelete(child, undoInfo);<a name="line.586"></a>
+<FONT color="green">587</FONT>          }<a name="line.587"></a>
+<FONT color="green">588</FONT>        }<a name="line.588"></a>
+<FONT color="green">589</FONT>        return removed;<a name="line.589"></a>
+<FONT color="green">590</FONT>      }<a name="line.590"></a>
+<FONT color="green">591</FONT>      <a name="line.591"></a>
+<FONT color="green">592</FONT>      @Override<a name="line.592"></a>
+<FONT color="green">593</FONT>      public void replaceChildFileInSnapshot(final INodeFile oldChild,<a name="line.593"></a>
+<FONT color="green">594</FONT>          final INodeFile newChild) {<a name="line.594"></a>
+<FONT color="green">595</FONT>        super.replaceChildFileInSnapshot(oldChild, newChild);<a name="line.595"></a>
+<FONT color="green">596</FONT>        diffs.replaceChild(ListType.DELETED, oldChild, newChild);<a name="line.596"></a>
+<FONT color="green">597</FONT>        diffs.replaceChild(ListType.CREATED, oldChild, newChild);<a name="line.597"></a>
+<FONT color="green">598</FONT>      }<a name="line.598"></a>
+<FONT color="green">599</FONT>      <a name="line.599"></a>
+<FONT color="green">600</FONT>      @Override<a name="line.600"></a>
+<FONT color="green">601</FONT>      public void replaceChild(final INode oldChild, final INode newChild,<a name="line.601"></a>
+<FONT color="green">602</FONT>          final INodeMap inodeMap) {<a name="line.602"></a>
+<FONT color="green">603</FONT>        super.replaceChild(oldChild, newChild, inodeMap);<a name="line.603"></a>
+<FONT color="green">604</FONT>        if (oldChild.getParentReference() != null &amp;&amp; !newChild.isReference()) {<a name="line.604"></a>
+<FONT color="green">605</FONT>          // oldChild is referred by a Reference node. Thus we are replacing the <a name="line.605"></a>
+<FONT color="green">606</FONT>          // referred inode, e.g., <a name="line.606"></a>
+<FONT color="green">607</FONT>          // INodeFileWithSnapshot -&gt; INodeFileUnderConstructionWithSnapshot<a name="line.607"></a>
+<FONT color="green">608</FONT>          // in this case, we do not need to update the diff list<a name="line.608"></a>
+<FONT color="green">609</FONT>          return;<a name="line.609"></a>
+<FONT color="green">610</FONT>        } else {<a name="line.610"></a>
+<FONT color="green">611</FONT>          diffs.replaceChild(ListType.CREATED, oldChild, newChild);<a name="line.611"></a>
+<FONT color="green">612</FONT>        }<a name="line.612"></a>
+<FONT color="green">613</FONT>      }<a name="line.613"></a>
+<FONT color="green">614</FONT>      <a name="line.614"></a>
+<FONT color="green">615</FONT>      /**<a name="line.615"></a>
+<FONT color="green">616</FONT>       * This method is usually called by the undo section of rename.<a name="line.616"></a>
+<FONT color="green">617</FONT>       * <a name="line.617"></a>
+<FONT color="green">618</FONT>       * Before calling this function, in the rename operation, we replace the<a name="line.618"></a>
+<FONT color="green">619</FONT>       * original src node (of the rename operation) with a reference node (WithName<a name="line.619"></a>
+<FONT color="green">620</FONT>       * instance) in both the children list and a created list, delete the<a name="line.620"></a>
+<FONT color="green">621</FONT>       * reference node from the children list, and add it to the corresponding<a name="line.621"></a>
+<FONT color="green">622</FONT>       * deleted list.<a name="line.622"></a>
+<FONT color="green">623</FONT>       * <a name="line.623"></a>
+<FONT color="green">624</FONT>       * To undo the above operations, we have the following steps in particular:<a name="line.624"></a>
+<FONT color="green">625</FONT>       * <a name="line.625"></a>
+<FONT color="green">626</FONT>       * &lt;pre&gt;<a name="line.626"></a>
+<FONT color="green">627</FONT>       * 1) remove the WithName node from the deleted list (if it exists) <a name="line.627"></a>
+<FONT color="green">628</FONT>       * 2) replace the WithName node in the created list with srcChild <a name="line.628"></a>
+<FONT color="green">629</FONT>       * 3) add srcChild back as a child of srcParent. Note that we already add <a name="line.629"></a>
+<FONT color="green">630</FONT>       * the node into the created list of a snapshot diff in step 2, we do not need<a name="line.630"></a>
+<FONT color="green">631</FONT>       * to add srcChild to the created list of the latest snapshot.<a name="line.631"></a>
+<FONT color="green">632</FONT>       * &lt;/pre&gt;<a name="line.632"></a>
+<FONT color="green">633</FONT>       * <a name="line.633"></a>
+<FONT color="green">634</FONT>       * We do not need to update quota usage because the old child is in the <a name="line.634"></a>
+<FONT color="green">635</FONT>       * deleted list before. <a name="line.635"></a>
+<FONT color="green">636</FONT>       * <a name="line.636"></a>
+<FONT color="green">637</FONT>       * @param oldChild<a name="line.637"></a>
+<FONT color="green">638</FONT>       *          The reference node to be removed/replaced<a name="line.638"></a>
+<FONT color="green">639</FONT>       * @param newChild<a name="line.639"></a>
+<FONT color="green">640</FONT>       *          The node to be added back<a name="line.640"></a>
+<FONT color="green">641</FONT>       * @param latestSnapshot<a name="line.641"></a>
+<FONT color="green">642</FONT>       *          The latest snapshot. Note this may not be the last snapshot in the<a name="line.642"></a>
+<FONT color="green">643</FONT>       *          {@link #diffs}, since the src tree of the current rename operation<a name="line.643"></a>
+<FONT color="green">644</FONT>       *          may be the dst tree of a previous rename.<a name="line.644"></a>
+<FONT color="green">645</FONT>       * @throws QuotaExceededException should not throw this exception<a name="line.645"></a>
+<FONT color="green">646</FONT>       */<a name="line.646"></a>
+<FONT color="green">647</FONT>      public void undoRename4ScrParent(final INodeReference oldChild,<a name="line.647"></a>
+<FONT color="green">648</FONT>          final INode newChild, Snapshot latestSnapshot)<a name="line.648"></a>
+<FONT color="green">649</FONT>          throws QuotaExceededException {<a name="line.649"></a>
+<FONT color="green">650</FONT>        diffs.removeChild(ListType.DELETED, oldChild);<a name="line.650"></a>
+<FONT color="green">651</FONT>        diffs.replaceChild(ListType.CREATED, oldChild, newChild);<a name="line.651"></a>
+<FONT color="green">652</FONT>        // pass null for inodeMap since the parent node will not get replaced when<a name="line.652"></a>
+<FONT color="green">653</FONT>        // undoing rename<a name="line.653"></a>
+<FONT color="green">654</FONT>        addChild(newChild, true, null, null);<a name="line.654"></a>
+<FONT color="green">655</FONT>      }<a name="line.655"></a>
+<FONT color="green">656</FONT>      <a name="line.656"></a>
+<FONT color="green">657</FONT>      /**<a name="line.657"></a>
+<FONT color="green">658</FONT>       * Undo the rename operation for the dst tree, i.e., if the rename operation<a name="line.658"></a>
+<FONT color="green">659</FONT>       * (with OVERWRITE option) removes a file/dir from the dst tree, add it back<a name="line.659"></a>
+<FONT color="green">660</FONT>       * and delete possible record in the deleted list.  <a name="line.660"></a>
+<FONT color="green">661</FONT>       */<a name="line.661"></a>
+<FONT color="green">662</FONT>      public void undoRename4DstParent(final INode deletedChild,<a name="line.662"></a>
+<FONT color="green">663</FONT>          Snapshot latestSnapshot) throws QuotaExceededException {<a name="line.663"></a>
+<FONT color="green">664</FONT>        boolean removeDeletedChild = diffs.removeChild(ListType.DELETED,<a name="line.664"></a>
+<FONT color="green">665</FONT>            deletedChild);<a name="line.665"></a>
+<FONT color="green">666</FONT>        // pass null for inodeMap since the parent node will not get replaced when<a name="line.666"></a>
+<FONT color="green">667</FONT>        // undoing rename<a name="line.667"></a>
+<FONT color="green">668</FONT>        final boolean added = addChild(deletedChild, true, removeDeletedChild ? null<a name="line.668"></a>
+<FONT color="green">669</FONT>            : latestSnapshot, null);<a name="line.669"></a>
+<FONT color="green">670</FONT>        // update quota usage if adding is successfully and the old child has not<a name="line.670"></a>
+<FONT color="green">671</FONT>        // been stored in deleted list before<a name="line.671"></a>
+<FONT color="green">672</FONT>        if (added &amp;&amp; !removeDeletedChild) {<a name="line.672"></a>
+<FONT color="green">673</FONT>          final Quota.Counts counts = deletedChild.computeQuotaUsage();<a name="line.673"></a>
+<FONT color="green">674</FONT>          addSpaceConsumed(counts.get(Quota.NAMESPACE),<a name="line.674"></a>
+<FONT color="green">675</FONT>              counts.get(Quota.DISKSPACE), false);<a name="line.675"></a>
+<FONT color="green">676</FONT>        }<a name="line.676"></a>
+<FONT color="green">677</FONT>      }<a name="line.677"></a>
+<FONT color="green">678</FONT>    <a name="line.678"></a>
+<FONT color="green">679</FONT>      @Override<a name="line.679"></a>
+<FONT color="green">680</FONT>      public ReadOnlyList&lt;INode&gt; getChildrenList(Snapshot snapshot) {<a name="line.680"></a>
+<FONT color="green">681</FONT>        final DirectoryDiff diff = diffs.getDiff(snapshot);<a name="line.681"></a>
+<FONT color="green">682</FONT>        return diff != null? diff.getChildrenList(this): super.getChildrenList(null);<a name="line.682"></a>
+<FONT color="green">683</FONT>      }<a name="line.683"></a>
+<FONT color="green">684</FONT>    <a name="line.684"></a>
+<FONT color="green">685</FONT>      @Override<a name="line.685"></a>
+<FONT color="green">686</FONT>      public INode getChild(byte[] name, Snapshot snapshot) {<a name="line.686"></a>
+<FONT color="green">687</FONT>        final DirectoryDiff diff = diffs.getDiff(snapshot);<a name="line.687"></a>
+<FONT color="green">688</FONT>        return diff != null? diff.getChild(name, true, this): super.getChild(name, null);<a name="line.688"></a>
+<FONT color="green">689</FONT>      }<a name="line.689"></a>
+<FONT color="green">690</FONT>    <a name="line.690"></a>
+<FONT color="green">691</FONT>      @Override<a name="line.691"></a>
+<FONT color="green">692</FONT>      public String toDetailString() {<a name="line.692"></a>
+<FONT color="green">693</FONT>        return super.toDetailString() + ", " + diffs;<a name="line.693"></a>
+<FONT color="green">694</FONT>      }<a name="line.694"></a>
+<FONT color="green">695</FONT>      <a name="line.695"></a>
+<FONT color="green">696</FONT>      /**<a name="line.696"></a>
+<FONT color="green">697</FONT>       * Get all the directories that are stored in some snapshot but not in the<a name="line.697"></a>
+<FONT color="green">698</FONT>       * current children list. These directories are equivalent to the directories<a name="line.698"></a>
+<FONT color="green">699</FONT>       * stored in the deletes lists.<a name="line.699"></a>
+<FONT color="green">700</FONT>       */<a name="line.700"></a>
+<FONT color="green">701</FONT>      public void getSnapshotDirectory(List&lt;INodeDirectory&gt; snapshotDir) {<a name="line.701"></a>
+<FONT color="green">702</FONT>        for (DirectoryDiff sdiff : diffs) {<a name="line.702"></a>
+<FONT color="green">703</FONT>          sdiff.getChildrenDiff().getDirsInDeleted(snapshotDir);<a name="line.703"></a>
+<FONT color="green">704</FONT>        }<a name="line.704"></a>
+<FONT color="green">705</FONT>      }<a name="line.705"></a>
+<FONT color="green">706</FONT>    <a name="line.706"></a>
+<FONT color="green">707</FONT>      @Override<a name="line.707"></a>
+<FONT color="green">708</FONT>      public Quota.Counts cleanSubtree(final Snapshot snapshot, Snapshot prior,<a name="line.708"></a>
+<FONT color="green">709</FONT>          final BlocksMapUpdateInfo collectedBlocks,<a name="line.709"></a>
+<FONT color="green">710</FONT>          final List&lt;INode&gt; removedINodes, final boolean countDiffChange)<a name="line.710"></a>
+<FONT color="green">711</FONT>          throws QuotaExceededException {<a name="line.711"></a>
+<FONT color="green">712</FONT>        Quota.Counts counts = Quota.Counts.newInstance();<a name="line.712"></a>
+<FONT color="green">713</FONT>        Map&lt;INode, INode&gt; priorCreated = null;<a name="line.713"></a>
+<FONT color="green">714</FONT>        Map&lt;INode, INode&gt; priorDeleted = null;<a name="line.714"></a>
+<FONT color="green">715</FONT>        if (snapshot == null) { // delete the current directory<a name="line.715"></a>
+<FONT color="green">716</FONT>          recordModification(prior, null);<a name="line.716"></a>
+<FONT color="green">717</FONT>          // delete everything in created list<a name="line.717"></a>
+<FONT color="green">718</FONT>          DirectoryDiff lastDiff = diffs.getLast();<a name="line.718"></a>
+<FONT color="green">719</FONT>          if (lastDiff != null) {<a name="line.719"></a>
+<FONT color="green">720</FONT>            counts.add(lastDiff.diff.destroyCreatedList(this, collectedBlocks,<a name="line.720"></a>
+<FONT color="green">721</FONT>                removedINodes));<a name="line.721"></a>
+<FONT color="green">722</FONT>          }<a name="line.722"></a>
+<FONT color="green">723</FONT>        } else {<a name="line.723"></a>
+<FONT color="green">724</FONT>          // update prior<a name="line.724"></a>
+<FONT color="green">725</FONT>          prior = getDiffs().updatePrior(snapshot, prior);<a name="line.725"></a>
+<FONT color="green">726</FONT>          // if there is a snapshot diff associated with prior, we need to record<a name="line.726"></a>
+<FONT color="green">727</FONT>          // its original created and deleted list before deleting post<a name="line.727"></a>
+<FONT color="green">728</FONT>          if (prior != null) {<a name="line.728"></a>
+<FONT color="green">729</FONT>            DirectoryDiff priorDiff = this.getDiffs().getDiff(prior);<a name="line.729"></a>
+<FONT color="green">730</FONT>            if (priorDiff != null &amp;&amp; priorDiff.getSnapshot().equals(prior)) {<a name="line.730"></a>
+<FONT color="green">731</FONT>              List&lt;INode&gt; cList = priorDiff.diff.getList(ListType.CREATED);<a name="line.731"></a>
+<FONT color="green">732</FONT>              List&lt;INode&gt; dList = priorDiff.diff.getList(ListType.DELETED);<a name="line.732"></a>
+<FONT color="green">733</FONT>              priorCreated = cloneDiffList(cList);<a name="line.733"></a>
+<FONT color="green">734</FONT>              priorDeleted = cloneDiffList(dList);<a name="line.734"></a>
+<FONT color="green">735</FONT>            }<a name="line.735"></a>
+<FONT color="green">736</FONT>          }<a name="line.736"></a>
+<FONT color="green">737</FONT>          <a name="line.737"></a>
+<FONT color="green">738</FONT>          counts.add(getDiffs().deleteSnapshotDiff(snapshot, prior, this, <a name="line.738"></a>
+<FONT color="green">739</FONT>              collectedBlocks, removedINodes, countDiffChange));<a name="line.739"></a>
+<FONT color="green">740</FONT>          <a name="line.740"></a>
+<FONT color="green">741</FONT>          // check priorDiff again since it may be created during the diff deletion<a name="line.741"></a>
+<FONT color="green">742</FONT>          if (prior != null) {<a name="line.742"></a>
+<FONT color="green">743</FONT>            DirectoryDiff priorDiff = this.getDiffs().getDiff(prior);<a name="line.743"></a>
+<FONT color="green">744</FONT>            if (priorDiff != null &amp;&amp; priorDiff.getSnapshot().equals(prior)) {<a name="line.744"></a>
+<FONT color="green">745</FONT>              // For files/directories created between "prior" and "snapshot", <a name="line.745"></a>
+<FONT color="green">746</FONT>              // we need to clear snapshot copies for "snapshot". Note that we must<a name="line.746"></a>
+<FONT color="green">747</FONT>              // use null as prior in the cleanSubtree call. Files/directories that<a name="line.747"></a>
+<FONT color="green">748</FONT>              // were created before "prior" will be covered by the later <a name="line.748"></a>
+<FONT color="green">749</FONT>              // cleanSubtreeRecursively call.<a name="line.749"></a>
+<FONT color="green">750</FONT>              if (priorCreated != null) {<a name="line.750"></a>
+<FONT color="green">751</FONT>                // we only check the node originally in prior's created list<a name="line.751"></a>
+<FONT color="green">752</FONT>                for (INode cNode : priorDiff.getChildrenDiff().getList(<a name="line.752"></a>
+<FONT color="green">753</FONT>                    ListType.CREATED)) {<a name="line.753"></a>
+<FONT color="green">754</FONT>                  if (priorCreated.containsKey(cNode)) {<a name="line.754"></a>
+<FONT color="green">755</FONT>                    counts.add(cNode.cleanSubtree(snapshot, null, collectedBlocks,<a name="line.755"></a>
+<FONT color="green">756</FONT>                        removedINodes, countDiffChange));<a name="line.756"></a>
+<FONT color="green">757</FONT>                  }<a name="line.757"></a>
+<FONT color="green">758</FONT>                }<a name="line.758"></a>
+<FONT color="green">759</FONT>              }<a name="line.759"></a>
+<FONT color="green">760</FONT>              <a name="line.760"></a>
+<FONT color="green">761</FONT>              // When a directory is moved from the deleted list of the posterior<a name="line.761"></a>
+<FONT color="green">762</FONT>              // diff to the deleted list of this diff, we need to destroy its<a name="line.762"></a>
+<FONT color="green">763</FONT>              // descendants that were 1) created after taking this diff and 2)<a name="line.763"></a>
+<FONT color="green">764</FONT>              // deleted after taking posterior diff.<a name="line.764"></a>
+<FONT color="green">765</FONT>    <a name="line.765"></a>
+<FONT color="green">766</FONT>              // For files moved from posterior's deleted list, we also need to<a name="line.766"></a>
+<FONT color="green">767</FONT>              // delete its snapshot copy associated with the posterior snapshot.<a name="line.767"></a>
+<FONT color="green">768</FONT>              <a name="line.768"></a>
+<FONT color="green">769</FONT>              for (INode dNode : priorDiff.getChildrenDiff().getList(<a name="line.769"></a>
+<FONT color="green">770</FONT>                  ListType.DELETED)) {<a name="line.770"></a>
+<FONT color="green">771</FONT>                if (priorDeleted == null || !priorDeleted.containsKey(dNode)) {<a name="line.771"></a>
+<FONT color="green">772</FONT>                  counts.add(cleanDeletedINode(dNode, snapshot, prior,<a name="line.772"></a>
+<FONT color="green">773</FONT>                      collectedBlocks, removedINodes, countDiffChange));<a name="line.773"></a>
+<FONT color="green">774</FONT>                }<a name="line.774"></a>
+<FONT color="green">775</FONT>              }<a name="line.775"></a>
+<FONT color="green">776</FONT>            }<a name="line.776"></a>
+<FONT color="green">777</FONT>          }<a name="line.777"></a>
+<FONT color="green">778</FONT>        }<a name="line.778"></a>
+<FONT color="green">779</FONT>        counts.add(cleanSubtreeRecursively(snapshot, prior, collectedBlocks,<a name="line.779"></a>
+<FONT color="green">780</FONT>            removedINodes, priorDeleted, countDiffChange));<a name="line.780"></a>
+<FONT color="green">781</FONT>        <a name="line.781"></a>
+<FONT color="green">782</FONT>        if (isQuotaSet()) {<a name="line.782"></a>
+<FONT color="green">783</FONT>          this.addSpaceConsumed2Cache(-counts.get(Quota.NAMESPACE),<a name="line.783"></a>
+<FONT color="green">784</FONT>              -counts.get(Quota.DISKSPACE));<a name="line.784"></a>
+<FONT color="green">785</FONT>        }<a name="line.785"></a>
+<FONT color="green">786</FONT>        return counts;<a name="line.786"></a>
+<FONT color="green">787</FONT>      }<a name="line.787"></a>
+<FONT color="green">788</FONT>      <a name="line.788"></a>
+<FONT color="green">789</FONT>      /**<a name="line.789"></a>
+<FONT color="green">790</FONT>       * Clean an inode while we move it from the deleted list of post to the<a name="line.790"></a>
+<FONT color="green">791</FONT>       * deleted list of prior.<a name="line.791"></a>
+<FONT color="green">792</FONT>       * @param inode The inode to clean.<a name="line.792"></a>
+<FONT color="green">793</FONT>       * @param post The post snapshot.<a name="line.793"></a>
+<FONT color="green">794</FONT>       * @param prior The prior snapshot.<a name="line.794"></a>
+<FONT color="green">795</FONT>       * @param collectedBlocks Used to collect blocks for later deletion.<a name="line.795"></a>
+<FONT color="green">796</FONT>       * @return Quota usage update.<a name="line.796"></a>
+<FONT color="green">797</FONT>       */<a name="line.797"></a>
+<FONT color="green">798</FONT>      private static Quota.Counts cleanDeletedINode(INode inode,<a name="line.798"></a>
+<FONT color="green">799</FONT>          final Snapshot post, final Snapshot prior,<a name="line.799"></a>
+<FONT color="green">800</FONT>          final BlocksMapUpdateInfo collectedBlocks,<a name="line.800"></a>
+<FONT color="green">801</FONT>          final List&lt;INode&gt; removedINodes, final boolean countDiffChange) <a name="line.801"></a>
+<FONT color="green">802</FONT>          throws QuotaExceededException {<a name="line.802"></a>
+<FONT color="green">803</FONT>        Quota.Counts counts = Quota.Counts.newInstance();<a name="line.803"></a>
+<FONT color="green">804</FONT>        Deque&lt;INode&gt; queue = new ArrayDeque&lt;INode&gt;();<a name="line.804"></a>
+<FONT color="green">805</FONT>        queue.addLast(inode);<a name="line.805"></a>
+<FONT color="green">806</FONT>        while (!queue.isEmpty()) {<a name="line.806"></a>
+<FONT color="green">807</FONT>          INode topNode = queue.pollFirst();<a name="line.807"></a>
+<FONT color="green">808</FONT>          if (topNode instanceof INodeReference.WithName) {<a name="line.808"></a>
+<FONT color="green">809</FONT>            INodeReference.WithName wn = (INodeReference.WithName) topNode;<a name="line.809"></a>
+<FONT color="green">810</FONT>            if (wn.getLastSnapshotId() &gt;= post.getId()) {<a name="line.810"></a>
+<FONT color="green">811</FONT>              wn.cleanSubtree(post, prior, collectedBlocks, removedINodes,<a name="line.811"></a>
+<FONT color="green">812</FONT>                  countDiffChange);<a name="line.812"></a>
+<FONT color="green">813</FONT>            }<a name="line.813"></a>
+<FONT color="green">814</FONT>            // For DstReference node, since the node is not in the created list of<a name="line.814"></a>
+<FONT color="green">815</FONT>            // prior, we should treat it as regular file/dir<a name="line.815"></a>
+<FONT color="green">816</FONT>          } else if (topNode.isFile()<a name="line.816"></a>
+<FONT color="green">817</FONT>              &amp;&amp; topNode.asFile() instanceof FileWithSnapshot) {<a name="line.817"></a>
+<FONT color="green">818</FONT>            FileWithSnapshot fs = (FileWithSnapshot) topNode.asFile();<a name="line.818"></a>
+<FONT color="green">819</FONT>            counts.add(fs.getDiffs().deleteSnapshotDiff(post, prior,<a name="line.819"></a>
+<FONT color="green">820</FONT>                topNode.asFile(), collectedBlocks, removedINodes, countDiffChange));<a name="line.820"></a>
+<FONT color="green">821</FONT>          } else if (topNode.isDirectory()) {<a name="line.821"></a>
+<FONT color="green">822</FONT>            INodeDirectory dir = topNode.asDirectory();<a name="line.822"></a>
+<FONT color="green">823</FONT>            ChildrenDiff priorChildrenDiff = null;<a name="line.823"></a>
+<FONT color="green">824</FONT>            if (dir instanceof INodeDirectoryWithSnapshot) {<a name="line.824"></a>
+<FONT color="green">825</FONT>              // delete files/dirs created after prior. Note that these<a name="line.825"></a>
+<FONT color="green">826</FONT>              // files/dirs, along with inode, were deleted right after post.<a name="line.826"></a>
+<FONT color="green">827</FONT>              INodeDirectoryWithSnapshot sdir = (INodeDirectoryWithSnapshot) dir;<a name="line.827"></a>
+<FONT color="green">828</FONT>              DirectoryDiff priorDiff = sdir.getDiffs().getDiff(prior);<a name="line.828"></a>
+<FONT color="green">829</FONT>              if (priorDiff != null &amp;&amp; priorDiff.getSnapshot().equals(prior)) {<a name="line.829"></a>
+<FONT color="green">830</FONT>                priorChildrenDiff = priorDiff.getChildrenDiff();<a name="line.830"></a>
+<FONT color="green">831</FONT>                counts.add(priorChildrenDiff.destroyCreatedList(sdir,<a name="line.831"></a>
+<FONT color="green">832</FONT>                    collectedBlocks, removedINodes));<a name="line.832"></a>
+<FONT color="green">833</FONT>              }<a name="line.833"></a>
+<FONT color="green">834</FONT>            }<a name="line.834"></a>
+<FONT color="green">835</FONT>            <a name="line.835"></a>
+<FONT color="green">836</FONT>            for (INode child : dir.getChildrenList(prior)) {<a name="line.836"></a>
+<FONT color="green">837</FONT>              if (priorChildrenDiff != null<a name="line.837"></a>
+<FONT color="green">838</FONT>                  &amp;&amp; priorChildrenDiff.search(ListType.DELETED,<a name="line.838"></a>
+<FONT color="green">839</FONT>                      child.getLocalNameBytes()) != null) {<a name="line.839"></a>
+<FONT color="green">840</FONT>                continue;<a name="line.840"></a>
+<FONT color="green">841</FONT>              }<a name="line.841"></a>
+<FONT color="green">842</FONT>              queue.addLast(child);<a name="line.842"></a>
+<FONT color="green">843</FONT>            }<a name="line.843"></a>
+<FONT color="green">844</FONT>          }<a name="line.844"></a>
+<FONT color="green">845</FONT>        }<a name="line.845"></a>
+<FONT color="green">846</FONT>        return counts;<a name="line.846"></a>
+<FONT color="green">847</FONT>      }<a name="line.847"></a>
+<FONT color="green">848</FONT>    <a name="line.848"></a>
+<FONT color="green">849</FONT>      @Override<a name="line.849"></a>
+<FONT color="green">850</FONT>      public void destroyAndCollectBlocks(<a name="line.850"></a>
+<FONT color="green">851</FONT>          final BlocksMapUpdateInfo collectedBlocks, <a name="line.851"></a>
+<FONT color="green">852</FONT>          final List&lt;INode&gt; removedINodes) {<a name="line.852"></a>
+<FONT color="green">853</FONT>        // destroy its diff list<a name="line.853"></a>
+<FONT color="green">854</FONT>        for (DirectoryDiff diff : diffs) {<a name="line.854"></a>
+<FONT color="green">855</FONT>          diff.destroyDiffAndCollectBlocks(this, collectedBlocks, removedINodes);<a name="line.855"></a>
+<FONT color="green">856</FONT>        }<a name="line.856"></a>
+<FONT color="green">857</FONT>        diffs.clear();<a name="line.857"></a>
+<FONT color="green">858</FONT>        super.destroyAndCollectBlocks(collectedBlocks, removedINodes);<a name="line.858"></a>
+<FONT color="green">859</FONT>      }<a name="line.859"></a>
+<FONT color="green">860</FONT>    <a name="line.860"></a>
+<FONT color="green">861</FONT>      @Override<a name="line.861"></a>
+<FONT color="green">862</FONT>      public final Quota.Counts computeQuotaUsage(Quota.Counts counts,<a name="line.862"></a>
+<FONT color="green">863</FONT>          boolean useCache, int lastSnapshotId) {<a name="line.863"></a>
+<FONT color="green">864</FONT>        if ((useCache &amp;&amp; isQuotaSet()) || lastSnapshotId == Snapshot.INVALID_ID) {<a name="line.864"></a>
+<FONT color="green">865</FONT>          return super.computeQuotaUsage(counts, useCache, lastSnapshotId);<a name="line.865"></a>
+<FONT color="green">866</FONT>        }<a name="line.866"></a>
+<FONT color="green">867</FONT>        <a name="line.867"></a>
+<FONT color="green">868</FONT>        Snapshot lastSnapshot = diffs.getSnapshotById(lastSnapshotId);<a name="line.868"></a>
+<FONT color="green">869</FONT>        <a name="line.869"></a>
+<FONT color="green">870</FONT>        ReadOnlyList&lt;INode&gt; childrenList = getChildrenList(lastSnapshot);<a name="line.870"></a>
+<FONT color="green">871</FONT>        for (INode child : childrenList) {<a name="line.871"></a>
+<FONT color="green">872</FONT>          child.computeQuotaUsage(counts, useCache, lastSnapshotId);<a name="line.872"></a>
+<FONT color="green">873</FONT>        }<a name="line.873"></a>
+<FONT color="green">874</FONT>        <a name="line.874"></a>
+<FONT color="green">875</FONT>        counts.add(Quota.NAMESPACE, 1);<a name="line.875"></a>
+<FONT color="green">876</FONT>        return counts;<a name="line.876"></a>
+<FONT color="green">877</FONT>      }<a name="line.877"></a>
+<FONT color="green">878</FONT>      <a name="line.878"></a>
+<FONT color="green">879</FONT>      @Override<a name="line.879"></a>
+<FONT color="green">880</FONT>      public Quota.Counts computeQuotaUsage4CurrentDirectory(Quota.Counts counts) {<a name="line.880"></a>
+<FONT color="green">881</FONT>        super.computeQuotaUsage4CurrentDirectory(counts);<a name="line.881"></a>
+<FONT color="green">882</FONT>        for(DirectoryDiff d : diffs) {<a name="line.882"></a>
+<FONT color="green">883</FONT>          for(INode deleted : d.getChildrenDiff().getList(ListType.DELETED)) {<a name="line.883"></a>
+<FONT color="green">884</FONT>            deleted.computeQuotaUsage(counts, false, Snapshot.INVALID_ID);<a name="line.884"></a>
+<FONT color="green">885</FONT>          }<a name="line.885"></a>
+<FONT color="green">886</FONT>        }<a name="line.886"></a>
+<FONT color="green">887</FONT>        counts.add(Quota.NAMESPACE, diffs.asList().size());<a name="line.887"></a>
+<FONT color="green">888</FONT>        return counts;<a name="line.888"></a>
+<FONT color="green">889</FONT>      }<a name="line.889"></a>
+<FONT color="green">890</FONT>    <a name="line.890"></a>
+<FONT color="green">891</FONT>      @Override<a name="line.891"></a>
+<FONT color="green">892</FONT>      public ContentSummaryComputationContext computeContentSummary(<a name="line.892"></a>
+<FONT color="green">893</FONT>          final ContentSummaryComputationContext summary) {<a name="line.893"></a>
+<FONT color="green">894</FONT>        // Snapshot summary calc won't be relinquishing locks in the middle.<a name="line.894"></a>
+<FONT color="green">895</FONT>        // Do this first and handover to parent.<a name="line.895"></a>
+<FONT color="green">896</FONT>        computeContentSummary4Snapshot(summary.getCounts());<a name="line.896"></a>
+<FONT color="green">897</FONT>        super.computeContentSummary(summary);<a name="line.897"></a>
+<FONT color="green">898</FONT>        return summary;<a name="line.898"></a>
+<FONT color="green">899</FONT>      }<a name="line.899"></a>
+<FONT color="green">900</FONT>    <a name="line.900"></a>
+<FONT color="green">901</FONT>      private void computeContentSummary4Snapshot(final Content.Counts counts) {<a name="line.901"></a>
+<FONT color="green">902</FONT>        // Create a new blank summary context for blocking processing of subtree.<a name="line.902"></a>
+<FONT color="green">903</FONT>        ContentSummaryComputationContext summary = <a name="line.903"></a>
+<FONT color="green">904</FONT>            new ContentSummaryComputationContext();<a name="line.904"></a>
+<FONT color="green">905</FONT>        for(DirectoryDiff d : diffs) {<a name="line.905"></a>
+<FONT color="green">906</FONT>          for(INode deleted : d.getChildrenDiff().getList(ListType.DELETED)) {<a name="line.906"></a>
+<FONT color="green">907</FONT>            deleted.computeContentSummary(summary);<a name="line.907"></a>
+<FONT color="green">908</FONT>          }<a name="line.908"></a>
+<FONT color="green">909</FONT>        }<a name="line.909"></a>
+<FONT color="green">910</FONT>        // Add the counts from deleted trees.<a name="line.910"></a>
+<FONT color="green">911</FONT>        counts.add(summary.getCounts());<a name="line.911"></a>
+<FONT color="green">912</FONT>        // Add the deleted directory count.<a name="line.912"></a>
+<FONT color="green">913</FONT>        counts.add(Content.DIRECTORY, diffs.asList().size());<a name="line.913"></a>
+<FONT color="green">914</FONT>      }<a name="line.914"></a>
+<FONT color="green">915</FONT>      <a name="line.915"></a>
+<FONT color="green">916</FONT>      private static Map&lt;INode, INode&gt; cloneDiffList(List&lt;INode&gt; diffList) {<a name="line.916"></a>
+<FONT color="green">917</FONT>        if (diffList == null || diffList.size() == 0) {<a name="line.917"></a>
+<FONT color="green">918</FONT>          return null;<a name="line.918"></a>
+<FONT color="green">919</FONT>        }<a name="line.919"></a>
+<FONT color="green">920</FONT>        Map&lt;INode, INode&gt; map = new HashMap&lt;INode, INode&gt;(diffList.size());<a name="line.920"></a>
+<FONT color="green">921</FONT>        for (INode node : diffList) {<a name="line.921"></a>
+<FONT color="green">922</FONT>          map.put(node, node);<a name="line.922"></a>
+<FONT color="green">923</FONT>        }<a name="line.923"></a>
+<FONT color="green">924</FONT>        return map;<a name="line.924"></a>
+<FONT color="green">925</FONT>      }<a name="line.925"></a>
+<FONT color="green">926</FONT>      <a name="line.926"></a>
+<FONT color="green">927</FONT>      /**<a name="line.927"></a>
+<FONT color="green">928</FONT>       * Destroy a subtree under a DstReference node.<a name="line.928"></a>
+<FONT color="green">929</FONT>       */<a name="line.929"></a>
+<FONT color="green">930</FONT>      public static void destroyDstSubtree(INode inode, final Snapshot snapshot,<a name="line.930"></a>
+<FONT color="green">931</FONT>          final Snapshot prior, final BlocksMapUpdateInfo collectedBlocks,<a name="line.931"></a>
+<FONT color="green">932</FONT>          final List&lt;INode&gt; removedINodes) throws QuotaExceededException {<a name="line.932"></a>
+<FONT color="green">933</FONT>        Preconditions.checkArgument(prior != null);<a name="line.933"></a>
+<FONT color="green">934</FONT>        if (inode.isReference()) {<a name="line.934"></a>
+<FONT color="green">935</FONT>          if (inode instanceof INodeReference.WithName &amp;&amp; snapshot != null) {<a name="line.935"></a>
+<FONT color="green">936</FONT>            // this inode has been renamed before the deletion of the DstReference<a name="line.936"></a>
+<FONT color="green">937</FONT>            // subtree<a name="line.937"></a>
+<FONT color="green">938</FONT>            inode.cleanSubtree(snapshot, prior, collectedBlocks, removedINodes,<a name="line.938"></a>
+<FONT color="green">939</FONT>                true);<a name="line.939"></a>
+<FONT color="green">940</FONT>          } else { <a name="line.940"></a>
+<FONT color="green">941</FONT>            // for DstReference node, continue this process to its subtree<a name="line.941"></a>
+<FONT color="green">942</FONT>            destroyDstSubtree(inode.asReference().getReferredINode(), snapshot,<a name="line.942"></a>
+<FONT color="green">943</FONT>                prior, collectedBlocks, removedINodes);<a name="line.943"></a>
+<FONT color="green">944</FONT>          }<a name="line.944"></a>
+<FONT color="green">945</FONT>        } else if (inode.isFile()) {<a name="line.945"></a>
+<FONT color="green">946</FONT>          inode.cleanSubtree(snapshot, prior, collectedBlocks, removedINodes, true);<a name="line.946"></a>
+<FONT color="green">947</FONT>        } else if (inode.isDirectory()) {<a name="line.947"></a>
+<FONT color="green">948</FONT>          Map&lt;INode, INode&gt; excludedNodes = null;<a name="line.948"></a>
+<FONT color="green">949</FONT>          if (inode instanceof INodeDirectoryWithSnapshot) {<a name="line.949"></a>
+<FONT color="green">950</FONT>            INodeDirectoryWithSnapshot sdir = (INodeDirectoryWithSnapshot) inode;<a name="line.950"></a>
+<FONT color="green">951</FONT>            <a name="line.951"></a>
+<FONT color="green">952</FONT>            DirectoryDiffList diffList = sdir.getDiffs();<a name="line.952"></a>
+<FONT color="green">953</FONT>            DirectoryDiff priorDiff = diffList.getDiff(prior);<a name="line.953"></a>
+<FONT color="green">954</FONT>            if (priorDiff != null &amp;&amp; priorDiff.getSnapshot().equals(prior)) {<a name="line.954"></a>
+<FONT color="green">955</FONT>              List&lt;INode&gt; dList = priorDiff.diff.getList(ListType.DELETED);<a name="line.955"></a>
+<FONT color="green">956</FONT>              excludedNodes = cloneDiffList(dList);<a name="line.956"></a>
+<FONT color="green">957</FONT>            }<a name="line.957"></a>
+<FONT color="green">958</FONT>            <a name="line.958"></a>
+<FONT color="green">959</FONT>            if (snapshot != null) {<a name="line.959"></a>
+<FONT color="green">960</FONT>              diffList.deleteSnapshotDiff(snapshot, prior, sdir, collectedBlocks,<a name="line.960"></a>
+<FONT color="green">961</FONT>                  removedINodes, true);<a name="line.961"></a>
+<FONT color="green">962</FONT>            }<a name="line.962"></a>
+<FONT color="green">963</FONT>            priorDiff = diffList.getDiff(prior);<a name="line.963"></a>
+<FONT color="green">964</FONT>            if (priorDiff != null &amp;&amp; priorDiff.getSnapshot().equals(prior)) {<a name="line.964"></a>
+<FONT color="green">965</FONT>              priorDiff.diff.destroyCreatedList(sdir, collectedBlocks,<a name="line.965"></a>
+<FONT color="green">966</FONT>                  removedINodes);<a name="line.966"></a>
+<FONT color="green">967</FONT>            }<a name="line.967"></a>
+<FONT color="green">968</FONT>          }<a name="line.968"></a>
+<FONT color="green">969</FONT>          for (INode child : inode.asDirectory().getChildrenList(prior)) {<a name="line.969"></a>
+<FONT color="green">970</FONT>            if (excludedNodes != null &amp;&amp; excludedNodes.containsKey(child)) {<a name="line.970"></a>
+<FONT color="green">971</FONT>              continue;<a name="line.971"></a>
+<FONT color="green">972</FONT>            }<a name="line.972"></a>
+<FONT color="green">973</FONT>            destroyDstSubtree(child, snapshot, prior, collectedBlocks,<a name="line.973"></a>
+<FONT color="green">974</FONT>                removedINodes);<a name="line.974"></a>
+<FONT color="green">975</FONT>          }<a name="line.975"></a>
+<FONT color="green">976</FONT>        }<a name="line.976"></a>
+<FONT color="green">977</FONT>      }<a name="line.977"></a>
+<FONT color="green">978</FONT>    }<a name="line.978"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>

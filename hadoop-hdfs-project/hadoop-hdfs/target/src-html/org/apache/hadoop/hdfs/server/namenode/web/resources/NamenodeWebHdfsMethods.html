@@ -1,0 +1,927 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    /**<a name="line.1"></a>
+<FONT color="green">002</FONT>     * Licensed to the Apache Software Foundation (ASF) under one<a name="line.2"></a>
+<FONT color="green">003</FONT>     * or more contributor license agreements.  See the NOTICE file<a name="line.3"></a>
+<FONT color="green">004</FONT>     * distributed with this work for additional information<a name="line.4"></a>
+<FONT color="green">005</FONT>     * regarding copyright ownership.  The ASF licenses this file<a name="line.5"></a>
+<FONT color="green">006</FONT>     * to you under the Apache License, Version 2.0 (the<a name="line.6"></a>
+<FONT color="green">007</FONT>     * "License"); you may not use this file except in compliance<a name="line.7"></a>
+<FONT color="green">008</FONT>     * with the License.  You may obtain a copy of the License at<a name="line.8"></a>
+<FONT color="green">009</FONT>     *<a name="line.9"></a>
+<FONT color="green">010</FONT>     *     http://www.apache.org/licenses/LICENSE-2.0<a name="line.10"></a>
+<FONT color="green">011</FONT>     *<a name="line.11"></a>
+<FONT color="green">012</FONT>     * Unless required by applicable law or agreed to in writing, software<a name="line.12"></a>
+<FONT color="green">013</FONT>     * distributed under the License is distributed on an "AS IS" BASIS,<a name="line.13"></a>
+<FONT color="green">014</FONT>     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.14"></a>
+<FONT color="green">015</FONT>     * See the License for the specific language governing permissions and<a name="line.15"></a>
+<FONT color="green">016</FONT>     * limitations under the License.<a name="line.16"></a>
+<FONT color="green">017</FONT>     */<a name="line.17"></a>
+<FONT color="green">018</FONT>    package org.apache.hadoop.hdfs.server.namenode.web.resources;<a name="line.18"></a>
+<FONT color="green">019</FONT>    <a name="line.19"></a>
+<FONT color="green">020</FONT>    import java.io.FileNotFoundException;<a name="line.20"></a>
+<FONT color="green">021</FONT>    import java.io.IOException;<a name="line.21"></a>
+<FONT color="green">022</FONT>    import java.io.OutputStream;<a name="line.22"></a>
+<FONT color="green">023</FONT>    import java.io.OutputStreamWriter;<a name="line.23"></a>
+<FONT color="green">024</FONT>    import java.io.PrintWriter;<a name="line.24"></a>
+<FONT color="green">025</FONT>    import java.net.InetAddress;<a name="line.25"></a>
+<FONT color="green">026</FONT>    import java.net.URI;<a name="line.26"></a>
+<FONT color="green">027</FONT>    import java.net.URISyntaxException;<a name="line.27"></a>
+<FONT color="green">028</FONT>    import java.security.PrivilegedExceptionAction;<a name="line.28"></a>
+<FONT color="green">029</FONT>    import java.util.ArrayList;<a name="line.29"></a>
+<FONT color="green">030</FONT>    import java.util.EnumSet;<a name="line.30"></a>
+<FONT color="green">031</FONT>    <a name="line.31"></a>
+<FONT color="green">032</FONT>    import javax.servlet.ServletContext;<a name="line.32"></a>
+<FONT color="green">033</FONT>    import javax.servlet.http.HttpServletRequest;<a name="line.33"></a>
+<FONT color="green">034</FONT>    import javax.servlet.http.HttpServletResponse;<a name="line.34"></a>
+<FONT color="green">035</FONT>    import javax.ws.rs.Consumes;<a name="line.35"></a>
+<FONT color="green">036</FONT>    import javax.ws.rs.DELETE;<a name="line.36"></a>
+<FONT color="green">037</FONT>    import javax.ws.rs.DefaultValue;<a name="line.37"></a>
+<FONT color="green">038</FONT>    import javax.ws.rs.GET;<a name="line.38"></a>
+<FONT color="green">039</FONT>    import javax.ws.rs.POST;<a name="line.39"></a>
+<FONT color="green">040</FONT>    import javax.ws.rs.PUT;<a name="line.40"></a>
+<FONT color="green">041</FONT>    import javax.ws.rs.Path;<a name="line.41"></a>
+<FONT color="green">042</FONT>    import javax.ws.rs.PathParam;<a name="line.42"></a>
+<FONT color="green">043</FONT>    import javax.ws.rs.Produces;<a name="line.43"></a>
+<FONT color="green">044</FONT>    import javax.ws.rs.QueryParam;<a name="line.44"></a>
+<FONT color="green">045</FONT>    import javax.ws.rs.core.Context;<a name="line.45"></a>
+<FONT color="green">046</FONT>    import javax.ws.rs.core.MediaType;<a name="line.46"></a>
+<FONT color="green">047</FONT>    import javax.ws.rs.core.Response;<a name="line.47"></a>
+<FONT color="green">048</FONT>    import javax.ws.rs.core.StreamingOutput;<a name="line.48"></a>
+<FONT color="green">049</FONT>    <a name="line.49"></a>
+<FONT color="green">050</FONT>    import org.apache.commons.logging.Log;<a name="line.50"></a>
+<FONT color="green">051</FONT>    import org.apache.commons.logging.LogFactory;<a name="line.51"></a>
+<FONT color="green">052</FONT>    import org.apache.hadoop.conf.Configuration;<a name="line.52"></a>
+<FONT color="green">053</FONT>    import org.apache.hadoop.fs.ContentSummary;<a name="line.53"></a>
+<FONT color="green">054</FONT>    import org.apache.hadoop.fs.FileStatus;<a name="line.54"></a>
+<FONT color="green">055</FONT>    import org.apache.hadoop.fs.Options;<a name="line.55"></a>
+<FONT color="green">056</FONT>    import org.apache.hadoop.hdfs.StorageType;<a name="line.56"></a>
+<FONT color="green">057</FONT>    import org.apache.hadoop.hdfs.protocol.DatanodeInfo;<a name="line.57"></a>
+<FONT color="green">058</FONT>    import org.apache.hadoop.hdfs.protocol.DirectoryListing;<a name="line.58"></a>
+<FONT color="green">059</FONT>    import org.apache.hadoop.hdfs.protocol.HdfsFileStatus;<a name="line.59"></a>
+<FONT color="green">060</FONT>    import org.apache.hadoop.hdfs.protocol.LocatedBlocks;<a name="line.60"></a>
+<FONT color="green">061</FONT>    import org.apache.hadoop.hdfs.security.token.delegation.DelegationTokenIdentifier;<a name="line.61"></a>
+<FONT color="green">062</FONT>    import org.apache.hadoop.hdfs.security.token.delegation.DelegationTokenSecretManager;<a name="line.62"></a>
+<FONT color="green">063</FONT>    import org.apache.hadoop.hdfs.server.blockmanagement.BlockManager;<a name="line.63"></a>
+<FONT color="green">064</FONT>    import org.apache.hadoop.hdfs.server.blockmanagement.DatanodeDescriptor;<a name="line.64"></a>
+<FONT color="green">065</FONT>    import org.apache.hadoop.hdfs.server.blockmanagement.DatanodeStorageInfo;<a name="line.65"></a>
+<FONT color="green">066</FONT>    import org.apache.hadoop.hdfs.server.common.JspHelper;<a name="line.66"></a>
+<FONT color="green">067</FONT>    import org.apache.hadoop.hdfs.server.namenode.NameNode;<a name="line.67"></a>
+<FONT color="green">068</FONT>    import org.apache.hadoop.hdfs.server.protocol.NamenodeProtocols;<a name="line.68"></a>
+<FONT color="green">069</FONT>    import org.apache.hadoop.hdfs.web.JsonUtil;<a name="line.69"></a>
+<FONT color="green">070</FONT>    import org.apache.hadoop.hdfs.web.ParamFilter;<a name="line.70"></a>
+<FONT color="green">071</FONT>    import org.apache.hadoop.hdfs.web.SWebHdfsFileSystem;<a name="line.71"></a>
+<FONT color="green">072</FONT>    import org.apache.hadoop.hdfs.web.WebHdfsFileSystem;<a name="line.72"></a>
+<FONT color="green">073</FONT>    import org.apache.hadoop.hdfs.web.resources.AccessTimeParam;<a name="line.73"></a>
+<FONT color="green">074</FONT>    import org.apache.hadoop.hdfs.web.resources.BlockSizeParam;<a name="line.74"></a>
+<FONT color="green">075</FONT>    import org.apache.hadoop.hdfs.web.resources.BufferSizeParam;<a name="line.75"></a>
+<FONT color="green">076</FONT>    import org.apache.hadoop.hdfs.web.resources.ConcatSourcesParam;<a name="line.76"></a>
+<FONT color="green">077</FONT>    import org.apache.hadoop.hdfs.web.resources.CreateParentParam;<a name="line.77"></a>
+<FONT color="green">078</FONT>    import org.apache.hadoop.hdfs.web.resources.DelegationParam;<a name="line.78"></a>
+<FONT color="green">079</FONT>    import org.apache.hadoop.hdfs.web.resources.DeleteOpParam;<a name="line.79"></a>
+<FONT color="green">080</FONT>    import org.apache.hadoop.hdfs.web.resources.DestinationParam;<a name="line.80"></a>
+<FONT color="green">081</FONT>    import org.apache.hadoop.hdfs.web.resources.DoAsParam;<a name="line.81"></a>
+<FONT color="green">082</FONT>    import org.apache.hadoop.hdfs.web.resources.GetOpParam;<a name="line.82"></a>
+<FONT color="green">083</FONT>    import org.apache.hadoop.hdfs.web.resources.GroupParam;<a name="line.83"></a>
+<FONT color="green">084</FONT>    import org.apache.hadoop.hdfs.web.resources.HttpOpParam;<a name="line.84"></a>
+<FONT color="green">085</FONT>    import org.apache.hadoop.hdfs.web.resources.LengthParam;<a name="line.85"></a>
+<FONT color="green">086</FONT>    import org.apache.hadoop.hdfs.web.resources.ModificationTimeParam;<a name="line.86"></a>
+<FONT color="green">087</FONT>    import org.apache.hadoop.hdfs.web.resources.NamenodeRpcAddressParam;<a name="line.87"></a>
+<FONT color="green">088</FONT>    import org.apache.hadoop.hdfs.web.resources.OffsetParam;<a name="line.88"></a>
+<FONT color="green">089</FONT>    import org.apache.hadoop.hdfs.web.resources.OverwriteParam;<a name="line.89"></a>
+<FONT color="green">090</FONT>    import org.apache.hadoop.hdfs.web.resources.OwnerParam;<a name="line.90"></a>
+<FONT color="green">091</FONT>    import org.apache.hadoop.hdfs.web.resources.Param;<a name="line.91"></a>
+<FONT color="green">092</FONT>    import org.apache.hadoop.hdfs.web.resources.PermissionParam;<a name="line.92"></a>
+<FONT color="green">093</FONT>    import org.apache.hadoop.hdfs.web.resources.PostOpParam;<a name="line.93"></a>
+<FONT color="green">094</FONT>    import org.apache.hadoop.hdfs.web.resources.PutOpParam;<a name="line.94"></a>
+<FONT color="green">095</FONT>    import org.apache.hadoop.hdfs.web.resources.RecursiveParam;<a name="line.95"></a>
+<FONT color="green">096</FONT>    import org.apache.hadoop.hdfs.web.resources.RenameOptionSetParam;<a name="line.96"></a>
+<FONT color="green">097</FONT>    import org.apache.hadoop.hdfs.web.resources.RenewerParam;<a name="line.97"></a>
+<FONT color="green">098</FONT>    import org.apache.hadoop.hdfs.web.resources.ReplicationParam;<a name="line.98"></a>
+<FONT color="green">099</FONT>    import org.apache.hadoop.hdfs.web.resources.TokenArgumentParam;<a name="line.99"></a>
+<FONT color="green">100</FONT>    import org.apache.hadoop.hdfs.web.resources.UriFsPathParam;<a name="line.100"></a>
+<FONT color="green">101</FONT>    import org.apache.hadoop.hdfs.web.resources.UserParam;<a name="line.101"></a>
+<FONT color="green">102</FONT>    import org.apache.hadoop.io.Text;<a name="line.102"></a>
+<FONT color="green">103</FONT>    import org.apache.hadoop.ipc.Server;<a name="line.103"></a>
+<FONT color="green">104</FONT>    import org.apache.hadoop.net.NodeBase;<a name="line.104"></a>
+<FONT color="green">105</FONT>    import org.apache.hadoop.security.Credentials;<a name="line.105"></a>
+<FONT color="green">106</FONT>    import org.apache.hadoop.security.UserGroupInformation;<a name="line.106"></a>
+<FONT color="green">107</FONT>    import org.apache.hadoop.security.token.Token;<a name="line.107"></a>
+<FONT color="green">108</FONT>    import org.apache.hadoop.security.token.TokenIdentifier;<a name="line.108"></a>
+<FONT color="green">109</FONT>    <a name="line.109"></a>
+<FONT color="green">110</FONT>    import com.google.common.base.Charsets;<a name="line.110"></a>
+<FONT color="green">111</FONT>    import com.sun.jersey.spi.container.ResourceFilters;<a name="line.111"></a>
+<FONT color="green">112</FONT>    <a name="line.112"></a>
+<FONT color="green">113</FONT>    /** Web-hdfs NameNode implementation. */<a name="line.113"></a>
+<FONT color="green">114</FONT>    @Path("")<a name="line.114"></a>
+<FONT color="green">115</FONT>    @ResourceFilters(ParamFilter.class)<a name="line.115"></a>
+<FONT color="green">116</FONT>    public class NamenodeWebHdfsMethods {<a name="line.116"></a>
+<FONT color="green">117</FONT>      public static final Log LOG = LogFactory.getLog(NamenodeWebHdfsMethods.class);<a name="line.117"></a>
+<FONT color="green">118</FONT>    <a name="line.118"></a>
+<FONT color="green">119</FONT>      private static final UriFsPathParam ROOT = new UriFsPathParam("");<a name="line.119"></a>
+<FONT color="green">120</FONT>      <a name="line.120"></a>
+<FONT color="green">121</FONT>      private static final ThreadLocal&lt;String&gt; REMOTE_ADDRESS = new ThreadLocal&lt;String&gt;(); <a name="line.121"></a>
+<FONT color="green">122</FONT>    <a name="line.122"></a>
+<FONT color="green">123</FONT>      /** @return the remote client address. */<a name="line.123"></a>
+<FONT color="green">124</FONT>      public static String getRemoteAddress() {<a name="line.124"></a>
+<FONT color="green">125</FONT>        return REMOTE_ADDRESS.get();<a name="line.125"></a>
+<FONT color="green">126</FONT>      }<a name="line.126"></a>
+<FONT color="green">127</FONT>    <a name="line.127"></a>
+<FONT color="green">128</FONT>      public static InetAddress getRemoteIp() {<a name="line.128"></a>
+<FONT color="green">129</FONT>        try {<a name="line.129"></a>
+<FONT color="green">130</FONT>          return InetAddress.getByName(getRemoteAddress());<a name="line.130"></a>
+<FONT color="green">131</FONT>        } catch (Exception e) {<a name="line.131"></a>
+<FONT color="green">132</FONT>          return null;<a name="line.132"></a>
+<FONT color="green">133</FONT>        }<a name="line.133"></a>
+<FONT color="green">134</FONT>      }<a name="line.134"></a>
+<FONT color="green">135</FONT>    <a name="line.135"></a>
+<FONT color="green">136</FONT>      /**<a name="line.136"></a>
+<FONT color="green">137</FONT>       * Returns true if a WebHdfs request is in progress.  Akin to<a name="line.137"></a>
+<FONT color="green">138</FONT>       * {@link Server#isRpcInvocation()}.<a name="line.138"></a>
+<FONT color="green">139</FONT>       */<a name="line.139"></a>
+<FONT color="green">140</FONT>      public static boolean isWebHdfsInvocation() {<a name="line.140"></a>
+<FONT color="green">141</FONT>        return getRemoteAddress() != null;<a name="line.141"></a>
+<FONT color="green">142</FONT>      }<a name="line.142"></a>
+<FONT color="green">143</FONT>    <a name="line.143"></a>
+<FONT color="green">144</FONT>      private @Context ServletContext context;<a name="line.144"></a>
+<FONT color="green">145</FONT>      private @Context HttpServletRequest request;<a name="line.145"></a>
+<FONT color="green">146</FONT>      private @Context HttpServletResponse response;<a name="line.146"></a>
+<FONT color="green">147</FONT>    <a name="line.147"></a>
+<FONT color="green">148</FONT>      private void init(final UserGroupInformation ugi,<a name="line.148"></a>
+<FONT color="green">149</FONT>          final DelegationParam delegation,<a name="line.149"></a>
+<FONT color="green">150</FONT>          final UserParam username, final DoAsParam doAsUser,<a name="line.150"></a>
+<FONT color="green">151</FONT>          final UriFsPathParam path, final HttpOpParam&lt;?&gt; op,<a name="line.151"></a>
+<FONT color="green">152</FONT>          final Param&lt;?, ?&gt;... parameters) {<a name="line.152"></a>
+<FONT color="green">153</FONT>        if (LOG.isTraceEnabled()) {<a name="line.153"></a>
+<FONT color="green">154</FONT>          LOG.trace("HTTP " + op.getValue().getType() + ": " + op + ", " + path<a name="line.154"></a>
+<FONT color="green">155</FONT>              + ", ugi=" + ugi + ", " + username + ", " + doAsUser<a name="line.155"></a>
+<FONT color="green">156</FONT>              + Param.toSortedString(", ", parameters));<a name="line.156"></a>
+<FONT color="green">157</FONT>        }<a name="line.157"></a>
+<FONT color="green">158</FONT>    <a name="line.158"></a>
+<FONT color="green">159</FONT>        //clear content type<a name="line.159"></a>
+<FONT color="green">160</FONT>        response.setContentType(null);<a name="line.160"></a>
+<FONT color="green">161</FONT>      }<a name="line.161"></a>
+<FONT color="green">162</FONT>    <a name="line.162"></a>
+<FONT color="green">163</FONT>      static DatanodeInfo chooseDatanode(final NameNode namenode,<a name="line.163"></a>
+<FONT color="green">164</FONT>          final String path, final HttpOpParam.Op op, final long openOffset,<a name="line.164"></a>
+<FONT color="green">165</FONT>          final long blocksize, final Configuration conf) throws IOException {<a name="line.165"></a>
+<FONT color="green">166</FONT>        final BlockManager bm = namenode.getNamesystem().getBlockManager();<a name="line.166"></a>
+<FONT color="green">167</FONT>    <a name="line.167"></a>
+<FONT color="green">168</FONT>        if (op == PutOpParam.Op.CREATE) {<a name="line.168"></a>
+<FONT color="green">169</FONT>          //choose a datanode near to client <a name="line.169"></a>
+<FONT color="green">170</FONT>          final DatanodeDescriptor clientNode = bm.getDatanodeManager(<a name="line.170"></a>
+<FONT color="green">171</FONT>              ).getDatanodeByHost(getRemoteAddress());<a name="line.171"></a>
+<FONT color="green">172</FONT>          if (clientNode != null) {<a name="line.172"></a>
+<FONT color="green">173</FONT>            final DatanodeStorageInfo[] storages = bm.getBlockPlacementPolicy()<a name="line.173"></a>
+<FONT color="green">174</FONT>                .chooseTarget(path, 1, clientNode,<a name="line.174"></a>
+<FONT color="green">175</FONT>                    new ArrayList&lt;DatanodeStorageInfo&gt;(), false, null, blocksize,<a name="line.175"></a>
+<FONT color="green">176</FONT>                    // TODO: get storage type from the file<a name="line.176"></a>
+<FONT color="green">177</FONT>                    StorageType.DEFAULT);<a name="line.177"></a>
+<FONT color="green">178</FONT>            if (storages.length &gt; 0) {<a name="line.178"></a>
+<FONT color="green">179</FONT>              return storages[0].getDatanodeDescriptor();<a name="line.179"></a>
+<FONT color="green">180</FONT>            }<a name="line.180"></a>
+<FONT color="green">181</FONT>          }<a name="line.181"></a>
+<FONT color="green">182</FONT>        } else if (op == GetOpParam.Op.OPEN<a name="line.182"></a>
+<FONT color="green">183</FONT>            || op == GetOpParam.Op.GETFILECHECKSUM<a name="line.183"></a>
+<FONT color="green">184</FONT>            || op == PostOpParam.Op.APPEND) {<a name="line.184"></a>
+<FONT color="green">185</FONT>          //choose a datanode containing a replica <a name="line.185"></a>
+<FONT color="green">186</FONT>          final NamenodeProtocols np = namenode.getRpcServer();<a name="line.186"></a>
+<FONT color="green">187</FONT>          final HdfsFileStatus status = np.getFileInfo(path);<a name="line.187"></a>
+<FONT color="green">188</FONT>          if (status == null) {<a name="line.188"></a>
+<FONT color="green">189</FONT>            throw new FileNotFoundException("File " + path + " not found.");<a name="line.189"></a>
+<FONT color="green">190</FONT>          }<a name="line.190"></a>
+<FONT color="green">191</FONT>          final long len = status.getLen();<a name="line.191"></a>
+<FONT color="green">192</FONT>          if (op == GetOpParam.Op.OPEN) {<a name="line.192"></a>
+<FONT color="green">193</FONT>            if (openOffset &lt; 0L || (openOffset &gt;= len &amp;&amp; len &gt; 0)) {<a name="line.193"></a>
+<FONT color="green">194</FONT>              throw new IOException("Offset=" + openOffset<a name="line.194"></a>
+<FONT color="green">195</FONT>                  + " out of the range [0, " + len + "); " + op + ", path=" + path);<a name="line.195"></a>
+<FONT color="green">196</FONT>            }<a name="line.196"></a>
+<FONT color="green">197</FONT>          }<a name="line.197"></a>
+<FONT color="green">198</FONT>    <a name="line.198"></a>
+<FONT color="green">199</FONT>          if (len &gt; 0) {<a name="line.199"></a>
+<FONT color="green">200</FONT>            final long offset = op == GetOpParam.Op.OPEN? openOffset: len - 1;<a name="line.200"></a>
+<FONT color="green">201</FONT>            final LocatedBlocks locations = np.getBlockLocations(path, offset, 1);<a name="line.201"></a>
+<FONT color="green">202</FONT>            final int count = locations.locatedBlockCount();<a name="line.202"></a>
+<FONT color="green">203</FONT>            if (count &gt; 0) {<a name="line.203"></a>
+<FONT color="green">204</FONT>              return JspHelper.bestNode(locations.get(0).getLocations(), false, conf);<a name="line.204"></a>
+<FONT color="green">205</FONT>            }<a name="line.205"></a>
+<FONT color="green">206</FONT>          }<a name="line.206"></a>
+<FONT color="green">207</FONT>        } <a name="line.207"></a>
+<FONT color="green">208</FONT>    <a name="line.208"></a>
+<FONT color="green">209</FONT>        return (DatanodeDescriptor)bm.getDatanodeManager().getNetworkTopology(<a name="line.209"></a>
+<FONT color="green">210</FONT>            ).chooseRandom(NodeBase.ROOT);<a name="line.210"></a>
+<FONT color="green">211</FONT>      }<a name="line.211"></a>
+<FONT color="green">212</FONT>    <a name="line.212"></a>
+<FONT color="green">213</FONT>      private Token&lt;? extends TokenIdentifier&gt; generateDelegationToken(<a name="line.213"></a>
+<FONT color="green">214</FONT>          final NameNode namenode, final UserGroupInformation ugi,<a name="line.214"></a>
+<FONT color="green">215</FONT>          final String renewer) throws IOException {<a name="line.215"></a>
+<FONT color="green">216</FONT>        final Credentials c = DelegationTokenSecretManager.createCredentials(<a name="line.216"></a>
+<FONT color="green">217</FONT>            namenode, ugi, renewer != null? renewer: ugi.getShortUserName());<a name="line.217"></a>
+<FONT color="green">218</FONT>        final Token&lt;? extends TokenIdentifier&gt; t = c.getAllTokens().iterator().next();<a name="line.218"></a>
+<FONT color="green">219</FONT>        Text kind = request.getScheme().equals("http") ? WebHdfsFileSystem.TOKEN_KIND : SWebHdfsFileSystem.TOKEN_KIND;<a name="line.219"></a>
+<FONT color="green">220</FONT>        t.setKind(kind);<a name="line.220"></a>
+<FONT color="green">221</FONT>        return t;<a name="line.221"></a>
+<FONT color="green">222</FONT>      }<a name="line.222"></a>
+<FONT color="green">223</FONT>    <a name="line.223"></a>
+<FONT color="green">224</FONT>      private URI redirectURI(final NameNode namenode,<a name="line.224"></a>
+<FONT color="green">225</FONT>          final UserGroupInformation ugi, final DelegationParam delegation,<a name="line.225"></a>
+<FONT color="green">226</FONT>          final UserParam username, final DoAsParam doAsUser,<a name="line.226"></a>
+<FONT color="green">227</FONT>          final String path, final HttpOpParam.Op op, final long openOffset,<a name="line.227"></a>
+<FONT color="green">228</FONT>          final long blocksize,<a name="line.228"></a>
+<FONT color="green">229</FONT>          final Param&lt;?, ?&gt;... parameters) throws URISyntaxException, IOException {<a name="line.229"></a>
+<FONT color="green">230</FONT>        final Configuration conf = (Configuration)context.getAttribute(JspHelper.CURRENT_CONF);<a name="line.230"></a>
+<FONT color="green">231</FONT>        final DatanodeInfo dn = chooseDatanode(namenode, path, op, openOffset,<a name="line.231"></a>
+<FONT color="green">232</FONT>            blocksize, conf);<a name="line.232"></a>
+<FONT color="green">233</FONT>    <a name="line.233"></a>
+<FONT color="green">234</FONT>        final String delegationQuery;<a name="line.234"></a>
+<FONT color="green">235</FONT>        if (!UserGroupInformation.isSecurityEnabled()) {<a name="line.235"></a>
+<FONT color="green">236</FONT>          //security disabled<a name="line.236"></a>
+<FONT color="green">237</FONT>          delegationQuery = Param.toSortedString("&amp;", doAsUser, username);<a name="line.237"></a>
+<FONT color="green">238</FONT>        } else if (delegation.getValue() != null) {<a name="line.238"></a>
+<FONT color="green">239</FONT>          //client has provided a token<a name="line.239"></a>
+<FONT color="green">240</FONT>          delegationQuery = "&amp;" + delegation;<a name="line.240"></a>
+<FONT color="green">241</FONT>        } else {<a name="line.241"></a>
+<FONT color="green">242</FONT>          //generate a token<a name="line.242"></a>
+<FONT color="green">243</FONT>          final Token&lt;? extends TokenIdentifier&gt; t = generateDelegationToken(<a name="line.243"></a>
+<FONT color="green">244</FONT>              namenode, ugi, request.getUserPrincipal().getName());<a name="line.244"></a>
+<FONT color="green">245</FONT>          delegationQuery = "&amp;" + new DelegationParam(t.encodeToUrlString());<a name="line.245"></a>
+<FONT color="green">246</FONT>        }<a name="line.246"></a>
+<FONT color="green">247</FONT>        final String query = op.toQueryString() + delegationQuery<a name="line.247"></a>
+<FONT color="green">248</FONT>            + "&amp;" + new NamenodeRpcAddressParam(namenode)<a name="line.248"></a>
+<FONT color="green">249</FONT>            + Param.toSortedString("&amp;", parameters);<a name="line.249"></a>
+<FONT color="green">250</FONT>        final String uripath = WebHdfsFileSystem.PATH_PREFIX + path;<a name="line.250"></a>
+<FONT color="green">251</FONT>    <a name="line.251"></a>
+<FONT color="green">252</FONT>        final String scheme = request.getScheme();<a name="line.252"></a>
+<FONT color="green">253</FONT>        int port = "http".equals(scheme) ? dn.getInfoPort() : dn<a name="line.253"></a>
+<FONT color="green">254</FONT>            .getInfoSecurePort();<a name="line.254"></a>
+<FONT color="green">255</FONT>        final URI uri = new URI(scheme, null, dn.getHostName(), port, uripath,<a name="line.255"></a>
+<FONT color="green">256</FONT>            query, null);<a name="line.256"></a>
+<FONT color="green">257</FONT>    <a name="line.257"></a>
+<FONT color="green">258</FONT>        if (LOG.isTraceEnabled()) {<a name="line.258"></a>
+<FONT color="green">259</FONT>          LOG.trace("redirectURI=" + uri);<a name="line.259"></a>
+<FONT color="green">260</FONT>        }<a name="line.260"></a>
+<FONT color="green">261</FONT>        return uri;<a name="line.261"></a>
+<FONT color="green">262</FONT>      }<a name="line.262"></a>
+<FONT color="green">263</FONT>    <a name="line.263"></a>
+<FONT color="green">264</FONT>      /** Handle HTTP PUT request for the root. */<a name="line.264"></a>
+<FONT color="green">265</FONT>      @PUT<a name="line.265"></a>
+<FONT color="green">266</FONT>      @Path("/")<a name="line.266"></a>
+<FONT color="green">267</FONT>      @Consumes({"*/*"})<a name="line.267"></a>
+<FONT color="green">268</FONT>      @Produces({MediaType.APPLICATION_OCTET_STREAM, MediaType.APPLICATION_JSON})<a name="line.268"></a>
+<FONT color="green">269</FONT>      public Response putRoot(<a name="line.269"></a>
+<FONT color="green">270</FONT>          @Context final UserGroupInformation ugi,<a name="line.270"></a>
+<FONT color="green">271</FONT>          @QueryParam(DelegationParam.NAME) @DefaultValue(DelegationParam.DEFAULT)<a name="line.271"></a>
+<FONT color="green">272</FONT>              final DelegationParam delegation,<a name="line.272"></a>
+<FONT color="green">273</FONT>          @QueryParam(UserParam.NAME) @DefaultValue(UserParam.DEFAULT)<a name="line.273"></a>
+<FONT color="green">274</FONT>              final UserParam username,<a name="line.274"></a>
+<FONT color="green">275</FONT>          @QueryParam(DoAsParam.NAME) @DefaultValue(DoAsParam.DEFAULT)<a name="line.275"></a>
+<FONT color="green">276</FONT>              final DoAsParam doAsUser,<a name="line.276"></a>
+<FONT color="green">277</FONT>          @QueryParam(PutOpParam.NAME) @DefaultValue(PutOpParam.DEFAULT)<a name="line.277"></a>
+<FONT color="green">278</FONT>              final PutOpParam op,<a name="line.278"></a>
+<FONT color="green">279</FONT>          @QueryParam(DestinationParam.NAME) @DefaultValue(DestinationParam.DEFAULT)<a name="line.279"></a>
+<FONT color="green">280</FONT>              final DestinationParam destination,<a name="line.280"></a>
+<FONT color="green">281</FONT>          @QueryParam(OwnerParam.NAME) @DefaultValue(OwnerParam.DEFAULT)<a name="line.281"></a>
+<FONT color="green">282</FONT>              final OwnerParam owner,<a name="line.282"></a>
+<FONT color="green">283</FONT>          @QueryParam(GroupParam.NAME) @DefaultValue(GroupParam.DEFAULT)<a name="line.283"></a>
+<FONT color="green">284</FONT>              final GroupParam group,<a name="line.284"></a>
+<FONT color="green">285</FONT>          @QueryParam(PermissionParam.NAME) @DefaultValue(PermissionParam.DEFAULT)<a name="line.285"></a>
+<FONT color="green">286</FONT>              final PermissionParam permission,<a name="line.286"></a>
+<FONT color="green">287</FONT>          @QueryParam(OverwriteParam.NAME) @DefaultValue(OverwriteParam.DEFAULT)<a name="line.287"></a>
+<FONT color="green">288</FONT>              final OverwriteParam overwrite,<a name="line.288"></a>
+<FONT color="green">289</FONT>          @QueryParam(BufferSizeParam.NAME) @DefaultValue(BufferSizeParam.DEFAULT)<a name="line.289"></a>
+<FONT color="green">290</FONT>              final BufferSizeParam bufferSize,<a name="line.290"></a>
+<FONT color="green">291</FONT>          @QueryParam(ReplicationParam.NAME) @DefaultValue(ReplicationParam.DEFAULT)<a name="line.291"></a>
+<FONT color="green">292</FONT>              final ReplicationParam replication,<a name="line.292"></a>
+<FONT color="green">293</FONT>          @QueryParam(BlockSizeParam.NAME) @DefaultValue(BlockSizeParam.DEFAULT)<a name="line.293"></a>
+<FONT color="green">294</FONT>              final BlockSizeParam blockSize,<a name="line.294"></a>
+<FONT color="green">295</FONT>          @QueryParam(ModificationTimeParam.NAME) @DefaultValue(ModificationTimeParam.DEFAULT)<a name="line.295"></a>
+<FONT color="green">296</FONT>              final ModificationTimeParam modificationTime,<a name="line.296"></a>
+<FONT color="green">297</FONT>          @QueryParam(AccessTimeParam.NAME) @DefaultValue(AccessTimeParam.DEFAULT)<a name="line.297"></a>
+<FONT color="green">298</FONT>              final AccessTimeParam accessTime,<a name="line.298"></a>
+<FONT color="green">299</FONT>          @QueryParam(RenameOptionSetParam.NAME) @DefaultValue(RenameOptionSetParam.DEFAULT)<a name="line.299"></a>
+<FONT color="green">300</FONT>              final RenameOptionSetParam renameOptions,<a name="line.300"></a>
+<FONT color="green">301</FONT>          @QueryParam(CreateParentParam.NAME) @DefaultValue(CreateParentParam.DEFAULT)<a name="line.301"></a>
+<FONT color="green">302</FONT>              final CreateParentParam createParent,<a name="line.302"></a>
+<FONT color="green">303</FONT>          @QueryParam(TokenArgumentParam.NAME) @DefaultValue(TokenArgumentParam.DEFAULT)<a name="line.303"></a>
+<FONT color="green">304</FONT>              final TokenArgumentParam delegationTokenArgument<a name="line.304"></a>
+<FONT color="green">305</FONT>          ) throws IOException, InterruptedException {<a name="line.305"></a>
+<FONT color="green">306</FONT>        return put(ugi, delegation, username, doAsUser, ROOT, op, destination,<a name="line.306"></a>
+<FONT color="green">307</FONT>            owner, group, permission, overwrite, bufferSize, replication,<a name="line.307"></a>
+<FONT color="green">308</FONT>            blockSize, modificationTime, accessTime, renameOptions, createParent,<a name="line.308"></a>
+<FONT color="green">309</FONT>            delegationTokenArgument);<a name="line.309"></a>
+<FONT color="green">310</FONT>      }<a name="line.310"></a>
+<FONT color="green">311</FONT>    <a name="line.311"></a>
+<FONT color="green">312</FONT>      /** Handle HTTP PUT request. */<a name="line.312"></a>
+<FONT color="green">313</FONT>      @PUT<a name="line.313"></a>
+<FONT color="green">314</FONT>      @Path("{" + UriFsPathParam.NAME + ":.*}")<a name="line.314"></a>
+<FONT color="green">315</FONT>      @Consumes({"*/*"})<a name="line.315"></a>
+<FONT color="green">316</FONT>      @Produces({MediaType.APPLICATION_OCTET_STREAM, MediaType.APPLICATION_JSON})<a name="line.316"></a>
+<FONT color="green">317</FONT>      public Response put(<a name="line.317"></a>
+<FONT color="green">318</FONT>          @Context final UserGroupInformation ugi,<a name="line.318"></a>
+<FONT color="green">319</FONT>          @QueryParam(DelegationParam.NAME) @DefaultValue(DelegationParam.DEFAULT)<a name="line.319"></a>
+<FONT color="green">320</FONT>              final DelegationParam delegation,<a name="line.320"></a>
+<FONT color="green">321</FONT>          @QueryParam(UserParam.NAME) @DefaultValue(UserParam.DEFAULT)<a name="line.321"></a>
+<FONT color="green">322</FONT>              final UserParam username,<a name="line.322"></a>
+<FONT color="green">323</FONT>          @QueryParam(DoAsParam.NAME) @DefaultValue(DoAsParam.DEFAULT)<a name="line.323"></a>
+<FONT color="green">324</FONT>              final DoAsParam doAsUser,<a name="line.324"></a>
+<FONT color="green">325</FONT>          @PathParam(UriFsPathParam.NAME) final UriFsPathParam path,<a name="line.325"></a>
+<FONT color="green">326</FONT>          @QueryParam(PutOpParam.NAME) @DefaultValue(PutOpParam.DEFAULT)<a name="line.326"></a>
+<FONT color="green">327</FONT>              final PutOpParam op,<a name="line.327"></a>
+<FONT color="green">328</FONT>          @QueryParam(DestinationParam.NAME) @DefaultValue(DestinationParam.DEFAULT)<a name="line.328"></a>
+<FONT color="green">329</FONT>              final DestinationParam destination,<a name="line.329"></a>
+<FONT color="green">330</FONT>          @QueryParam(OwnerParam.NAME) @DefaultValue(OwnerParam.DEFAULT)<a name="line.330"></a>
+<FONT color="green">331</FONT>              final OwnerParam owner,<a name="line.331"></a>
+<FONT color="green">332</FONT>          @QueryParam(GroupParam.NAME) @DefaultValue(GroupParam.DEFAULT)<a name="line.332"></a>
+<FONT color="green">333</FONT>              final GroupParam group,<a name="line.333"></a>
+<FONT color="green">334</FONT>          @QueryParam(PermissionParam.NAME) @DefaultValue(PermissionParam.DEFAULT)<a name="line.334"></a>
+<FONT color="green">335</FONT>              final PermissionParam permission,<a name="line.335"></a>
+<FONT color="green">336</FONT>          @QueryParam(OverwriteParam.NAME) @DefaultValue(OverwriteParam.DEFAULT)<a name="line.336"></a>
+<FONT color="green">337</FONT>              final OverwriteParam overwrite,<a name="line.337"></a>
+<FONT color="green">338</FONT>          @QueryParam(BufferSizeParam.NAME) @DefaultValue(BufferSizeParam.DEFAULT)<a name="line.338"></a>
+<FONT color="green">339</FONT>              final BufferSizeParam bufferSize,<a name="line.339"></a>
+<FONT color="green">340</FONT>          @QueryParam(ReplicationParam.NAME) @DefaultValue(ReplicationParam.DEFAULT)<a name="line.340"></a>
+<FONT color="green">341</FONT>              final ReplicationParam replication,<a name="line.341"></a>
+<FONT color="green">342</FONT>          @QueryParam(BlockSizeParam.NAME) @DefaultValue(BlockSizeParam.DEFAULT)<a name="line.342"></a>
+<FONT color="green">343</FONT>              final BlockSizeParam blockSize,<a name="line.343"></a>
+<FONT color="green">344</FONT>          @QueryParam(ModificationTimeParam.NAME) @DefaultValue(ModificationTimeParam.DEFAULT)<a name="line.344"></a>
+<FONT color="green">345</FONT>              final ModificationTimeParam modificationTime,<a name="line.345"></a>
+<FONT color="green">346</FONT>          @QueryParam(AccessTimeParam.NAME) @DefaultValue(AccessTimeParam.DEFAULT)<a name="line.346"></a>
+<FONT color="green">347</FONT>              final AccessTimeParam accessTime,<a name="line.347"></a>
+<FONT color="green">348</FONT>          @QueryParam(RenameOptionSetParam.NAME) @DefaultValue(RenameOptionSetParam.DEFAULT)<a name="line.348"></a>
+<FONT color="green">349</FONT>              final RenameOptionSetParam renameOptions,<a name="line.349"></a>
+<FONT color="green">350</FONT>          @QueryParam(CreateParentParam.NAME) @DefaultValue(CreateParentParam.DEFAULT)<a name="line.350"></a>
+<FONT color="green">351</FONT>              final CreateParentParam createParent,<a name="line.351"></a>
+<FONT color="green">352</FONT>          @QueryParam(TokenArgumentParam.NAME) @DefaultValue(TokenArgumentParam.DEFAULT)<a name="line.352"></a>
+<FONT color="green">353</FONT>              final TokenArgumentParam delegationTokenArgument<a name="line.353"></a>
+<FONT color="green">354</FONT>          ) throws IOException, InterruptedException {<a name="line.354"></a>
+<FONT color="green">355</FONT>    <a name="line.355"></a>
+<FONT color="green">356</FONT>        init(ugi, delegation, username, doAsUser, path, op, destination, owner,<a name="line.356"></a>
+<FONT color="green">357</FONT>            group, permission, overwrite, bufferSize, replication, blockSize,<a name="line.357"></a>
+<FONT color="green">358</FONT>            modificationTime, accessTime, renameOptions, delegationTokenArgument);<a name="line.358"></a>
+<FONT color="green">359</FONT>    <a name="line.359"></a>
+<FONT color="green">360</FONT>        return ugi.doAs(new PrivilegedExceptionAction&lt;Response&gt;() {<a name="line.360"></a>
+<FONT color="green">361</FONT>          @Override<a name="line.361"></a>
+<FONT color="green">362</FONT>          public Response run() throws IOException, URISyntaxException {<a name="line.362"></a>
+<FONT color="green">363</FONT>            REMOTE_ADDRESS.set(request.getRemoteAddr());<a name="line.363"></a>
+<FONT color="green">364</FONT>            try {<a name="line.364"></a>
+<FONT color="green">365</FONT>              return put(ugi, delegation, username, doAsUser,<a name="line.365"></a>
+<FONT color="green">366</FONT>                  path.getAbsolutePath(), op, destination, owner, group,<a name="line.366"></a>
+<FONT color="green">367</FONT>                  permission, overwrite, bufferSize, replication, blockSize,<a name="line.367"></a>
+<FONT color="green">368</FONT>                  modificationTime, accessTime, renameOptions, createParent,<a name="line.368"></a>
+<FONT color="green">369</FONT>                  delegationTokenArgument);<a name="line.369"></a>
+<FONT color="green">370</FONT>            } finally {<a name="line.370"></a>
+<FONT color="green">371</FONT>              REMOTE_ADDRESS.set(null);<a name="line.371"></a>
+<FONT color="green">372</FONT>            }<a name="line.372"></a>
+<FONT color="green">373</FONT>          }<a name="line.373"></a>
+<FONT color="green">374</FONT>        });<a name="line.374"></a>
+<FONT color="green">375</FONT>      }<a name="line.375"></a>
+<FONT color="green">376</FONT>    <a name="line.376"></a>
+<FONT color="green">377</FONT>      private Response put(<a name="line.377"></a>
+<FONT color="green">378</FONT>          final UserGroupInformation ugi,<a name="line.378"></a>
+<FONT color="green">379</FONT>          final DelegationParam delegation,<a name="line.379"></a>
+<FONT color="green">380</FONT>          final UserParam username,<a name="line.380"></a>
+<FONT color="green">381</FONT>          final DoAsParam doAsUser,<a name="line.381"></a>
+<FONT color="green">382</FONT>          final String fullpath,<a name="line.382"></a>
+<FONT color="green">383</FONT>          final PutOpParam op,<a name="line.383"></a>
+<FONT color="green">384</FONT>          final DestinationParam destination,<a name="line.384"></a>
+<FONT color="green">385</FONT>          final OwnerParam owner,<a name="line.385"></a>
+<FONT color="green">386</FONT>          final GroupParam group,<a name="line.386"></a>
+<FONT color="green">387</FONT>          final PermissionParam permission,<a name="line.387"></a>
+<FONT color="green">388</FONT>          final OverwriteParam overwrite,<a name="line.388"></a>
+<FONT color="green">389</FONT>          final BufferSizeParam bufferSize,<a name="line.389"></a>
+<FONT color="green">390</FONT>          final ReplicationParam replication,<a name="line.390"></a>
+<FONT color="green">391</FONT>          final BlockSizeParam blockSize,<a name="line.391"></a>
+<FONT color="green">392</FONT>          final ModificationTimeParam modificationTime,<a name="line.392"></a>
+<FONT color="green">393</FONT>          final AccessTimeParam accessTime,<a name="line.393"></a>
+<FONT color="green">394</FONT>          final RenameOptionSetParam renameOptions,<a name="line.394"></a>
+<FONT color="green">395</FONT>          final CreateParentParam createParent,<a name="line.395"></a>
+<FONT color="green">396</FONT>          final TokenArgumentParam delegationTokenArgument<a name="line.396"></a>
+<FONT color="green">397</FONT>          ) throws IOException, URISyntaxException {<a name="line.397"></a>
+<FONT color="green">398</FONT>    <a name="line.398"></a>
+<FONT color="green">399</FONT>        final Configuration conf = (Configuration)context.getAttribute(JspHelper.CURRENT_CONF);<a name="line.399"></a>
+<FONT color="green">400</FONT>        final NameNode namenode = (NameNode)context.getAttribute("name.node");<a name="line.400"></a>
+<FONT color="green">401</FONT>        final NamenodeProtocols np = namenode.getRpcServer();<a name="line.401"></a>
+<FONT color="green">402</FONT>    <a name="line.402"></a>
+<FONT color="green">403</FONT>        switch(op.getValue()) {<a name="line.403"></a>
+<FONT color="green">404</FONT>        case CREATE:<a name="line.404"></a>
+<FONT color="green">405</FONT>        {<a name="line.405"></a>
+<FONT color="green">406</FONT>          final URI uri = redirectURI(namenode, ugi, delegation, username, doAsUser,<a name="line.406"></a>
+<FONT color="green">407</FONT>              fullpath, op.getValue(), -1L, blockSize.getValue(conf),<a name="line.407"></a>
+<FONT color="green">408</FONT>              permission, overwrite, bufferSize, replication, blockSize);<a name="line.408"></a>
+<FONT color="green">409</FONT>          return Response.temporaryRedirect(uri).type(MediaType.APPLICATION_OCTET_STREAM).build();<a name="line.409"></a>
+<FONT color="green">410</FONT>        } <a name="line.410"></a>
+<FONT color="green">411</FONT>        case MKDIRS:<a name="line.411"></a>
+<FONT color="green">412</FONT>        {<a name="line.412"></a>
+<FONT color="green">413</FONT>          final boolean b = np.mkdirs(fullpath, permission.getFsPermission(), true);<a name="line.413"></a>
+<FONT color="green">414</FONT>          final String js = JsonUtil.toJsonString("boolean", b);<a name="line.414"></a>
+<FONT color="green">415</FONT>          return Response.ok(js).type(MediaType.APPLICATION_JSON).build();<a name="line.415"></a>
+<FONT color="green">416</FONT>        }<a name="line.416"></a>
+<FONT color="green">417</FONT>        case CREATESYMLINK:<a name="line.417"></a>
+<FONT color="green">418</FONT>        {<a name="line.418"></a>
+<FONT color="green">419</FONT>          np.createSymlink(destination.getValue(), fullpath,<a name="line.419"></a>
+<FONT color="green">420</FONT>              PermissionParam.getDefaultFsPermission(), createParent.getValue());<a name="line.420"></a>
+<FONT color="green">421</FONT>          return Response.ok().type(MediaType.APPLICATION_OCTET_STREAM).build();<a name="line.421"></a>
+<FONT color="green">422</FONT>        }<a name="line.422"></a>
+<FONT color="green">423</FONT>        case RENAME:<a name="line.423"></a>
+<FONT color="green">424</FONT>        {<a name="line.424"></a>
+<FONT color="green">425</FONT>          final EnumSet&lt;Options.Rename&gt; s = renameOptions.getValue();<a name="line.425"></a>
+<FONT color="green">426</FONT>          if (s.isEmpty()) {<a name="line.426"></a>
+<FONT color="green">427</FONT>            final boolean b = np.rename(fullpath, destination.getValue());<a name="line.427"></a>
+<FONT color="green">428</FONT>            final String js = JsonUtil.toJsonString("boolean", b);<a name="line.428"></a>
+<FONT color="green">429</FONT>            return Response.ok(js).type(MediaType.APPLICATION_JSON).build();<a name="line.429"></a>
+<FONT color="green">430</FONT>          } else {<a name="line.430"></a>
+<FONT color="green">431</FONT>            np.rename2(fullpath, destination.getValue(),<a name="line.431"></a>
+<FONT color="green">432</FONT>                s.toArray(new Options.Rename[s.size()]));<a name="line.432"></a>
+<FONT color="green">433</FONT>            return Response.ok().type(MediaType.APPLICATION_OCTET_STREAM).build();<a name="line.433"></a>
+<FONT color="green">434</FONT>          }<a name="line.434"></a>
+<FONT color="green">435</FONT>        }<a name="line.435"></a>
+<FONT color="green">436</FONT>        case SETREPLICATION:<a name="line.436"></a>
+<FONT color="green">437</FONT>        {<a name="line.437"></a>
+<FONT color="green">438</FONT>          final boolean b = np.setReplication(fullpath, replication.getValue(conf));<a name="line.438"></a>
+<FONT color="green">439</FONT>          final String js = JsonUtil.toJsonString("boolean", b);<a name="line.439"></a>
+<FONT color="green">440</FONT>          return Response.ok(js).type(MediaType.APPLICATION_JSON).build();<a name="line.440"></a>
+<FONT color="green">441</FONT>        }<a name="line.441"></a>
+<FONT color="green">442</FONT>        case SETOWNER:<a name="line.442"></a>
+<FONT color="green">443</FONT>        {<a name="line.443"></a>
+<FONT color="green">444</FONT>          if (owner.getValue() == null &amp;&amp; group.getValue() == null) {<a name="line.444"></a>
+<FONT color="green">445</FONT>            throw new IllegalArgumentException("Both owner and group are empty.");<a name="line.445"></a>
+<FONT color="green">446</FONT>          }<a name="line.446"></a>
+<FONT color="green">447</FONT>    <a name="line.447"></a>
+<FONT color="green">448</FONT>          np.setOwner(fullpath, owner.getValue(), group.getValue());<a name="line.448"></a>
+<FONT color="green">449</FONT>          return Response.ok().type(MediaType.APPLICATION_OCTET_STREAM).build();<a name="line.449"></a>
+<FONT color="green">450</FONT>        }<a name="line.450"></a>
+<FONT color="green">451</FONT>        case SETPERMISSION:<a name="line.451"></a>
+<FONT color="green">452</FONT>        {<a name="line.452"></a>
+<FONT color="green">453</FONT>          np.setPermission(fullpath, permission.getFsPermission());<a name="line.453"></a>
+<FONT color="green">454</FONT>          return Response.ok().type(MediaType.APPLICATION_OCTET_STREAM).build();<a name="line.454"></a>
+<FONT color="green">455</FONT>        }<a name="line.455"></a>
+<FONT color="green">456</FONT>        case SETTIMES:<a name="line.456"></a>
+<FONT color="green">457</FONT>        {<a name="line.457"></a>
+<FONT color="green">458</FONT>          np.setTimes(fullpath, modificationTime.getValue(), accessTime.getValue());<a name="line.458"></a>
+<FONT color="green">459</FONT>          return Response.ok().type(MediaType.APPLICATION_OCTET_STREAM).build();<a name="line.459"></a>
+<FONT color="green">460</FONT>        }<a name="line.460"></a>
+<FONT color="green">461</FONT>        case RENEWDELEGATIONTOKEN:<a name="line.461"></a>
+<FONT color="green">462</FONT>        {<a name="line.462"></a>
+<FONT color="green">463</FONT>          final Token&lt;DelegationTokenIdentifier&gt; token = new Token&lt;DelegationTokenIdentifier&gt;();<a name="line.463"></a>
+<FONT color="green">464</FONT>          token.decodeFromUrlString(delegationTokenArgument.getValue());<a name="line.464"></a>
+<FONT color="green">465</FONT>          final long expiryTime = np.renewDelegationToken(token);<a name="line.465"></a>
+<FONT color="green">466</FONT>          final String js = JsonUtil.toJsonString("long", expiryTime);<a name="line.466"></a>
+<FONT color="green">467</FONT>          return Response.ok(js).type(MediaType.APPLICATION_JSON).build();<a name="line.467"></a>
+<FONT color="green">468</FONT>        }<a name="line.468"></a>
+<FONT color="green">469</FONT>        case CANCELDELEGATIONTOKEN:<a name="line.469"></a>
+<FONT color="green">470</FONT>        {<a name="line.470"></a>
+<FONT color="green">471</FONT>          final Token&lt;DelegationTokenIdentifier&gt; token = new Token&lt;DelegationTokenIdentifier&gt;();<a name="line.471"></a>
+<FONT color="green">472</FONT>          token.decodeFromUrlString(delegationTokenArgument.getValue());<a name="line.472"></a>
+<FONT color="green">473</FONT>          np.cancelDelegationToken(token);<a name="line.473"></a>
+<FONT color="green">474</FONT>          return Response.ok().type(MediaType.APPLICATION_OCTET_STREAM).build();<a name="line.474"></a>
+<FONT color="green">475</FONT>        }<a name="line.475"></a>
+<FONT color="green">476</FONT>        default:<a name="line.476"></a>
+<FONT color="green">477</FONT>          throw new UnsupportedOperationException(op + " is not supported");<a name="line.477"></a>
+<FONT color="green">478</FONT>        }<a name="line.478"></a>
+<FONT color="green">479</FONT>      }<a name="line.479"></a>
+<FONT color="green">480</FONT>    <a name="line.480"></a>
+<FONT color="green">481</FONT>      /** Handle HTTP POST request for the root. */<a name="line.481"></a>
+<FONT color="green">482</FONT>      @POST<a name="line.482"></a>
+<FONT color="green">483</FONT>      @Path("/")<a name="line.483"></a>
+<FONT color="green">484</FONT>      @Consumes({"*/*"})<a name="line.484"></a>
+<FONT color="green">485</FONT>      @Produces({MediaType.APPLICATION_OCTET_STREAM, MediaType.APPLICATION_JSON})<a name="line.485"></a>
+<FONT color="green">486</FONT>      public Response postRoot(<a name="line.486"></a>
+<FONT color="green">487</FONT>          @Context final UserGroupInformation ugi,<a name="line.487"></a>
+<FONT color="green">488</FONT>          @QueryParam(DelegationParam.NAME) @DefaultValue(DelegationParam.DEFAULT)<a name="line.488"></a>
+<FONT color="green">489</FONT>              final DelegationParam delegation,<a name="line.489"></a>
+<FONT color="green">490</FONT>          @QueryParam(UserParam.NAME) @DefaultValue(UserParam.DEFAULT)<a name="line.490"></a>
+<FONT color="green">491</FONT>              final UserParam username,<a name="line.491"></a>
+<FONT color="green">492</FONT>          @QueryParam(DoAsParam.NAME) @DefaultValue(DoAsParam.DEFAULT)<a name="line.492"></a>
+<FONT color="green">493</FONT>              final DoAsParam doAsUser,<a name="line.493"></a>
+<FONT color="green">494</FONT>          @QueryParam(PostOpParam.NAME) @DefaultValue(PostOpParam.DEFAULT)<a name="line.494"></a>
+<FONT color="green">495</FONT>              final PostOpParam op,<a name="line.495"></a>
+<FONT color="green">496</FONT>          @QueryParam(ConcatSourcesParam.NAME) @DefaultValue(ConcatSourcesParam.DEFAULT)<a name="line.496"></a>
+<FONT color="green">497</FONT>              final ConcatSourcesParam concatSrcs,<a name="line.497"></a>
+<FONT color="green">498</FONT>          @QueryParam(BufferSizeParam.NAME) @DefaultValue(BufferSizeParam.DEFAULT)<a name="line.498"></a>
+<FONT color="green">499</FONT>              final BufferSizeParam bufferSize<a name="line.499"></a>
+<FONT color="green">500</FONT>          ) throws IOException, InterruptedException {<a name="line.500"></a>
+<FONT color="green">501</FONT>        return post(ugi, delegation, username, doAsUser, ROOT, op, concatSrcs, bufferSize);<a name="line.501"></a>
+<FONT color="green">502</FONT>      }<a name="line.502"></a>
+<FONT color="green">503</FONT>    <a name="line.503"></a>
+<FONT color="green">504</FONT>      /** Handle HTTP POST request. */<a name="line.504"></a>
+<FONT color="green">505</FONT>      @POST<a name="line.505"></a>
+<FONT color="green">506</FONT>      @Path("{" + UriFsPathParam.NAME + ":.*}")<a name="line.506"></a>
+<FONT color="green">507</FONT>      @Consumes({"*/*"})<a name="line.507"></a>
+<FONT color="green">508</FONT>      @Produces({MediaType.APPLICATION_OCTET_STREAM, MediaType.APPLICATION_JSON})<a name="line.508"></a>
+<FONT color="green">509</FONT>      public Response post(<a name="line.509"></a>
+<FONT color="green">510</FONT>          @Context final UserGroupInformation ugi,<a name="line.510"></a>
+<FONT color="green">511</FONT>          @QueryParam(DelegationParam.NAME) @DefaultValue(DelegationParam.DEFAULT)<a name="line.511"></a>
+<FONT color="green">512</FONT>              final DelegationParam delegation,<a name="line.512"></a>
+<FONT color="green">513</FONT>          @QueryParam(UserParam.NAME) @DefaultValue(UserParam.DEFAULT)<a name="line.513"></a>
+<FONT color="green">514</FONT>              final UserParam username,<a name="line.514"></a>
+<FONT color="green">515</FONT>          @QueryParam(DoAsParam.NAME) @DefaultValue(DoAsParam.DEFAULT)<a name="line.515"></a>
+<FONT color="green">516</FONT>              final DoAsParam doAsUser,<a name="line.516"></a>
+<FONT color="green">517</FONT>          @PathParam(UriFsPathParam.NAME) final UriFsPathParam path,<a name="line.517"></a>
+<FONT color="green">518</FONT>          @QueryParam(PostOpParam.NAME) @DefaultValue(PostOpParam.DEFAULT)<a name="line.518"></a>
+<FONT color="green">519</FONT>              final PostOpParam op,<a name="line.519"></a>
+<FONT color="green">520</FONT>          @QueryParam(ConcatSourcesParam.NAME) @DefaultValue(ConcatSourcesParam.DEFAULT)<a name="line.520"></a>
+<FONT color="green">521</FONT>              final ConcatSourcesParam concatSrcs,<a name="line.521"></a>
+<FONT color="green">522</FONT>          @QueryParam(BufferSizeParam.NAME) @DefaultValue(BufferSizeParam.DEFAULT)<a name="line.522"></a>
+<FONT color="green">523</FONT>              final BufferSizeParam bufferSize<a name="line.523"></a>
+<FONT color="green">524</FONT>          ) throws IOException, InterruptedException {<a name="line.524"></a>
+<FONT color="green">525</FONT>    <a name="line.525"></a>
+<FONT color="green">526</FONT>        init(ugi, delegation, username, doAsUser, path, op, concatSrcs, bufferSize);<a name="line.526"></a>
+<FONT color="green">527</FONT>    <a name="line.527"></a>
+<FONT color="green">528</FONT>        return ugi.doAs(new PrivilegedExceptionAction&lt;Response&gt;() {<a name="line.528"></a>
+<FONT color="green">529</FONT>          @Override<a name="line.529"></a>
+<FONT color="green">530</FONT>          public Response run() throws IOException, URISyntaxException {<a name="line.530"></a>
+<FONT color="green">531</FONT>            REMOTE_ADDRESS.set(request.getRemoteAddr());<a name="line.531"></a>
+<FONT color="green">532</FONT>            try {<a name="line.532"></a>
+<FONT color="green">533</FONT>              return post(ugi, delegation, username, doAsUser,<a name="line.533"></a>
+<FONT color="green">534</FONT>                  path.getAbsolutePath(), op, concatSrcs, bufferSize);<a name="line.534"></a>
+<FONT color="green">535</FONT>            } finally {<a name="line.535"></a>
+<FONT color="green">536</FONT>              REMOTE_ADDRESS.set(null);<a name="line.536"></a>
+<FONT color="green">537</FONT>            }<a name="line.537"></a>
+<FONT color="green">538</FONT>          }<a name="line.538"></a>
+<FONT color="green">539</FONT>        });<a name="line.539"></a>
+<FONT color="green">540</FONT>      }<a name="line.540"></a>
+<FONT color="green">541</FONT>    <a name="line.541"></a>
+<FONT color="green">542</FONT>      private Response post(<a name="line.542"></a>
+<FONT color="green">543</FONT>          final UserGroupInformation ugi,<a name="line.543"></a>
+<FONT color="green">544</FONT>          final DelegationParam delegation,<a name="line.544"></a>
+<FONT color="green">545</FONT>          final UserParam username,<a name="line.545"></a>
+<FONT color="green">546</FONT>          final DoAsParam doAsUser,<a name="line.546"></a>
+<FONT color="green">547</FONT>          final String fullpath,<a name="line.547"></a>
+<FONT color="green">548</FONT>          final PostOpParam op,<a name="line.548"></a>
+<FONT color="green">549</FONT>          final ConcatSourcesParam concatSrcs,<a name="line.549"></a>
+<FONT color="green">550</FONT>          final BufferSizeParam bufferSize<a name="line.550"></a>
+<FONT color="green">551</FONT>          ) throws IOException, URISyntaxException {<a name="line.551"></a>
+<FONT color="green">552</FONT>        final NameNode namenode = (NameNode)context.getAttribute("name.node");<a name="line.552"></a>
+<FONT color="green">553</FONT>    <a name="line.553"></a>
+<FONT color="green">554</FONT>        switch(op.getValue()) {<a name="line.554"></a>
+<FONT color="green">555</FONT>        case APPEND:<a name="line.555"></a>
+<FONT color="green">556</FONT>        {<a name="line.556"></a>
+<FONT color="green">557</FONT>          final URI uri = redirectURI(namenode, ugi, delegation, username, doAsUser,<a name="line.557"></a>
+<FONT color="green">558</FONT>              fullpath, op.getValue(), -1L, -1L, bufferSize);<a name="line.558"></a>
+<FONT color="green">559</FONT>          return Response.temporaryRedirect(uri).type(MediaType.APPLICATION_OCTET_STREAM).build();<a name="line.559"></a>
+<FONT color="green">560</FONT>        }<a name="line.560"></a>
+<FONT color="green">561</FONT>        case CONCAT:<a name="line.561"></a>
+<FONT color="green">562</FONT>        {<a name="line.562"></a>
+<FONT color="green">563</FONT>          namenode.getRpcServer().concat(fullpath, concatSrcs.getAbsolutePaths());<a name="line.563"></a>
+<FONT color="green">564</FONT>          return Response.ok().build();<a name="line.564"></a>
+<FONT color="green">565</FONT>        }<a name="line.565"></a>
+<FONT color="green">566</FONT>        default:<a name="line.566"></a>
+<FONT color="green">567</FONT>          throw new UnsupportedOperationException(op + " is not supported");<a name="line.567"></a>
+<FONT color="green">568</FONT>        }<a name="line.568"></a>
+<FONT color="green">569</FONT>      }<a name="line.569"></a>
+<FONT color="green">570</FONT>    <a name="line.570"></a>
+<FONT color="green">571</FONT>      /** Handle HTTP GET request for the root. */<a name="line.571"></a>
+<FONT color="green">572</FONT>      @GET<a name="line.572"></a>
+<FONT color="green">573</FONT>      @Path("/")<a name="line.573"></a>
+<FONT color="green">574</FONT>      @Produces({MediaType.APPLICATION_OCTET_STREAM, MediaType.APPLICATION_JSON})<a name="line.574"></a>
+<FONT color="green">575</FONT>      public Response getRoot(<a name="line.575"></a>
+<FONT color="green">576</FONT>          @Context final UserGroupInformation ugi,<a name="line.576"></a>
+<FONT color="green">577</FONT>          @QueryParam(DelegationParam.NAME) @DefaultValue(DelegationParam.DEFAULT)<a name="line.577"></a>
+<FONT color="green">578</FONT>              final DelegationParam delegation,<a name="line.578"></a>
+<FONT color="green">579</FONT>          @QueryParam(UserParam.NAME) @DefaultValue(UserParam.DEFAULT)<a name="line.579"></a>
+<FONT color="green">580</FONT>              final UserParam username,<a name="line.580"></a>
+<FONT color="green">581</FONT>          @QueryParam(DoAsParam.NAME) @DefaultValue(DoAsParam.DEFAULT)<a name="line.581"></a>
+<FONT color="green">582</FONT>              final DoAsParam doAsUser,<a name="line.582"></a>
+<FONT color="green">583</FONT>          @QueryParam(GetOpParam.NAME) @DefaultValue(GetOpParam.DEFAULT)<a name="line.583"></a>
+<FONT color="green">584</FONT>              final GetOpParam op,<a name="line.584"></a>
+<FONT color="green">585</FONT>          @QueryParam(OffsetParam.NAME) @DefaultValue(OffsetParam.DEFAULT)<a name="line.585"></a>
+<FONT color="green">586</FONT>              final OffsetParam offset,<a name="line.586"></a>
+<FONT color="green">587</FONT>          @QueryParam(LengthParam.NAME) @DefaultValue(LengthParam.DEFAULT)<a name="line.587"></a>
+<FONT color="green">588</FONT>              final LengthParam length,<a name="line.588"></a>
+<FONT color="green">589</FONT>          @QueryParam(RenewerParam.NAME) @DefaultValue(RenewerParam.DEFAULT)<a name="line.589"></a>
+<FONT color="green">590</FONT>              final RenewerParam renewer,<a name="line.590"></a>
+<FONT color="green">591</FONT>          @QueryParam(BufferSizeParam.NAME) @DefaultValue(BufferSizeParam.DEFAULT)<a name="line.591"></a>
+<FONT color="green">592</FONT>              final BufferSizeParam bufferSize<a name="line.592"></a>
+<FONT color="green">593</FONT>          ) throws IOException, InterruptedException {<a name="line.593"></a>
+<FONT color="green">594</FONT>        return get(ugi, delegation, username, doAsUser, ROOT, op,<a name="line.594"></a>
+<FONT color="green">595</FONT>            offset, length, renewer, bufferSize);<a name="line.595"></a>
+<FONT color="green">596</FONT>      }<a name="line.596"></a>
+<FONT color="green">597</FONT>    <a name="line.597"></a>
+<FONT color="green">598</FONT>      /** Handle HTTP GET request. */<a name="line.598"></a>
+<FONT color="green">599</FONT>      @GET<a name="line.599"></a>
+<FONT color="green">600</FONT>      @Path("{" + UriFsPathParam.NAME + ":.*}")<a name="line.600"></a>
+<FONT color="green">601</FONT>      @Produces({MediaType.APPLICATION_OCTET_STREAM, MediaType.APPLICATION_JSON})<a name="line.601"></a>
+<FONT color="green">602</FONT>      public Response get(<a name="line.602"></a>
+<FONT color="green">603</FONT>          @Context final UserGroupInformation ugi,<a name="line.603"></a>
+<FONT color="green">604</FONT>          @QueryParam(DelegationParam.NAME) @DefaultValue(DelegationParam.DEFAULT)<a name="line.604"></a>
+<FONT color="green">605</FONT>              final DelegationParam delegation,<a name="line.605"></a>
+<FONT color="green">606</FONT>          @QueryParam(UserParam.NAME) @DefaultValue(UserParam.DEFAULT)<a name="line.606"></a>
+<FONT color="green">607</FONT>              final UserParam username,<a name="line.607"></a>
+<FONT color="green">608</FONT>          @QueryParam(DoAsParam.NAME) @DefaultValue(DoAsParam.DEFAULT)<a name="line.608"></a>
+<FONT color="green">609</FONT>              final DoAsParam doAsUser,<a name="line.609"></a>
+<FONT color="green">610</FONT>          @PathParam(UriFsPathParam.NAME) final UriFsPathParam path,<a name="line.610"></a>
+<FONT color="green">611</FONT>          @QueryParam(GetOpParam.NAME) @DefaultValue(GetOpParam.DEFAULT)<a name="line.611"></a>
+<FONT color="green">612</FONT>              final GetOpParam op,<a name="line.612"></a>
+<FONT color="green">613</FONT>          @QueryParam(OffsetParam.NAME) @DefaultValue(OffsetParam.DEFAULT)<a name="line.613"></a>
+<FONT color="green">614</FONT>              final OffsetParam offset,<a name="line.614"></a>
+<FONT color="green">615</FONT>          @QueryParam(LengthParam.NAME) @DefaultValue(LengthParam.DEFAULT)<a name="line.615"></a>
+<FONT color="green">616</FONT>              final LengthParam length,<a name="line.616"></a>
+<FONT color="green">617</FONT>          @QueryParam(RenewerParam.NAME) @DefaultValue(RenewerParam.DEFAULT)<a name="line.617"></a>
+<FONT color="green">618</FONT>              final RenewerParam renewer,<a name="line.618"></a>
+<FONT color="green">619</FONT>          @QueryParam(BufferSizeParam.NAME) @DefaultValue(BufferSizeParam.DEFAULT)<a name="line.619"></a>
+<FONT color="green">620</FONT>              final BufferSizeParam bufferSize<a name="line.620"></a>
+<FONT color="green">621</FONT>          ) throws IOException, InterruptedException {<a name="line.621"></a>
+<FONT color="green">622</FONT>    <a name="line.622"></a>
+<FONT color="green">623</FONT>        init(ugi, delegation, username, doAsUser, path, op,<a name="line.623"></a>
+<FONT color="green">624</FONT>            offset, length, renewer, bufferSize);<a name="line.624"></a>
+<FONT color="green">625</FONT>    <a name="line.625"></a>
+<FONT color="green">626</FONT>        return ugi.doAs(new PrivilegedExceptionAction&lt;Response&gt;() {<a name="line.626"></a>
+<FONT color="green">627</FONT>          @Override<a name="line.627"></a>
+<FONT color="green">628</FONT>          public Response run() throws IOException, URISyntaxException {<a name="line.628"></a>
+<FONT color="green">629</FONT>            REMOTE_ADDRESS.set(request.getRemoteAddr());<a name="line.629"></a>
+<FONT color="green">630</FONT>            try {<a name="line.630"></a>
+<FONT color="green">631</FONT>              return get(ugi, delegation, username, doAsUser,<a name="line.631"></a>
+<FONT color="green">632</FONT>                  path.getAbsolutePath(), op, offset, length, renewer, bufferSize);<a name="line.632"></a>
+<FONT color="green">633</FONT>            } finally {<a name="line.633"></a>
+<FONT color="green">634</FONT>              REMOTE_ADDRESS.set(null);<a name="line.634"></a>
+<FONT color="green">635</FONT>            }<a name="line.635"></a>
+<FONT color="green">636</FONT>          }<a name="line.636"></a>
+<FONT color="green">637</FONT>        });<a name="line.637"></a>
+<FONT color="green">638</FONT>      }<a name="line.638"></a>
+<FONT color="green">639</FONT>    <a name="line.639"></a>
+<FONT color="green">640</FONT>      private Response get(<a name="line.640"></a>
+<FONT color="green">641</FONT>          final UserGroupInformation ugi,<a name="line.641"></a>
+<FONT color="green">642</FONT>          final DelegationParam delegation,<a name="line.642"></a>
+<FONT color="green">643</FONT>          final UserParam username,<a name="line.643"></a>
+<FONT color="green">644</FONT>          final DoAsParam doAsUser,<a name="line.644"></a>
+<FONT color="green">645</FONT>          final String fullpath,<a name="line.645"></a>
+<FONT color="green">646</FONT>          final GetOpParam op,<a name="line.646"></a>
+<FONT color="green">647</FONT>          final OffsetParam offset,<a name="line.647"></a>
+<FONT color="green">648</FONT>          final LengthParam length,<a name="line.648"></a>
+<FONT color="green">649</FONT>          final RenewerParam renewer,<a name="line.649"></a>
+<FONT color="green">650</FONT>          final BufferSizeParam bufferSize<a name="line.650"></a>
+<FONT color="green">651</FONT>          ) throws IOException, URISyntaxException {<a name="line.651"></a>
+<FONT color="green">652</FONT>        final NameNode namenode = (NameNode)context.getAttribute("name.node");<a name="line.652"></a>
+<FONT color="green">653</FONT>        final NamenodeProtocols np = namenode.getRpcServer();<a name="line.653"></a>
+<FONT color="green">654</FONT>    <a name="line.654"></a>
+<FONT color="green">655</FONT>        switch(op.getValue()) {<a name="line.655"></a>
+<FONT color="green">656</FONT>        case OPEN:<a name="line.656"></a>
+<FONT color="green">657</FONT>        {<a name="line.657"></a>
+<FONT color="green">658</FONT>          final URI uri = redirectURI(namenode, ugi, delegation, username, doAsUser,<a name="line.658"></a>
+<FONT color="green">659</FONT>              fullpath, op.getValue(), offset.getValue(), -1L, offset, length, bufferSize);<a name="line.659"></a>
+<FONT color="green">660</FONT>          return Response.temporaryRedirect(uri).type(MediaType.APPLICATION_OCTET_STREAM).build();<a name="line.660"></a>
+<FONT color="green">661</FONT>        }<a name="line.661"></a>
+<FONT color="green">662</FONT>        case GET_BLOCK_LOCATIONS:<a name="line.662"></a>
+<FONT color="green">663</FONT>        {<a name="line.663"></a>
+<FONT color="green">664</FONT>          final long offsetValue = offset.getValue();<a name="line.664"></a>
+<FONT color="green">665</FONT>          final Long lengthValue = length.getValue();<a name="line.665"></a>
+<FONT color="green">666</FONT>          final LocatedBlocks locatedblocks = np.getBlockLocations(fullpath,<a name="line.666"></a>
+<FONT color="green">667</FONT>              offsetValue, lengthValue != null? lengthValue: Long.MAX_VALUE);<a name="line.667"></a>
+<FONT color="green">668</FONT>          final String js = JsonUtil.toJsonString(locatedblocks);<a name="line.668"></a>
+<FONT color="green">669</FONT>          return Response.ok(js).type(MediaType.APPLICATION_JSON).build();<a name="line.669"></a>
+<FONT color="green">670</FONT>        }<a name="line.670"></a>
+<FONT color="green">671</FONT>        case GETFILESTATUS:<a name="line.671"></a>
+<FONT color="green">672</FONT>        {<a name="line.672"></a>
+<FONT color="green">673</FONT>          final HdfsFileStatus status = np.getFileInfo(fullpath);<a name="line.673"></a>
+<FONT color="green">674</FONT>          if (status == null) {<a name="line.674"></a>
+<FONT color="green">675</FONT>            throw new FileNotFoundException("File does not exist: " + fullpath);<a name="line.675"></a>
+<FONT color="green">676</FONT>          }<a name="line.676"></a>
+<FONT color="green">677</FONT>    <a name="line.677"></a>
+<FONT color="green">678</FONT>          final String js = JsonUtil.toJsonString(status, true);<a name="line.678"></a>
+<FONT color="green">679</FONT>          return Response.ok(js).type(MediaType.APPLICATION_JSON).build();<a name="line.679"></a>
+<FONT color="green">680</FONT>        }<a name="line.680"></a>
+<FONT color="green">681</FONT>        case LISTSTATUS:<a name="line.681"></a>
+<FONT color="green">682</FONT>        {<a name="line.682"></a>
+<FONT color="green">683</FONT>          final StreamingOutput streaming = getListingStream(np, fullpath);<a name="line.683"></a>
+<FONT color="green">684</FONT>          return Response.ok(streaming).type(MediaType.APPLICATION_JSON).build();<a name="line.684"></a>
+<FONT color="green">685</FONT>        }<a name="line.685"></a>
+<FONT color="green">686</FONT>        case GETCONTENTSUMMARY:<a name="line.686"></a>
+<FONT color="green">687</FONT>        {<a name="line.687"></a>
+<FONT color="green">688</FONT>          final ContentSummary contentsummary = np.getContentSummary(fullpath);<a name="line.688"></a>
+<FONT color="green">689</FONT>          final String js = JsonUtil.toJsonString(contentsummary);<a name="line.689"></a>
+<FONT color="green">690</FONT>          return Response.ok(js).type(MediaType.APPLICATION_JSON).build();<a name="line.690"></a>
+<FONT color="green">691</FONT>        }<a name="line.691"></a>
+<FONT color="green">692</FONT>        case GETFILECHECKSUM:<a name="line.692"></a>
+<FONT color="green">693</FONT>        {<a name="line.693"></a>
+<FONT color="green">694</FONT>          final URI uri = redirectURI(namenode, ugi, delegation, username, doAsUser,<a name="line.694"></a>
+<FONT color="green">695</FONT>              fullpath, op.getValue(), -1L, -1L);<a name="line.695"></a>
+<FONT color="green">696</FONT>          return Response.temporaryRedirect(uri).type(MediaType.APPLICATION_OCTET_STREAM).build();<a name="line.696"></a>
+<FONT color="green">697</FONT>        }<a name="line.697"></a>
+<FONT color="green">698</FONT>        case GETDELEGATIONTOKEN:<a name="line.698"></a>
+<FONT color="green">699</FONT>        {<a name="line.699"></a>
+<FONT color="green">700</FONT>          if (delegation.getValue() != null) {<a name="line.700"></a>
+<FONT color="green">701</FONT>            throw new IllegalArgumentException(delegation.getName()<a name="line.701"></a>
+<FONT color="green">702</FONT>                + " parameter is not null.");<a name="line.702"></a>
+<FONT color="green">703</FONT>          }<a name="line.703"></a>
+<FONT color="green">704</FONT>          final Token&lt;? extends TokenIdentifier&gt; token = generateDelegationToken(<a name="line.704"></a>
+<FONT color="green">705</FONT>              namenode, ugi, renewer.getValue());<a name="line.705"></a>
+<FONT color="green">706</FONT>          final String js = JsonUtil.toJsonString(token);<a name="line.706"></a>
+<FONT color="green">707</FONT>          return Response.ok(js).type(MediaType.APPLICATION_JSON).build();<a name="line.707"></a>
+<FONT color="green">708</FONT>        }<a name="line.708"></a>
+<FONT color="green">709</FONT>        case GETHOMEDIRECTORY:<a name="line.709"></a>
+<FONT color="green">710</FONT>        {<a name="line.710"></a>
+<FONT color="green">711</FONT>          final String js = JsonUtil.toJsonString(<a name="line.711"></a>
+<FONT color="green">712</FONT>              org.apache.hadoop.fs.Path.class.getSimpleName(),<a name="line.712"></a>
+<FONT color="green">713</FONT>              WebHdfsFileSystem.getHomeDirectoryString(ugi));<a name="line.713"></a>
+<FONT color="green">714</FONT>          return Response.ok(js).type(MediaType.APPLICATION_JSON).build();<a name="line.714"></a>
+<FONT color="green">715</FONT>        }<a name="line.715"></a>
+<FONT color="green">716</FONT>        default:<a name="line.716"></a>
+<FONT color="green">717</FONT>          throw new UnsupportedOperationException(op + " is not supported");<a name="line.717"></a>
+<FONT color="green">718</FONT>        }<a name="line.718"></a>
+<FONT color="green">719</FONT>      }<a name="line.719"></a>
+<FONT color="green">720</FONT>    <a name="line.720"></a>
+<FONT color="green">721</FONT>      private static DirectoryListing getDirectoryListing(final NamenodeProtocols np,<a name="line.721"></a>
+<FONT color="green">722</FONT>          final String p, byte[] startAfter) throws IOException {<a name="line.722"></a>
+<FONT color="green">723</FONT>        final DirectoryListing listing = np.getListing(p, startAfter, false);<a name="line.723"></a>
+<FONT color="green">724</FONT>        if (listing == null) { // the directory does not exist<a name="line.724"></a>
+<FONT color="green">725</FONT>          throw new FileNotFoundException("File " + p + " does not exist.");<a name="line.725"></a>
+<FONT color="green">726</FONT>        }<a name="line.726"></a>
+<FONT color="green">727</FONT>        return listing;<a name="line.727"></a>
+<FONT color="green">728</FONT>      }<a name="line.728"></a>
+<FONT color="green">729</FONT>      <a name="line.729"></a>
+<FONT color="green">730</FONT>      private static StreamingOutput getListingStream(final NamenodeProtocols np, <a name="line.730"></a>
+<FONT color="green">731</FONT>          final String p) throws IOException {<a name="line.731"></a>
+<FONT color="green">732</FONT>        // allows exceptions like FNF or ACE to prevent http response of 200 for<a name="line.732"></a>
+<FONT color="green">733</FONT>        // a failure since we can't (currently) return error responses in the<a name="line.733"></a>
+<FONT color="green">734</FONT>        // middle of a streaming operation<a name="line.734"></a>
+<FONT color="green">735</FONT>        final DirectoryListing firstDirList = getDirectoryListing(np, p,<a name="line.735"></a>
+<FONT color="green">736</FONT>            HdfsFileStatus.EMPTY_NAME);<a name="line.736"></a>
+<FONT color="green">737</FONT>    <a name="line.737"></a>
+<FONT color="green">738</FONT>        // must save ugi because the streaming object will be executed outside<a name="line.738"></a>
+<FONT color="green">739</FONT>        // the remote user's ugi<a name="line.739"></a>
+<FONT color="green">740</FONT>        final UserGroupInformation ugi = UserGroupInformation.getCurrentUser();<a name="line.740"></a>
+<FONT color="green">741</FONT>        return new StreamingOutput() {<a name="line.741"></a>
+<FONT color="green">742</FONT>          @Override<a name="line.742"></a>
+<FONT color="green">743</FONT>          public void write(final OutputStream outstream) throws IOException {<a name="line.743"></a>
+<FONT color="green">744</FONT>            final PrintWriter out = new PrintWriter(new OutputStreamWriter(<a name="line.744"></a>
+<FONT color="green">745</FONT>                outstream, Charsets.UTF_8));<a name="line.745"></a>
+<FONT color="green">746</FONT>            out.println("{\"" + FileStatus.class.getSimpleName() + "es\":{\""<a name="line.746"></a>
+<FONT color="green">747</FONT>                + FileStatus.class.getSimpleName() + "\":[");<a name="line.747"></a>
+<FONT color="green">748</FONT>    <a name="line.748"></a>
+<FONT color="green">749</FONT>            try {<a name="line.749"></a>
+<FONT color="green">750</FONT>              // restore remote user's ugi<a name="line.750"></a>
+<FONT color="green">751</FONT>              ugi.doAs(new PrivilegedExceptionAction&lt;Void&gt;() {<a name="line.751"></a>
+<FONT color="green">752</FONT>                @Override<a name="line.752"></a>
+<FONT color="green">753</FONT>                public Void run() throws IOException {<a name="line.753"></a>
+<FONT color="green">754</FONT>                  long n = 0;<a name="line.754"></a>
+<FONT color="green">755</FONT>                  for (DirectoryListing dirList = firstDirList; ;<a name="line.755"></a>
+<FONT color="green">756</FONT>                       dirList = getDirectoryListing(np, p, dirList.getLastName())<a name="line.756"></a>
+<FONT color="green">757</FONT>                  ) {<a name="line.757"></a>
+<FONT color="green">758</FONT>                    // send each segment of the directory listing<a name="line.758"></a>
+<FONT color="green">759</FONT>                    for (HdfsFileStatus s : dirList.getPartialListing()) {<a name="line.759"></a>
+<FONT color="green">760</FONT>                      if (n++ &gt; 0) {<a name="line.760"></a>
+<FONT color="green">761</FONT>                        out.println(',');<a name="line.761"></a>
+<FONT color="green">762</FONT>                      }<a name="line.762"></a>
+<FONT color="green">763</FONT>                      out.print(JsonUtil.toJsonString(s, false));<a name="line.763"></a>
+<FONT color="green">764</FONT>                    }<a name="line.764"></a>
+<FONT color="green">765</FONT>                    // stop if last segment<a name="line.765"></a>
+<FONT color="green">766</FONT>                    if (!dirList.hasMore()) {<a name="line.766"></a>
+<FONT color="green">767</FONT>                      break;<a name="line.767"></a>
+<FONT color="green">768</FONT>                    }<a name="line.768"></a>
+<FONT color="green">769</FONT>                  }<a name="line.769"></a>
+<FONT color="green">770</FONT>                  return null;<a name="line.770"></a>
+<FONT color="green">771</FONT>                }<a name="line.771"></a>
+<FONT color="green">772</FONT>              });<a name="line.772"></a>
+<FONT color="green">773</FONT>            } catch (InterruptedException e) {<a name="line.773"></a>
+<FONT color="green">774</FONT>              throw new IOException(e);<a name="line.774"></a>
+<FONT color="green">775</FONT>            }<a name="line.775"></a>
+<FONT color="green">776</FONT>            <a name="line.776"></a>
+<FONT color="green">777</FONT>            out.println();<a name="line.777"></a>
+<FONT color="green">778</FONT>            out.println("]}}");<a name="line.778"></a>
+<FONT color="green">779</FONT>            out.flush();<a name="line.779"></a>
+<FONT color="green">780</FONT>          }<a name="line.780"></a>
+<FONT color="green">781</FONT>        };<a name="line.781"></a>
+<FONT color="green">782</FONT>      }<a name="line.782"></a>
+<FONT color="green">783</FONT>    <a name="line.783"></a>
+<FONT color="green">784</FONT>      /** Handle HTTP DELETE request for the root. */<a name="line.784"></a>
+<FONT color="green">785</FONT>      @DELETE<a name="line.785"></a>
+<FONT color="green">786</FONT>      @Path("/")<a name="line.786"></a>
+<FONT color="green">787</FONT>      @Produces(MediaType.APPLICATION_JSON)<a name="line.787"></a>
+<FONT color="green">788</FONT>      public Response deleteRoot(<a name="line.788"></a>
+<FONT color="green">789</FONT>          @Context final UserGroupInformation ugi,<a name="line.789"></a>
+<FONT color="green">790</FONT>          @QueryParam(DelegationParam.NAME) @DefaultValue(DelegationParam.DEFAULT)<a name="line.790"></a>
+<FONT color="green">791</FONT>              final DelegationParam delegation,<a name="line.791"></a>
+<FONT color="green">792</FONT>          @QueryParam(UserParam.NAME) @DefaultValue(UserParam.DEFAULT)<a name="line.792"></a>
+<FONT color="green">793</FONT>              final UserParam username,<a name="line.793"></a>
+<FONT color="green">794</FONT>          @QueryParam(DoAsParam.NAME) @DefaultValue(DoAsParam.DEFAULT)<a name="line.794"></a>
+<FONT color="green">795</FONT>              final DoAsParam doAsUser,<a name="line.795"></a>
+<FONT color="green">796</FONT>          @QueryParam(DeleteOpParam.NAME) @DefaultValue(DeleteOpParam.DEFAULT)<a name="line.796"></a>
+<FONT color="green">797</FONT>              final DeleteOpParam op,<a name="line.797"></a>
+<FONT color="green">798</FONT>          @QueryParam(RecursiveParam.NAME) @DefaultValue(RecursiveParam.DEFAULT)<a name="line.798"></a>
+<FONT color="green">799</FONT>              final RecursiveParam recursive<a name="line.799"></a>
+<FONT color="green">800</FONT>          ) throws IOException, InterruptedException {<a name="line.800"></a>
+<FONT color="green">801</FONT>        return delete(ugi, delegation, username, doAsUser, ROOT, op, recursive);<a name="line.801"></a>
+<FONT color="green">802</FONT>      }<a name="line.802"></a>
+<FONT color="green">803</FONT>    <a name="line.803"></a>
+<FONT color="green">804</FONT>      /** Handle HTTP DELETE request. */<a name="line.804"></a>
+<FONT color="green">805</FONT>      @DELETE<a name="line.805"></a>
+<FONT color="green">806</FONT>      @Path("{" + UriFsPathParam.NAME + ":.*}")<a name="line.806"></a>
+<FONT color="green">807</FONT>      @Produces(MediaType.APPLICATION_JSON)<a name="line.807"></a>
+<FONT color="green">808</FONT>      public Response delete(<a name="line.808"></a>
+<FONT color="green">809</FONT>          @Context final UserGroupInformation ugi,<a name="line.809"></a>
+<FONT color="green">810</FONT>          @QueryParam(DelegationParam.NAME) @DefaultValue(DelegationParam.DEFAULT)<a name="line.810"></a>
+<FONT color="green">811</FONT>              final DelegationParam delegation,<a name="line.811"></a>
+<FONT color="green">812</FONT>          @QueryParam(UserParam.NAME) @DefaultValue(UserParam.DEFAULT)<a name="line.812"></a>
+<FONT color="green">813</FONT>              final UserParam username,<a name="line.813"></a>
+<FONT color="green">814</FONT>          @QueryParam(DoAsParam.NAME) @DefaultValue(DoAsParam.DEFAULT)<a name="line.814"></a>
+<FONT color="green">815</FONT>              final DoAsParam doAsUser,<a name="line.815"></a>
+<FONT color="green">816</FONT>          @PathParam(UriFsPathParam.NAME) final UriFsPathParam path,<a name="line.816"></a>
+<FONT color="green">817</FONT>          @QueryParam(DeleteOpParam.NAME) @DefaultValue(DeleteOpParam.DEFAULT)<a name="line.817"></a>
+<FONT color="green">818</FONT>              final DeleteOpParam op,<a name="line.818"></a>
+<FONT color="green">819</FONT>          @QueryParam(RecursiveParam.NAME) @DefaultValue(RecursiveParam.DEFAULT)<a name="line.819"></a>
+<FONT color="green">820</FONT>              final RecursiveParam recursive<a name="line.820"></a>
+<FONT color="green">821</FONT>          ) throws IOException, InterruptedException {<a name="line.821"></a>
+<FONT color="green">822</FONT>    <a name="line.822"></a>
+<FONT color="green">823</FONT>        init(ugi, delegation, username, doAsUser, path, op, recursive);<a name="line.823"></a>
+<FONT color="green">824</FONT>    <a name="line.824"></a>
+<FONT color="green">825</FONT>        return ugi.doAs(new PrivilegedExceptionAction&lt;Response&gt;() {<a name="line.825"></a>
+<FONT color="green">826</FONT>          @Override<a name="line.826"></a>
+<FONT color="green">827</FONT>          public Response run() throws IOException {<a name="line.827"></a>
+<FONT color="green">828</FONT>            REMOTE_ADDRESS.set(request.getRemoteAddr());<a name="line.828"></a>
+<FONT color="green">829</FONT>            try {<a name="line.829"></a>
+<FONT color="green">830</FONT>              return delete(ugi, delegation, username, doAsUser,<a name="line.830"></a>
+<FONT color="green">831</FONT>                  path.getAbsolutePath(), op, recursive);<a name="line.831"></a>
+<FONT color="green">832</FONT>            } finally {<a name="line.832"></a>
+<FONT color="green">833</FONT>              REMOTE_ADDRESS.set(null);<a name="line.833"></a>
+<FONT color="green">834</FONT>            }<a name="line.834"></a>
+<FONT color="green">835</FONT>          }<a name="line.835"></a>
+<FONT color="green">836</FONT>        });<a name="line.836"></a>
+<FONT color="green">837</FONT>      }<a name="line.837"></a>
+<FONT color="green">838</FONT>    <a name="line.838"></a>
+<FONT color="green">839</FONT>      private Response delete(<a name="line.839"></a>
+<FONT color="green">840</FONT>          final UserGroupInformation ugi,<a name="line.840"></a>
+<FONT color="green">841</FONT>          final DelegationParam delegation,<a name="line.841"></a>
+<FONT color="green">842</FONT>          final UserParam username,<a name="line.842"></a>
+<FONT color="green">843</FONT>          final DoAsParam doAsUser,<a name="line.843"></a>
+<FONT color="green">844</FONT>          final String fullpath,<a name="line.844"></a>
+<FONT color="green">845</FONT>          final DeleteOpParam op,<a name="line.845"></a>
+<FONT color="green">846</FONT>          final RecursiveParam recursive<a name="line.846"></a>
+<FONT color="green">847</FONT>          ) throws IOException {<a name="line.847"></a>
+<FONT color="green">848</FONT>        final NameNode namenode = (NameNode)context.getAttribute("name.node");<a name="line.848"></a>
+<FONT color="green">849</FONT>    <a name="line.849"></a>
+<FONT color="green">850</FONT>        switch(op.getValue()) {<a name="line.850"></a>
+<FONT color="green">851</FONT>        case DELETE:<a name="line.851"></a>
+<FONT color="green">852</FONT>        {<a name="line.852"></a>
+<FONT color="green">853</FONT>          final boolean b = namenode.getRpcServer().delete(fullpath, recursive.getValue());<a name="line.853"></a>
+<FONT color="green">854</FONT>          final String js = JsonUtil.toJsonString("boolean", b);<a name="line.854"></a>
+<FONT color="green">855</FONT>          return Response.ok(js).type(MediaType.APPLICATION_JSON).build();<a name="line.855"></a>
+<FONT color="green">856</FONT>        }<a name="line.856"></a>
+<FONT color="green">857</FONT>        default:<a name="line.857"></a>
+<FONT color="green">858</FONT>          throw new UnsupportedOperationException(op + " is not supported");<a name="line.858"></a>
+<FONT color="green">859</FONT>        }<a name="line.859"></a>
+<FONT color="green">860</FONT>      }<a name="line.860"></a>
+<FONT color="green">861</FONT>    }<a name="line.861"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>

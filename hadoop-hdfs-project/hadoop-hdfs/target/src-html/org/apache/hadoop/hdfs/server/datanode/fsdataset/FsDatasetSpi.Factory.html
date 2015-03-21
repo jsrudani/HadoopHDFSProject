@@ -1,0 +1,481 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    /**<a name="line.1"></a>
+<FONT color="green">002</FONT>     * Licensed to the Apache Software Foundation (ASF) under one<a name="line.2"></a>
+<FONT color="green">003</FONT>     * or more contributor license agreements.  See the NOTICE file<a name="line.3"></a>
+<FONT color="green">004</FONT>     * distributed with this work for additional information<a name="line.4"></a>
+<FONT color="green">005</FONT>     * regarding copyright ownership.  The ASF licenses this file<a name="line.5"></a>
+<FONT color="green">006</FONT>     * to you under the Apache License, Version 2.0 (the<a name="line.6"></a>
+<FONT color="green">007</FONT>     * "License"); you may not use this file except in compliance<a name="line.7"></a>
+<FONT color="green">008</FONT>     * with the License.  You may obtain a copy of the License at<a name="line.8"></a>
+<FONT color="green">009</FONT>     *<a name="line.9"></a>
+<FONT color="green">010</FONT>     *     http://www.apache.org/licenses/LICENSE-2.0<a name="line.10"></a>
+<FONT color="green">011</FONT>     *<a name="line.11"></a>
+<FONT color="green">012</FONT>     * Unless required by applicable law or agreed to in writing, software<a name="line.12"></a>
+<FONT color="green">013</FONT>     * distributed under the License is distributed on an "AS IS" BASIS,<a name="line.13"></a>
+<FONT color="green">014</FONT>     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.14"></a>
+<FONT color="green">015</FONT>     * See the License for the specific language governing permissions and<a name="line.15"></a>
+<FONT color="green">016</FONT>     * limitations under the License.<a name="line.16"></a>
+<FONT color="green">017</FONT>     */<a name="line.17"></a>
+<FONT color="green">018</FONT>    package org.apache.hadoop.hdfs.server.datanode.fsdataset;<a name="line.18"></a>
+<FONT color="green">019</FONT>    <a name="line.19"></a>
+<FONT color="green">020</FONT>    <a name="line.20"></a>
+<FONT color="green">021</FONT>    import java.io.File;<a name="line.21"></a>
+<FONT color="green">022</FONT>    import java.io.IOException;<a name="line.22"></a>
+<FONT color="green">023</FONT>    import java.io.InputStream;<a name="line.23"></a>
+<FONT color="green">024</FONT>    import java.util.List;<a name="line.24"></a>
+<FONT color="green">025</FONT>    import java.util.Map;<a name="line.25"></a>
+<FONT color="green">026</FONT>    <a name="line.26"></a>
+<FONT color="green">027</FONT>    import org.apache.hadoop.classification.InterfaceAudience;<a name="line.27"></a>
+<FONT color="green">028</FONT>    import org.apache.hadoop.conf.Configuration;<a name="line.28"></a>
+<FONT color="green">029</FONT>    import org.apache.hadoop.hdfs.DFSConfigKeys;<a name="line.29"></a>
+<FONT color="green">030</FONT>    import org.apache.hadoop.hdfs.protocol.Block;<a name="line.30"></a>
+<FONT color="green">031</FONT>    import org.apache.hadoop.hdfs.protocol.BlockListAsLongs;<a name="line.31"></a>
+<FONT color="green">032</FONT>    import org.apache.hadoop.hdfs.protocol.BlockLocalPathInfo;<a name="line.32"></a>
+<FONT color="green">033</FONT>    import org.apache.hadoop.hdfs.protocol.ExtendedBlock;<a name="line.33"></a>
+<FONT color="green">034</FONT>    import org.apache.hadoop.hdfs.protocol.HdfsBlocksMetadata;<a name="line.34"></a>
+<FONT color="green">035</FONT>    import org.apache.hadoop.hdfs.server.datanode.DataNode;<a name="line.35"></a>
+<FONT color="green">036</FONT>    import org.apache.hadoop.hdfs.server.datanode.DataStorage;<a name="line.36"></a>
+<FONT color="green">037</FONT>    import org.apache.hadoop.hdfs.server.datanode.FinalizedReplica;<a name="line.37"></a>
+<FONT color="green">038</FONT>    import org.apache.hadoop.hdfs.server.datanode.Replica;<a name="line.38"></a>
+<FONT color="green">039</FONT>    import org.apache.hadoop.hdfs.server.datanode.ReplicaInPipelineInterface;<a name="line.39"></a>
+<FONT color="green">040</FONT>    import org.apache.hadoop.hdfs.server.datanode.fsdataset.impl.FsDatasetFactory;<a name="line.40"></a>
+<FONT color="green">041</FONT>    import org.apache.hadoop.hdfs.server.datanode.metrics.FSDatasetMBean;<a name="line.41"></a>
+<FONT color="green">042</FONT>    import org.apache.hadoop.hdfs.server.protocol.BlockRecoveryCommand.RecoveringBlock;<a name="line.42"></a>
+<FONT color="green">043</FONT>    import org.apache.hadoop.hdfs.server.protocol.DatanodeStorage;<a name="line.43"></a>
+<FONT color="green">044</FONT>    import org.apache.hadoop.hdfs.server.protocol.ReplicaRecoveryInfo;<a name="line.44"></a>
+<FONT color="green">045</FONT>    import org.apache.hadoop.hdfs.server.protocol.StorageReport;<a name="line.45"></a>
+<FONT color="green">046</FONT>    import org.apache.hadoop.util.DiskChecker.DiskErrorException;<a name="line.46"></a>
+<FONT color="green">047</FONT>    import org.apache.hadoop.util.ReflectionUtils;<a name="line.47"></a>
+<FONT color="green">048</FONT>    <a name="line.48"></a>
+<FONT color="green">049</FONT>    /**<a name="line.49"></a>
+<FONT color="green">050</FONT>     * This is a service provider interface for the underlying storage that<a name="line.50"></a>
+<FONT color="green">051</FONT>     * stores replicas for a data node.<a name="line.51"></a>
+<FONT color="green">052</FONT>     * The default implementation stores replicas on local drives. <a name="line.52"></a>
+<FONT color="green">053</FONT>     */<a name="line.53"></a>
+<FONT color="green">054</FONT>    @InterfaceAudience.Private<a name="line.54"></a>
+<FONT color="green">055</FONT>    public interface FsDatasetSpi&lt;V extends FsVolumeSpi&gt; extends FSDatasetMBean {<a name="line.55"></a>
+<FONT color="green">056</FONT>      /**<a name="line.56"></a>
+<FONT color="green">057</FONT>       * A factory for creating {@link FsDatasetSpi} objects.<a name="line.57"></a>
+<FONT color="green">058</FONT>       */<a name="line.58"></a>
+<FONT color="green">059</FONT>      public static abstract class Factory&lt;D extends FsDatasetSpi&lt;?&gt;&gt; {<a name="line.59"></a>
+<FONT color="green">060</FONT>        /** @return the configured factory. */<a name="line.60"></a>
+<FONT color="green">061</FONT>        public static Factory&lt;?&gt; getFactory(Configuration conf) {<a name="line.61"></a>
+<FONT color="green">062</FONT>          @SuppressWarnings("rawtypes")<a name="line.62"></a>
+<FONT color="green">063</FONT>          final Class&lt;? extends Factory&gt; clazz = conf.getClass(<a name="line.63"></a>
+<FONT color="green">064</FONT>              DFSConfigKeys.DFS_DATANODE_FSDATASET_FACTORY_KEY,<a name="line.64"></a>
+<FONT color="green">065</FONT>              FsDatasetFactory.class,<a name="line.65"></a>
+<FONT color="green">066</FONT>              Factory.class);<a name="line.66"></a>
+<FONT color="green">067</FONT>          return ReflectionUtils.newInstance(clazz, conf);<a name="line.67"></a>
+<FONT color="green">068</FONT>        }<a name="line.68"></a>
+<FONT color="green">069</FONT>    <a name="line.69"></a>
+<FONT color="green">070</FONT>        /** Create a new object. */<a name="line.70"></a>
+<FONT color="green">071</FONT>        public abstract D newInstance(DataNode datanode, DataStorage storage,<a name="line.71"></a>
+<FONT color="green">072</FONT>            Configuration conf) throws IOException;<a name="line.72"></a>
+<FONT color="green">073</FONT>    <a name="line.73"></a>
+<FONT color="green">074</FONT>        /** Does the factory create simulated objects? */<a name="line.74"></a>
+<FONT color="green">075</FONT>        public boolean isSimulated() {<a name="line.75"></a>
+<FONT color="green">076</FONT>          return false;<a name="line.76"></a>
+<FONT color="green">077</FONT>        }<a name="line.77"></a>
+<FONT color="green">078</FONT>      }<a name="line.78"></a>
+<FONT color="green">079</FONT>    <a name="line.79"></a>
+<FONT color="green">080</FONT>      /**<a name="line.80"></a>
+<FONT color="green">081</FONT>       * Create rolling logs.<a name="line.81"></a>
+<FONT color="green">082</FONT>       * <a name="line.82"></a>
+<FONT color="green">083</FONT>       * @param prefix the prefix of the log names.<a name="line.83"></a>
+<FONT color="green">084</FONT>       * @return rolling logs<a name="line.84"></a>
+<FONT color="green">085</FONT>       */<a name="line.85"></a>
+<FONT color="green">086</FONT>      public RollingLogs createRollingLogs(String bpid, String prefix<a name="line.86"></a>
+<FONT color="green">087</FONT>          ) throws IOException;<a name="line.87"></a>
+<FONT color="green">088</FONT>    <a name="line.88"></a>
+<FONT color="green">089</FONT>      /** @return a list of volumes. */<a name="line.89"></a>
+<FONT color="green">090</FONT>      public List&lt;V&gt; getVolumes();<a name="line.90"></a>
+<FONT color="green">091</FONT>    <a name="line.91"></a>
+<FONT color="green">092</FONT>      /** @return one or more storage reports for attached volumes. */<a name="line.92"></a>
+<FONT color="green">093</FONT>      public StorageReport[] getStorageReports(String bpid)<a name="line.93"></a>
+<FONT color="green">094</FONT>          throws IOException;<a name="line.94"></a>
+<FONT color="green">095</FONT>    <a name="line.95"></a>
+<FONT color="green">096</FONT>      /** @return the volume that contains a replica of the block. */<a name="line.96"></a>
+<FONT color="green">097</FONT>      public V getVolume(ExtendedBlock b);<a name="line.97"></a>
+<FONT color="green">098</FONT>    <a name="line.98"></a>
+<FONT color="green">099</FONT>      /** @return a volume information map (name =&gt; info). */<a name="line.99"></a>
+<FONT color="green">100</FONT>      public Map&lt;String, Object&gt; getVolumeInfoMap();<a name="line.100"></a>
+<FONT color="green">101</FONT>    <a name="line.101"></a>
+<FONT color="green">102</FONT>      /** @return a list of finalized blocks for the given block pool. */<a name="line.102"></a>
+<FONT color="green">103</FONT>      public List&lt;FinalizedReplica&gt; getFinalizedBlocks(String bpid);<a name="line.103"></a>
+<FONT color="green">104</FONT>    <a name="line.104"></a>
+<FONT color="green">105</FONT>      /**<a name="line.105"></a>
+<FONT color="green">106</FONT>       * Check whether the in-memory block record matches the block on the disk,<a name="line.106"></a>
+<FONT color="green">107</FONT>       * and, in case that they are not matched, update the record or mark it<a name="line.107"></a>
+<FONT color="green">108</FONT>       * as corrupted.<a name="line.108"></a>
+<FONT color="green">109</FONT>       */<a name="line.109"></a>
+<FONT color="green">110</FONT>      public void checkAndUpdate(String bpid, long blockId, File diskFile,<a name="line.110"></a>
+<FONT color="green">111</FONT>          File diskMetaFile, FsVolumeSpi vol);<a name="line.111"></a>
+<FONT color="green">112</FONT>    <a name="line.112"></a>
+<FONT color="green">113</FONT>      /**<a name="line.113"></a>
+<FONT color="green">114</FONT>       * @param b - the block<a name="line.114"></a>
+<FONT color="green">115</FONT>       * @return a stream if the meta-data of the block exists;<a name="line.115"></a>
+<FONT color="green">116</FONT>       *         otherwise, return null.<a name="line.116"></a>
+<FONT color="green">117</FONT>       * @throws IOException<a name="line.117"></a>
+<FONT color="green">118</FONT>       */<a name="line.118"></a>
+<FONT color="green">119</FONT>      public LengthInputStream getMetaDataInputStream(ExtendedBlock b<a name="line.119"></a>
+<FONT color="green">120</FONT>          ) throws IOException;<a name="line.120"></a>
+<FONT color="green">121</FONT>    <a name="line.121"></a>
+<FONT color="green">122</FONT>      /**<a name="line.122"></a>
+<FONT color="green">123</FONT>       * Returns the specified block's on-disk length (excluding metadata)<a name="line.123"></a>
+<FONT color="green">124</FONT>       * @param b<a name="line.124"></a>
+<FONT color="green">125</FONT>       * @return   the specified block's on-disk length (excluding metadta)<a name="line.125"></a>
+<FONT color="green">126</FONT>       * @throws IOException<a name="line.126"></a>
+<FONT color="green">127</FONT>       */<a name="line.127"></a>
+<FONT color="green">128</FONT>      public long getLength(ExtendedBlock b) throws IOException;<a name="line.128"></a>
+<FONT color="green">129</FONT>    <a name="line.129"></a>
+<FONT color="green">130</FONT>      /**<a name="line.130"></a>
+<FONT color="green">131</FONT>       * Get reference to the replica meta info in the replicasMap. <a name="line.131"></a>
+<FONT color="green">132</FONT>       * To be called from methods that are synchronized on {@link FSDataset}<a name="line.132"></a>
+<FONT color="green">133</FONT>       * @param blockId<a name="line.133"></a>
+<FONT color="green">134</FONT>       * @return replica from the replicas map<a name="line.134"></a>
+<FONT color="green">135</FONT>       */<a name="line.135"></a>
+<FONT color="green">136</FONT>      @Deprecated<a name="line.136"></a>
+<FONT color="green">137</FONT>      public Replica getReplica(String bpid, long blockId);<a name="line.137"></a>
+<FONT color="green">138</FONT>    <a name="line.138"></a>
+<FONT color="green">139</FONT>      /**<a name="line.139"></a>
+<FONT color="green">140</FONT>       * @return replica meta information<a name="line.140"></a>
+<FONT color="green">141</FONT>       */<a name="line.141"></a>
+<FONT color="green">142</FONT>      public String getReplicaString(String bpid, long blockId);<a name="line.142"></a>
+<FONT color="green">143</FONT>    <a name="line.143"></a>
+<FONT color="green">144</FONT>      /**<a name="line.144"></a>
+<FONT color="green">145</FONT>       * @return the generation stamp stored with the block.<a name="line.145"></a>
+<FONT color="green">146</FONT>       */<a name="line.146"></a>
+<FONT color="green">147</FONT>      public Block getStoredBlock(String bpid, long blkid) throws IOException;<a name="line.147"></a>
+<FONT color="green">148</FONT>      <a name="line.148"></a>
+<FONT color="green">149</FONT>      /**<a name="line.149"></a>
+<FONT color="green">150</FONT>       * Returns an input stream at specified offset of the specified block<a name="line.150"></a>
+<FONT color="green">151</FONT>       * @param b<a name="line.151"></a>
+<FONT color="green">152</FONT>       * @param seekOffset<a name="line.152"></a>
+<FONT color="green">153</FONT>       * @return an input stream to read the contents of the specified block,<a name="line.153"></a>
+<FONT color="green">154</FONT>       *  starting at the offset<a name="line.154"></a>
+<FONT color="green">155</FONT>       * @throws IOException<a name="line.155"></a>
+<FONT color="green">156</FONT>       */<a name="line.156"></a>
+<FONT color="green">157</FONT>      public InputStream getBlockInputStream(ExtendedBlock b, long seekOffset)<a name="line.157"></a>
+<FONT color="green">158</FONT>                throws IOException;<a name="line.158"></a>
+<FONT color="green">159</FONT>    <a name="line.159"></a>
+<FONT color="green">160</FONT>      /**<a name="line.160"></a>
+<FONT color="green">161</FONT>       * Returns an input stream at specified offset of the specified block<a name="line.161"></a>
+<FONT color="green">162</FONT>       * The block is still in the tmp directory and is not finalized<a name="line.162"></a>
+<FONT color="green">163</FONT>       * @param b<a name="line.163"></a>
+<FONT color="green">164</FONT>       * @param blkoff<a name="line.164"></a>
+<FONT color="green">165</FONT>       * @param ckoff<a name="line.165"></a>
+<FONT color="green">166</FONT>       * @return an input stream to read the contents of the specified block,<a name="line.166"></a>
+<FONT color="green">167</FONT>       *  starting at the offset<a name="line.167"></a>
+<FONT color="green">168</FONT>       * @throws IOException<a name="line.168"></a>
+<FONT color="green">169</FONT>       */<a name="line.169"></a>
+<FONT color="green">170</FONT>      public ReplicaInputStreams getTmpInputStreams(ExtendedBlock b, long blkoff,<a name="line.170"></a>
+<FONT color="green">171</FONT>          long ckoff) throws IOException;<a name="line.171"></a>
+<FONT color="green">172</FONT>    <a name="line.172"></a>
+<FONT color="green">173</FONT>      /**<a name="line.173"></a>
+<FONT color="green">174</FONT>       * Creates a temporary replica and returns the meta information of the replica<a name="line.174"></a>
+<FONT color="green">175</FONT>       * <a name="line.175"></a>
+<FONT color="green">176</FONT>       * @param b block<a name="line.176"></a>
+<FONT color="green">177</FONT>       * @return the meta info of the replica which is being written to<a name="line.177"></a>
+<FONT color="green">178</FONT>       * @throws IOException if an error occurs<a name="line.178"></a>
+<FONT color="green">179</FONT>       */<a name="line.179"></a>
+<FONT color="green">180</FONT>      public ReplicaInPipelineInterface createTemporary(ExtendedBlock b<a name="line.180"></a>
+<FONT color="green">181</FONT>          ) throws IOException;<a name="line.181"></a>
+<FONT color="green">182</FONT>    <a name="line.182"></a>
+<FONT color="green">183</FONT>      /**<a name="line.183"></a>
+<FONT color="green">184</FONT>       * Creates a RBW replica and returns the meta info of the replica<a name="line.184"></a>
+<FONT color="green">185</FONT>       * <a name="line.185"></a>
+<FONT color="green">186</FONT>       * @param b block<a name="line.186"></a>
+<FONT color="green">187</FONT>       * @return the meta info of the replica which is being written to<a name="line.187"></a>
+<FONT color="green">188</FONT>       * @throws IOException if an error occurs<a name="line.188"></a>
+<FONT color="green">189</FONT>       */<a name="line.189"></a>
+<FONT color="green">190</FONT>      public ReplicaInPipelineInterface createRbw(ExtendedBlock b<a name="line.190"></a>
+<FONT color="green">191</FONT>          ) throws IOException;<a name="line.191"></a>
+<FONT color="green">192</FONT>    <a name="line.192"></a>
+<FONT color="green">193</FONT>      /**<a name="line.193"></a>
+<FONT color="green">194</FONT>       * Recovers a RBW replica and returns the meta info of the replica<a name="line.194"></a>
+<FONT color="green">195</FONT>       * <a name="line.195"></a>
+<FONT color="green">196</FONT>       * @param b block<a name="line.196"></a>
+<FONT color="green">197</FONT>       * @param newGS the new generation stamp for the replica<a name="line.197"></a>
+<FONT color="green">198</FONT>       * @param minBytesRcvd the minimum number of bytes that the replica could have<a name="line.198"></a>
+<FONT color="green">199</FONT>       * @param maxBytesRcvd the maximum number of bytes that the replica could have<a name="line.199"></a>
+<FONT color="green">200</FONT>       * @return the meta info of the replica which is being written to<a name="line.200"></a>
+<FONT color="green">201</FONT>       * @throws IOException if an error occurs<a name="line.201"></a>
+<FONT color="green">202</FONT>       */<a name="line.202"></a>
+<FONT color="green">203</FONT>      public ReplicaInPipelineInterface recoverRbw(ExtendedBlock b, <a name="line.203"></a>
+<FONT color="green">204</FONT>          long newGS, long minBytesRcvd, long maxBytesRcvd) throws IOException;<a name="line.204"></a>
+<FONT color="green">205</FONT>    <a name="line.205"></a>
+<FONT color="green">206</FONT>      /**<a name="line.206"></a>
+<FONT color="green">207</FONT>       * Covert a temporary replica to a RBW.<a name="line.207"></a>
+<FONT color="green">208</FONT>       * @param temporary the temporary replica being converted<a name="line.208"></a>
+<FONT color="green">209</FONT>       * @return the result RBW<a name="line.209"></a>
+<FONT color="green">210</FONT>       */<a name="line.210"></a>
+<FONT color="green">211</FONT>      public ReplicaInPipelineInterface convertTemporaryToRbw(<a name="line.211"></a>
+<FONT color="green">212</FONT>          ExtendedBlock temporary) throws IOException;<a name="line.212"></a>
+<FONT color="green">213</FONT>    <a name="line.213"></a>
+<FONT color="green">214</FONT>      /**<a name="line.214"></a>
+<FONT color="green">215</FONT>       * Append to a finalized replica and returns the meta info of the replica<a name="line.215"></a>
+<FONT color="green">216</FONT>       * <a name="line.216"></a>
+<FONT color="green">217</FONT>       * @param b block<a name="line.217"></a>
+<FONT color="green">218</FONT>       * @param newGS the new generation stamp for the replica<a name="line.218"></a>
+<FONT color="green">219</FONT>       * @param expectedBlockLen the number of bytes the replica is expected to have<a name="line.219"></a>
+<FONT color="green">220</FONT>       * @return the meata info of the replica which is being written to<a name="line.220"></a>
+<FONT color="green">221</FONT>       * @throws IOException<a name="line.221"></a>
+<FONT color="green">222</FONT>       */<a name="line.222"></a>
+<FONT color="green">223</FONT>      public ReplicaInPipelineInterface append(ExtendedBlock b, long newGS,<a name="line.223"></a>
+<FONT color="green">224</FONT>          long expectedBlockLen) throws IOException;<a name="line.224"></a>
+<FONT color="green">225</FONT>    <a name="line.225"></a>
+<FONT color="green">226</FONT>      /**<a name="line.226"></a>
+<FONT color="green">227</FONT>       * Recover a failed append to a finalized replica<a name="line.227"></a>
+<FONT color="green">228</FONT>       * and returns the meta info of the replica<a name="line.228"></a>
+<FONT color="green">229</FONT>       * <a name="line.229"></a>
+<FONT color="green">230</FONT>       * @param b block<a name="line.230"></a>
+<FONT color="green">231</FONT>       * @param newGS the new generation stamp for the replica<a name="line.231"></a>
+<FONT color="green">232</FONT>       * @param expectedBlockLen the number of bytes the replica is expected to have<a name="line.232"></a>
+<FONT color="green">233</FONT>       * @return the meta info of the replica which is being written to<a name="line.233"></a>
+<FONT color="green">234</FONT>       * @throws IOException<a name="line.234"></a>
+<FONT color="green">235</FONT>       */<a name="line.235"></a>
+<FONT color="green">236</FONT>      public ReplicaInPipelineInterface recoverAppend(ExtendedBlock b, long newGS,<a name="line.236"></a>
+<FONT color="green">237</FONT>          long expectedBlockLen) throws IOException;<a name="line.237"></a>
+<FONT color="green">238</FONT>      <a name="line.238"></a>
+<FONT color="green">239</FONT>      /**<a name="line.239"></a>
+<FONT color="green">240</FONT>       * Recover a failed pipeline close<a name="line.240"></a>
+<FONT color="green">241</FONT>       * It bumps the replica's generation stamp and finalize it if RBW replica<a name="line.241"></a>
+<FONT color="green">242</FONT>       * <a name="line.242"></a>
+<FONT color="green">243</FONT>       * @param b block<a name="line.243"></a>
+<FONT color="green">244</FONT>       * @param newGS the new generation stamp for the replica<a name="line.244"></a>
+<FONT color="green">245</FONT>       * @param expectedBlockLen the number of bytes the replica is expected to have<a name="line.245"></a>
+<FONT color="green">246</FONT>       * @return the storage uuid of the replica.<a name="line.246"></a>
+<FONT color="green">247</FONT>       * @throws IOException<a name="line.247"></a>
+<FONT color="green">248</FONT>       */<a name="line.248"></a>
+<FONT color="green">249</FONT>      public String recoverClose(ExtendedBlock b, long newGS, long expectedBlockLen<a name="line.249"></a>
+<FONT color="green">250</FONT>          ) throws IOException;<a name="line.250"></a>
+<FONT color="green">251</FONT>      <a name="line.251"></a>
+<FONT color="green">252</FONT>      /**<a name="line.252"></a>
+<FONT color="green">253</FONT>       * Finalizes the block previously opened for writing using writeToBlock.<a name="line.253"></a>
+<FONT color="green">254</FONT>       * The block size is what is in the parameter b and it must match the amount<a name="line.254"></a>
+<FONT color="green">255</FONT>       *  of data written<a name="line.255"></a>
+<FONT color="green">256</FONT>       * @param b<a name="line.256"></a>
+<FONT color="green">257</FONT>       * @throws IOException<a name="line.257"></a>
+<FONT color="green">258</FONT>       */<a name="line.258"></a>
+<FONT color="green">259</FONT>      public void finalizeBlock(ExtendedBlock b) throws IOException;<a name="line.259"></a>
+<FONT color="green">260</FONT>    <a name="line.260"></a>
+<FONT color="green">261</FONT>      /**<a name="line.261"></a>
+<FONT color="green">262</FONT>       * Unfinalizes the block previously opened for writing using writeToBlock.<a name="line.262"></a>
+<FONT color="green">263</FONT>       * The temporary file associated with this block is deleted.<a name="line.263"></a>
+<FONT color="green">264</FONT>       * @param b<a name="line.264"></a>
+<FONT color="green">265</FONT>       * @throws IOException<a name="line.265"></a>
+<FONT color="green">266</FONT>       */<a name="line.266"></a>
+<FONT color="green">267</FONT>      public void unfinalizeBlock(ExtendedBlock b) throws IOException;<a name="line.267"></a>
+<FONT color="green">268</FONT>    <a name="line.268"></a>
+<FONT color="green">269</FONT>      /**<a name="line.269"></a>
+<FONT color="green">270</FONT>       * Returns one block report per volume.<a name="line.270"></a>
+<FONT color="green">271</FONT>       * @param bpid Block Pool Id<a name="line.271"></a>
+<FONT color="green">272</FONT>       * @return - a map of DatanodeStorage to block report for the volume.<a name="line.272"></a>
+<FONT color="green">273</FONT>       */<a name="line.273"></a>
+<FONT color="green">274</FONT>      public Map&lt;DatanodeStorage, BlockListAsLongs&gt; getBlockReports(String bpid);<a name="line.274"></a>
+<FONT color="green">275</FONT>    <a name="line.275"></a>
+<FONT color="green">276</FONT>      /**<a name="line.276"></a>
+<FONT color="green">277</FONT>       * Returns the cache report - the full list of cached block IDs of a<a name="line.277"></a>
+<FONT color="green">278</FONT>       * block pool.<a name="line.278"></a>
+<FONT color="green">279</FONT>       * @param   bpid Block Pool Id<a name="line.279"></a>
+<FONT color="green">280</FONT>       * @return  the cache report - the full list of cached block IDs.<a name="line.280"></a>
+<FONT color="green">281</FONT>       */<a name="line.281"></a>
+<FONT color="green">282</FONT>      public List&lt;Long&gt; getCacheReport(String bpid);<a name="line.282"></a>
+<FONT color="green">283</FONT>    <a name="line.283"></a>
+<FONT color="green">284</FONT>      /** Does the dataset contain the block? */<a name="line.284"></a>
+<FONT color="green">285</FONT>      public boolean contains(ExtendedBlock block);<a name="line.285"></a>
+<FONT color="green">286</FONT>    <a name="line.286"></a>
+<FONT color="green">287</FONT>      /**<a name="line.287"></a>
+<FONT color="green">288</FONT>       * Is the block valid?<a name="line.288"></a>
+<FONT color="green">289</FONT>       * @param b<a name="line.289"></a>
+<FONT color="green">290</FONT>       * @return - true if the specified block is valid<a name="line.290"></a>
+<FONT color="green">291</FONT>       */<a name="line.291"></a>
+<FONT color="green">292</FONT>      public boolean isValidBlock(ExtendedBlock b);<a name="line.292"></a>
+<FONT color="green">293</FONT>    <a name="line.293"></a>
+<FONT color="green">294</FONT>      /**<a name="line.294"></a>
+<FONT color="green">295</FONT>       * Is the block a valid RBW?<a name="line.295"></a>
+<FONT color="green">296</FONT>       * @param b<a name="line.296"></a>
+<FONT color="green">297</FONT>       * @return - true if the specified block is a valid RBW<a name="line.297"></a>
+<FONT color="green">298</FONT>       */<a name="line.298"></a>
+<FONT color="green">299</FONT>      public boolean isValidRbw(ExtendedBlock b);<a name="line.299"></a>
+<FONT color="green">300</FONT>    <a name="line.300"></a>
+<FONT color="green">301</FONT>      /**<a name="line.301"></a>
+<FONT color="green">302</FONT>       * Invalidates the specified blocks<a name="line.302"></a>
+<FONT color="green">303</FONT>       * @param bpid Block pool Id<a name="line.303"></a>
+<FONT color="green">304</FONT>       * @param invalidBlks - the blocks to be invalidated<a name="line.304"></a>
+<FONT color="green">305</FONT>       * @throws IOException<a name="line.305"></a>
+<FONT color="green">306</FONT>       */<a name="line.306"></a>
+<FONT color="green">307</FONT>      public void invalidate(String bpid, Block invalidBlks[]) throws IOException;<a name="line.307"></a>
+<FONT color="green">308</FONT>    <a name="line.308"></a>
+<FONT color="green">309</FONT>      /**<a name="line.309"></a>
+<FONT color="green">310</FONT>       * Caches the specified blocks<a name="line.310"></a>
+<FONT color="green">311</FONT>       * @param bpid Block pool id<a name="line.311"></a>
+<FONT color="green">312</FONT>       * @param blockIds - block ids to cache<a name="line.312"></a>
+<FONT color="green">313</FONT>       */<a name="line.313"></a>
+<FONT color="green">314</FONT>      public void cache(String bpid, long[] blockIds);<a name="line.314"></a>
+<FONT color="green">315</FONT>    <a name="line.315"></a>
+<FONT color="green">316</FONT>      /**<a name="line.316"></a>
+<FONT color="green">317</FONT>       * Uncaches the specified blocks<a name="line.317"></a>
+<FONT color="green">318</FONT>       * @param bpid Block pool id<a name="line.318"></a>
+<FONT color="green">319</FONT>       * @param blockIds - blocks ids to uncache<a name="line.319"></a>
+<FONT color="green">320</FONT>       */<a name="line.320"></a>
+<FONT color="green">321</FONT>      public void uncache(String bpid, long[] blockIds);<a name="line.321"></a>
+<FONT color="green">322</FONT>    <a name="line.322"></a>
+<FONT color="green">323</FONT>        /**<a name="line.323"></a>
+<FONT color="green">324</FONT>         * Check if all the data directories are healthy<a name="line.324"></a>
+<FONT color="green">325</FONT>         * @throws DiskErrorException<a name="line.325"></a>
+<FONT color="green">326</FONT>         */<a name="line.326"></a>
+<FONT color="green">327</FONT>      public void checkDataDir() throws DiskErrorException;<a name="line.327"></a>
+<FONT color="green">328</FONT>    <a name="line.328"></a>
+<FONT color="green">329</FONT>      /**<a name="line.329"></a>
+<FONT color="green">330</FONT>       * Shutdown the FSDataset<a name="line.330"></a>
+<FONT color="green">331</FONT>       */<a name="line.331"></a>
+<FONT color="green">332</FONT>      public void shutdown();<a name="line.332"></a>
+<FONT color="green">333</FONT>    <a name="line.333"></a>
+<FONT color="green">334</FONT>      /**<a name="line.334"></a>
+<FONT color="green">335</FONT>       * Sets the file pointer of the checksum stream so that the last checksum<a name="line.335"></a>
+<FONT color="green">336</FONT>       * will be overwritten<a name="line.336"></a>
+<FONT color="green">337</FONT>       * @param b block<a name="line.337"></a>
+<FONT color="green">338</FONT>       * @param outs The streams for the data file and checksum file<a name="line.338"></a>
+<FONT color="green">339</FONT>       * @param checksumSize number of bytes each checksum has<a name="line.339"></a>
+<FONT color="green">340</FONT>       * @throws IOException<a name="line.340"></a>
+<FONT color="green">341</FONT>       */<a name="line.341"></a>
+<FONT color="green">342</FONT>      public void adjustCrcChannelPosition(ExtendedBlock b,<a name="line.342"></a>
+<FONT color="green">343</FONT>          ReplicaOutputStreams outs, int checksumSize) throws IOException;<a name="line.343"></a>
+<FONT color="green">344</FONT>    <a name="line.344"></a>
+<FONT color="green">345</FONT>      /**<a name="line.345"></a>
+<FONT color="green">346</FONT>       * Checks how many valid storage volumes there are in the DataNode.<a name="line.346"></a>
+<FONT color="green">347</FONT>       * @return true if more than the minimum number of valid volumes are left <a name="line.347"></a>
+<FONT color="green">348</FONT>       * in the FSDataSet.<a name="line.348"></a>
+<FONT color="green">349</FONT>       */<a name="line.349"></a>
+<FONT color="green">350</FONT>      public boolean hasEnoughResource();<a name="line.350"></a>
+<FONT color="green">351</FONT>    <a name="line.351"></a>
+<FONT color="green">352</FONT>      /**<a name="line.352"></a>
+<FONT color="green">353</FONT>       * Get visible length of the specified replica.<a name="line.353"></a>
+<FONT color="green">354</FONT>       */<a name="line.354"></a>
+<FONT color="green">355</FONT>      long getReplicaVisibleLength(final ExtendedBlock block) throws IOException;<a name="line.355"></a>
+<FONT color="green">356</FONT>    <a name="line.356"></a>
+<FONT color="green">357</FONT>      /**<a name="line.357"></a>
+<FONT color="green">358</FONT>       * Initialize a replica recovery.<a name="line.358"></a>
+<FONT color="green">359</FONT>       * @return actual state of the replica on this data-node or <a name="line.359"></a>
+<FONT color="green">360</FONT>       * null if data-node does not have the replica.<a name="line.360"></a>
+<FONT color="green">361</FONT>       */<a name="line.361"></a>
+<FONT color="green">362</FONT>      public ReplicaRecoveryInfo initReplicaRecovery(RecoveringBlock rBlock<a name="line.362"></a>
+<FONT color="green">363</FONT>          ) throws IOException;<a name="line.363"></a>
+<FONT color="green">364</FONT>    <a name="line.364"></a>
+<FONT color="green">365</FONT>      /**<a name="line.365"></a>
+<FONT color="green">366</FONT>       * Update replica's generation stamp and length and finalize it.<a name="line.366"></a>
+<FONT color="green">367</FONT>       * @return the ID of storage that stores the block<a name="line.367"></a>
+<FONT color="green">368</FONT>       */<a name="line.368"></a>
+<FONT color="green">369</FONT>      public String updateReplicaUnderRecovery(ExtendedBlock oldBlock,<a name="line.369"></a>
+<FONT color="green">370</FONT>          long recoveryId, long newLength) throws IOException;<a name="line.370"></a>
+<FONT color="green">371</FONT>    <a name="line.371"></a>
+<FONT color="green">372</FONT>      /**<a name="line.372"></a>
+<FONT color="green">373</FONT>       * add new block pool ID<a name="line.373"></a>
+<FONT color="green">374</FONT>       * @param bpid Block pool Id<a name="line.374"></a>
+<FONT color="green">375</FONT>       * @param conf Configuration<a name="line.375"></a>
+<FONT color="green">376</FONT>       */<a name="line.376"></a>
+<FONT color="green">377</FONT>      public void addBlockPool(String bpid, Configuration conf) throws IOException;<a name="line.377"></a>
+<FONT color="green">378</FONT>      <a name="line.378"></a>
+<FONT color="green">379</FONT>      /**<a name="line.379"></a>
+<FONT color="green">380</FONT>       * Shutdown and remove the block pool from underlying storage.<a name="line.380"></a>
+<FONT color="green">381</FONT>       * @param bpid Block pool Id to be removed<a name="line.381"></a>
+<FONT color="green">382</FONT>       */<a name="line.382"></a>
+<FONT color="green">383</FONT>      public void shutdownBlockPool(String bpid) ;<a name="line.383"></a>
+<FONT color="green">384</FONT>      <a name="line.384"></a>
+<FONT color="green">385</FONT>      /**<a name="line.385"></a>
+<FONT color="green">386</FONT>       * Deletes the block pool directories. If force is false, directories are <a name="line.386"></a>
+<FONT color="green">387</FONT>       * deleted only if no block files exist for the block pool. If force <a name="line.387"></a>
+<FONT color="green">388</FONT>       * is true entire directory for the blockpool is deleted along with its<a name="line.388"></a>
+<FONT color="green">389</FONT>       * contents.<a name="line.389"></a>
+<FONT color="green">390</FONT>       * @param bpid BlockPool Id to be deleted.<a name="line.390"></a>
+<FONT color="green">391</FONT>       * @param force If force is false, directories are deleted only if no<a name="line.391"></a>
+<FONT color="green">392</FONT>       *        block files exist for the block pool, otherwise entire <a name="line.392"></a>
+<FONT color="green">393</FONT>       *        directory for the blockpool is deleted along with its contents.<a name="line.393"></a>
+<FONT color="green">394</FONT>       * @throws IOException<a name="line.394"></a>
+<FONT color="green">395</FONT>       */<a name="line.395"></a>
+<FONT color="green">396</FONT>      public void deleteBlockPool(String bpid, boolean force) throws IOException;<a name="line.396"></a>
+<FONT color="green">397</FONT>      <a name="line.397"></a>
+<FONT color="green">398</FONT>      /**<a name="line.398"></a>
+<FONT color="green">399</FONT>       * Get {@link BlockLocalPathInfo} for the given block.<a name="line.399"></a>
+<FONT color="green">400</FONT>       */<a name="line.400"></a>
+<FONT color="green">401</FONT>      public BlockLocalPathInfo getBlockLocalPathInfo(ExtendedBlock b<a name="line.401"></a>
+<FONT color="green">402</FONT>          ) throws IOException;<a name="line.402"></a>
+<FONT color="green">403</FONT>    <a name="line.403"></a>
+<FONT color="green">404</FONT>      /**<a name="line.404"></a>
+<FONT color="green">405</FONT>       * Get a {@link HdfsBlocksMetadata} corresponding to the list of blocks in <a name="line.405"></a>
+<FONT color="green">406</FONT>       * &lt;code&gt;blocks&lt;/code&gt;.<a name="line.406"></a>
+<FONT color="green">407</FONT>       * <a name="line.407"></a>
+<FONT color="green">408</FONT>       * @param blocks List of blocks for which to return metadata<a name="line.408"></a>
+<FONT color="green">409</FONT>       * @return metadata Metadata for the list of blocks<a name="line.409"></a>
+<FONT color="green">410</FONT>       * @throws IOException<a name="line.410"></a>
+<FONT color="green">411</FONT>       */<a name="line.411"></a>
+<FONT color="green">412</FONT>      public HdfsBlocksMetadata getHdfsBlocksMetadata(List&lt;ExtendedBlock&gt; blocks)<a name="line.412"></a>
+<FONT color="green">413</FONT>          throws IOException;<a name="line.413"></a>
+<FONT color="green">414</FONT>    }<a name="line.414"></a>
+<FONT color="green">415</FONT>    <a name="line.415"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>

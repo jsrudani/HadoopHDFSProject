@@ -1,0 +1,2 @@
+/usr/bin/ar cr libnative_mini_dfs.a  CMakeFiles/native_mini_dfs.dir/main/native/libhdfs/native_mini_dfs.c.o
+/usr/bin/ranlib libnative_mini_dfs.a

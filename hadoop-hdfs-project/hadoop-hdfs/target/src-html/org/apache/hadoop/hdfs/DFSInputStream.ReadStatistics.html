@@ -1,0 +1,1654 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    /**<a name="line.1"></a>
+<FONT color="green">002</FONT>     * Licensed to the Apache Software Foundation (ASF) under one<a name="line.2"></a>
+<FONT color="green">003</FONT>     * or more contributor license agreements.  See the NOTICE file<a name="line.3"></a>
+<FONT color="green">004</FONT>     * distributed with this work for additional information<a name="line.4"></a>
+<FONT color="green">005</FONT>     * regarding copyright ownership.  The ASF licenses this file<a name="line.5"></a>
+<FONT color="green">006</FONT>     * to you under the Apache License, Version 2.0 (the<a name="line.6"></a>
+<FONT color="green">007</FONT>     * "License"); you may not use this file except in compliance<a name="line.7"></a>
+<FONT color="green">008</FONT>     * with the License.  You may obtain a copy of the License at<a name="line.8"></a>
+<FONT color="green">009</FONT>     *<a name="line.9"></a>
+<FONT color="green">010</FONT>     *     http://www.apache.org/licenses/LICENSE-2.0<a name="line.10"></a>
+<FONT color="green">011</FONT>     *<a name="line.11"></a>
+<FONT color="green">012</FONT>     * Unless required by applicable law or agreed to in writing, software<a name="line.12"></a>
+<FONT color="green">013</FONT>     * distributed under the License is distributed on an "AS IS" BASIS,<a name="line.13"></a>
+<FONT color="green">014</FONT>     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.14"></a>
+<FONT color="green">015</FONT>     * See the License for the specific language governing permissions and<a name="line.15"></a>
+<FONT color="green">016</FONT>     * limitations under the License.<a name="line.16"></a>
+<FONT color="green">017</FONT>     */<a name="line.17"></a>
+<FONT color="green">018</FONT>    package org.apache.hadoop.hdfs;<a name="line.18"></a>
+<FONT color="green">019</FONT>    <a name="line.19"></a>
+<FONT color="green">020</FONT>    import java.io.FileInputStream;<a name="line.20"></a>
+<FONT color="green">021</FONT>    import java.io.IOException;<a name="line.21"></a>
+<FONT color="green">022</FONT>    import java.net.InetSocketAddress;<a name="line.22"></a>
+<FONT color="green">023</FONT>    import java.net.Socket;<a name="line.23"></a>
+<FONT color="green">024</FONT>    import java.nio.ByteBuffer;<a name="line.24"></a>
+<FONT color="green">025</FONT>    import java.util.AbstractMap;<a name="line.25"></a>
+<FONT color="green">026</FONT>    import java.util.ArrayList;<a name="line.26"></a>
+<FONT color="green">027</FONT>    import java.util.EnumSet;<a name="line.27"></a>
+<FONT color="green">028</FONT>    import java.util.HashMap;<a name="line.28"></a>
+<FONT color="green">029</FONT>    import java.util.HashSet;<a name="line.29"></a>
+<FONT color="green">030</FONT>    import java.util.Iterator;<a name="line.30"></a>
+<FONT color="green">031</FONT>    import java.util.List;<a name="line.31"></a>
+<FONT color="green">032</FONT>    import java.util.Map;<a name="line.32"></a>
+<FONT color="green">033</FONT>    import java.util.Map.Entry;<a name="line.33"></a>
+<FONT color="green">034</FONT>    import java.util.Set;<a name="line.34"></a>
+<FONT color="green">035</FONT>    import java.util.concurrent.ConcurrentHashMap;<a name="line.35"></a>
+<FONT color="green">036</FONT>    <a name="line.36"></a>
+<FONT color="green">037</FONT>    import org.apache.commons.io.IOUtils;<a name="line.37"></a>
+<FONT color="green">038</FONT>    import org.apache.hadoop.classification.InterfaceAudience;<a name="line.38"></a>
+<FONT color="green">039</FONT>    import org.apache.hadoop.fs.ByteBufferReadable;<a name="line.39"></a>
+<FONT color="green">040</FONT>    import org.apache.hadoop.fs.ByteBufferUtil;<a name="line.40"></a>
+<FONT color="green">041</FONT>    import org.apache.hadoop.fs.CanSetDropBehind;<a name="line.41"></a>
+<FONT color="green">042</FONT>    import org.apache.hadoop.fs.CanSetReadahead;<a name="line.42"></a>
+<FONT color="green">043</FONT>    import org.apache.hadoop.fs.ChecksumException;<a name="line.43"></a>
+<FONT color="green">044</FONT>    import org.apache.hadoop.fs.FSInputStream;<a name="line.44"></a>
+<FONT color="green">045</FONT>    import org.apache.hadoop.fs.HasEnhancedByteBufferAccess;<a name="line.45"></a>
+<FONT color="green">046</FONT>    import org.apache.hadoop.fs.ReadOption;<a name="line.46"></a>
+<FONT color="green">047</FONT>    import org.apache.hadoop.fs.UnresolvedLinkException;<a name="line.47"></a>
+<FONT color="green">048</FONT>    import org.apache.hadoop.hdfs.client.ClientMmap;<a name="line.48"></a>
+<FONT color="green">049</FONT>    import org.apache.hadoop.hdfs.net.DomainPeer;<a name="line.49"></a>
+<FONT color="green">050</FONT>    import org.apache.hadoop.hdfs.net.Peer;<a name="line.50"></a>
+<FONT color="green">051</FONT>    import org.apache.hadoop.hdfs.net.TcpPeerServer;<a name="line.51"></a>
+<FONT color="green">052</FONT>    import org.apache.hadoop.hdfs.protocol.ClientDatanodeProtocol;<a name="line.52"></a>
+<FONT color="green">053</FONT>    import org.apache.hadoop.hdfs.protocol.DatanodeInfo;<a name="line.53"></a>
+<FONT color="green">054</FONT>    import org.apache.hadoop.hdfs.protocol.ExtendedBlock;<a name="line.54"></a>
+<FONT color="green">055</FONT>    import org.apache.hadoop.hdfs.protocol.LocatedBlock;<a name="line.55"></a>
+<FONT color="green">056</FONT>    import org.apache.hadoop.hdfs.protocol.LocatedBlocks;<a name="line.56"></a>
+<FONT color="green">057</FONT>    import org.apache.hadoop.hdfs.protocol.datatransfer.InvalidEncryptionKeyException;<a name="line.57"></a>
+<FONT color="green">058</FONT>    import org.apache.hadoop.hdfs.security.token.block.BlockTokenIdentifier;<a name="line.58"></a>
+<FONT color="green">059</FONT>    import org.apache.hadoop.hdfs.security.token.block.InvalidBlockTokenException;<a name="line.59"></a>
+<FONT color="green">060</FONT>    import org.apache.hadoop.hdfs.server.datanode.BlockMetadataHeader;<a name="line.60"></a>
+<FONT color="green">061</FONT>    import org.apache.hadoop.hdfs.server.datanode.CachingStrategy;<a name="line.61"></a>
+<FONT color="green">062</FONT>    import org.apache.hadoop.hdfs.server.datanode.ReplicaNotFoundException;<a name="line.62"></a>
+<FONT color="green">063</FONT>    import org.apache.hadoop.io.ByteBufferPool;<a name="line.63"></a>
+<FONT color="green">064</FONT>    import org.apache.hadoop.ipc.RPC;<a name="line.64"></a>
+<FONT color="green">065</FONT>    import org.apache.hadoop.ipc.RemoteException;<a name="line.65"></a>
+<FONT color="green">066</FONT>    import org.apache.hadoop.net.NetUtils;<a name="line.66"></a>
+<FONT color="green">067</FONT>    import org.apache.hadoop.net.unix.DomainSocket;<a name="line.67"></a>
+<FONT color="green">068</FONT>    import org.apache.hadoop.security.AccessControlException;<a name="line.68"></a>
+<FONT color="green">069</FONT>    import org.apache.hadoop.security.token.SecretManager.InvalidToken;<a name="line.69"></a>
+<FONT color="green">070</FONT>    import org.apache.hadoop.security.token.Token;<a name="line.70"></a>
+<FONT color="green">071</FONT>    import org.apache.hadoop.util.IdentityHashStore;<a name="line.71"></a>
+<FONT color="green">072</FONT>    <a name="line.72"></a>
+<FONT color="green">073</FONT>    import com.google.common.annotations.VisibleForTesting;<a name="line.73"></a>
+<FONT color="green">074</FONT>    <a name="line.74"></a>
+<FONT color="green">075</FONT>    /****************************************************************<a name="line.75"></a>
+<FONT color="green">076</FONT>     * DFSInputStream provides bytes from a named file.  It handles <a name="line.76"></a>
+<FONT color="green">077</FONT>     * negotiation of the namenode and various datanodes as necessary.<a name="line.77"></a>
+<FONT color="green">078</FONT>     ****************************************************************/<a name="line.78"></a>
+<FONT color="green">079</FONT>    @InterfaceAudience.Private<a name="line.79"></a>
+<FONT color="green">080</FONT>    public class DFSInputStream extends FSInputStream<a name="line.80"></a>
+<FONT color="green">081</FONT>    implements ByteBufferReadable, CanSetDropBehind, CanSetReadahead,<a name="line.81"></a>
+<FONT color="green">082</FONT>        HasEnhancedByteBufferAccess {<a name="line.82"></a>
+<FONT color="green">083</FONT>      @VisibleForTesting<a name="line.83"></a>
+<FONT color="green">084</FONT>      static boolean tcpReadsDisabledForTesting = false;<a name="line.84"></a>
+<FONT color="green">085</FONT>      private final PeerCache peerCache;<a name="line.85"></a>
+<FONT color="green">086</FONT>      private final DFSClient dfsClient;<a name="line.86"></a>
+<FONT color="green">087</FONT>      private boolean closed = false;<a name="line.87"></a>
+<FONT color="green">088</FONT>      private final String src;<a name="line.88"></a>
+<FONT color="green">089</FONT>      private BlockReader blockReader = null;<a name="line.89"></a>
+<FONT color="green">090</FONT>      private final boolean verifyChecksum;<a name="line.90"></a>
+<FONT color="green">091</FONT>      private LocatedBlocks locatedBlocks = null;<a name="line.91"></a>
+<FONT color="green">092</FONT>      private long lastBlockBeingWrittenLength = 0;<a name="line.92"></a>
+<FONT color="green">093</FONT>      private DatanodeInfo currentNode = null;<a name="line.93"></a>
+<FONT color="green">094</FONT>      private LocatedBlock currentLocatedBlock = null;<a name="line.94"></a>
+<FONT color="green">095</FONT>      private long pos = 0;<a name="line.95"></a>
+<FONT color="green">096</FONT>      private long blockEnd = -1;<a name="line.96"></a>
+<FONT color="green">097</FONT>      private CachingStrategy cachingStrategy;<a name="line.97"></a>
+<FONT color="green">098</FONT>      private final ReadStatistics readStatistics = new ReadStatistics();<a name="line.98"></a>
+<FONT color="green">099</FONT>    <a name="line.99"></a>
+<FONT color="green">100</FONT>      /**<a name="line.100"></a>
+<FONT color="green">101</FONT>       * Track the ByteBuffers that we have handed out to readers.<a name="line.101"></a>
+<FONT color="green">102</FONT>       * <a name="line.102"></a>
+<FONT color="green">103</FONT>       * The value type can be either ByteBufferPool or ClientMmap, depending on<a name="line.103"></a>
+<FONT color="green">104</FONT>       * whether we this is a memory-mapped buffer or not.<a name="line.104"></a>
+<FONT color="green">105</FONT>       */<a name="line.105"></a>
+<FONT color="green">106</FONT>      private final IdentityHashStore&lt;ByteBuffer, Object&gt;<a name="line.106"></a>
+<FONT color="green">107</FONT>          extendedReadBuffers = new IdentityHashStore&lt;ByteBuffer, Object&gt;(0);<a name="line.107"></a>
+<FONT color="green">108</FONT>    <a name="line.108"></a>
+<FONT color="green">109</FONT>      public static class ReadStatistics {<a name="line.109"></a>
+<FONT color="green">110</FONT>        public ReadStatistics() {<a name="line.110"></a>
+<FONT color="green">111</FONT>          this.totalBytesRead = 0;<a name="line.111"></a>
+<FONT color="green">112</FONT>          this.totalLocalBytesRead = 0;<a name="line.112"></a>
+<FONT color="green">113</FONT>          this.totalShortCircuitBytesRead = 0;<a name="line.113"></a>
+<FONT color="green">114</FONT>          this.totalZeroCopyBytesRead = 0;<a name="line.114"></a>
+<FONT color="green">115</FONT>        }<a name="line.115"></a>
+<FONT color="green">116</FONT>    <a name="line.116"></a>
+<FONT color="green">117</FONT>        public ReadStatistics(ReadStatistics rhs) {<a name="line.117"></a>
+<FONT color="green">118</FONT>          this.totalBytesRead = rhs.getTotalBytesRead();<a name="line.118"></a>
+<FONT color="green">119</FONT>          this.totalLocalBytesRead = rhs.getTotalLocalBytesRead();<a name="line.119"></a>
+<FONT color="green">120</FONT>          this.totalShortCircuitBytesRead = rhs.getTotalShortCircuitBytesRead();<a name="line.120"></a>
+<FONT color="green">121</FONT>          this.totalZeroCopyBytesRead = rhs.getTotalZeroCopyBytesRead();<a name="line.121"></a>
+<FONT color="green">122</FONT>        }<a name="line.122"></a>
+<FONT color="green">123</FONT>    <a name="line.123"></a>
+<FONT color="green">124</FONT>        /**<a name="line.124"></a>
+<FONT color="green">125</FONT>         * @return The total bytes read.  This will always be at least as<a name="line.125"></a>
+<FONT color="green">126</FONT>         * high as the other numbers, since it includes all of them.<a name="line.126"></a>
+<FONT color="green">127</FONT>         */<a name="line.127"></a>
+<FONT color="green">128</FONT>        public long getTotalBytesRead() {<a name="line.128"></a>
+<FONT color="green">129</FONT>          return totalBytesRead;<a name="line.129"></a>
+<FONT color="green">130</FONT>        }<a name="line.130"></a>
+<FONT color="green">131</FONT>    <a name="line.131"></a>
+<FONT color="green">132</FONT>        /**<a name="line.132"></a>
+<FONT color="green">133</FONT>         * @return The total local bytes read.  This will always be at least<a name="line.133"></a>
+<FONT color="green">134</FONT>         * as high as totalShortCircuitBytesRead, since all short-circuit<a name="line.134"></a>
+<FONT color="green">135</FONT>         * reads are also local.<a name="line.135"></a>
+<FONT color="green">136</FONT>         */<a name="line.136"></a>
+<FONT color="green">137</FONT>        public long getTotalLocalBytesRead() {<a name="line.137"></a>
+<FONT color="green">138</FONT>          return totalLocalBytesRead;<a name="line.138"></a>
+<FONT color="green">139</FONT>        }<a name="line.139"></a>
+<FONT color="green">140</FONT>    <a name="line.140"></a>
+<FONT color="green">141</FONT>        /**<a name="line.141"></a>
+<FONT color="green">142</FONT>         * @return The total short-circuit local bytes read.<a name="line.142"></a>
+<FONT color="green">143</FONT>         */<a name="line.143"></a>
+<FONT color="green">144</FONT>        public long getTotalShortCircuitBytesRead() {<a name="line.144"></a>
+<FONT color="green">145</FONT>          return totalShortCircuitBytesRead;<a name="line.145"></a>
+<FONT color="green">146</FONT>        }<a name="line.146"></a>
+<FONT color="green">147</FONT>        <a name="line.147"></a>
+<FONT color="green">148</FONT>        /**<a name="line.148"></a>
+<FONT color="green">149</FONT>         * @return The total number of zero-copy bytes read.<a name="line.149"></a>
+<FONT color="green">150</FONT>         */<a name="line.150"></a>
+<FONT color="green">151</FONT>        public long getTotalZeroCopyBytesRead() {<a name="line.151"></a>
+<FONT color="green">152</FONT>          return totalZeroCopyBytesRead;<a name="line.152"></a>
+<FONT color="green">153</FONT>        }<a name="line.153"></a>
+<FONT color="green">154</FONT>    <a name="line.154"></a>
+<FONT color="green">155</FONT>        /**<a name="line.155"></a>
+<FONT color="green">156</FONT>         * @return The total number of bytes read which were not local.<a name="line.156"></a>
+<FONT color="green">157</FONT>         */<a name="line.157"></a>
+<FONT color="green">158</FONT>        public long getRemoteBytesRead() {<a name="line.158"></a>
+<FONT color="green">159</FONT>          return totalBytesRead - totalLocalBytesRead;<a name="line.159"></a>
+<FONT color="green">160</FONT>        }<a name="line.160"></a>
+<FONT color="green">161</FONT>        <a name="line.161"></a>
+<FONT color="green">162</FONT>        void addRemoteBytes(long amt) {<a name="line.162"></a>
+<FONT color="green">163</FONT>          this.totalBytesRead += amt;<a name="line.163"></a>
+<FONT color="green">164</FONT>        }<a name="line.164"></a>
+<FONT color="green">165</FONT>    <a name="line.165"></a>
+<FONT color="green">166</FONT>        void addLocalBytes(long amt) {<a name="line.166"></a>
+<FONT color="green">167</FONT>          this.totalBytesRead += amt;<a name="line.167"></a>
+<FONT color="green">168</FONT>          this.totalLocalBytesRead += amt;<a name="line.168"></a>
+<FONT color="green">169</FONT>        }<a name="line.169"></a>
+<FONT color="green">170</FONT>    <a name="line.170"></a>
+<FONT color="green">171</FONT>        void addShortCircuitBytes(long amt) {<a name="line.171"></a>
+<FONT color="green">172</FONT>          this.totalBytesRead += amt;<a name="line.172"></a>
+<FONT color="green">173</FONT>          this.totalLocalBytesRead += amt;<a name="line.173"></a>
+<FONT color="green">174</FONT>          this.totalShortCircuitBytesRead += amt;<a name="line.174"></a>
+<FONT color="green">175</FONT>        }<a name="line.175"></a>
+<FONT color="green">176</FONT>    <a name="line.176"></a>
+<FONT color="green">177</FONT>        void addZeroCopyBytes(long amt) {<a name="line.177"></a>
+<FONT color="green">178</FONT>          this.totalBytesRead += amt;<a name="line.178"></a>
+<FONT color="green">179</FONT>          this.totalLocalBytesRead += amt;<a name="line.179"></a>
+<FONT color="green">180</FONT>          this.totalShortCircuitBytesRead += amt;<a name="line.180"></a>
+<FONT color="green">181</FONT>          this.totalZeroCopyBytesRead += amt;<a name="line.181"></a>
+<FONT color="green">182</FONT>        }<a name="line.182"></a>
+<FONT color="green">183</FONT>        <a name="line.183"></a>
+<FONT color="green">184</FONT>        private long totalBytesRead;<a name="line.184"></a>
+<FONT color="green">185</FONT>    <a name="line.185"></a>
+<FONT color="green">186</FONT>        private long totalLocalBytesRead;<a name="line.186"></a>
+<FONT color="green">187</FONT>    <a name="line.187"></a>
+<FONT color="green">188</FONT>        private long totalShortCircuitBytesRead;<a name="line.188"></a>
+<FONT color="green">189</FONT>    <a name="line.189"></a>
+<FONT color="green">190</FONT>        private long totalZeroCopyBytesRead;<a name="line.190"></a>
+<FONT color="green">191</FONT>      }<a name="line.191"></a>
+<FONT color="green">192</FONT>      <a name="line.192"></a>
+<FONT color="green">193</FONT>      private final FileInputStreamCache fileInputStreamCache;<a name="line.193"></a>
+<FONT color="green">194</FONT>    <a name="line.194"></a>
+<FONT color="green">195</FONT>      /**<a name="line.195"></a>
+<FONT color="green">196</FONT>       * This variable tracks the number of failures since the start of the<a name="line.196"></a>
+<FONT color="green">197</FONT>       * most recent user-facing operation. That is to say, it should be reset<a name="line.197"></a>
+<FONT color="green">198</FONT>       * whenever the user makes a call on this stream, and if at any point<a name="line.198"></a>
+<FONT color="green">199</FONT>       * during the retry logic, the failure count exceeds a threshold,<a name="line.199"></a>
+<FONT color="green">200</FONT>       * the errors will be thrown back to the operation.<a name="line.200"></a>
+<FONT color="green">201</FONT>       *<a name="line.201"></a>
+<FONT color="green">202</FONT>       * Specifically this counts the number of times the client has gone<a name="line.202"></a>
+<FONT color="green">203</FONT>       * back to the namenode to get a new list of block locations, and is<a name="line.203"></a>
+<FONT color="green">204</FONT>       * capped at maxBlockAcquireFailures<a name="line.204"></a>
+<FONT color="green">205</FONT>       */<a name="line.205"></a>
+<FONT color="green">206</FONT>      private int failures = 0;<a name="line.206"></a>
+<FONT color="green">207</FONT>    <a name="line.207"></a>
+<FONT color="green">208</FONT>      /* XXX Use of CocurrentHashMap is temp fix. Need to fix <a name="line.208"></a>
+<FONT color="green">209</FONT>       * parallel accesses to DFSInputStream (through ptreads) properly */<a name="line.209"></a>
+<FONT color="green">210</FONT>      private final ConcurrentHashMap&lt;DatanodeInfo, DatanodeInfo&gt; deadNodes =<a name="line.210"></a>
+<FONT color="green">211</FONT>                 new ConcurrentHashMap&lt;DatanodeInfo, DatanodeInfo&gt;();<a name="line.211"></a>
+<FONT color="green">212</FONT>      private int buffersize = 1;<a name="line.212"></a>
+<FONT color="green">213</FONT>      <a name="line.213"></a>
+<FONT color="green">214</FONT>      private final byte[] oneByteBuf = new byte[1]; // used for 'int read()'<a name="line.214"></a>
+<FONT color="green">215</FONT>    <a name="line.215"></a>
+<FONT color="green">216</FONT>      void addToDeadNodes(DatanodeInfo dnInfo) {<a name="line.216"></a>
+<FONT color="green">217</FONT>        deadNodes.put(dnInfo, dnInfo);<a name="line.217"></a>
+<FONT color="green">218</FONT>      }<a name="line.218"></a>
+<FONT color="green">219</FONT>      <a name="line.219"></a>
+<FONT color="green">220</FONT>      DFSInputStream(DFSClient dfsClient, String src, int buffersize, boolean verifyChecksum<a name="line.220"></a>
+<FONT color="green">221</FONT>                     ) throws IOException, UnresolvedLinkException {<a name="line.221"></a>
+<FONT color="green">222</FONT>        this.dfsClient = dfsClient;<a name="line.222"></a>
+<FONT color="green">223</FONT>        this.verifyChecksum = verifyChecksum;<a name="line.223"></a>
+<FONT color="green">224</FONT>        this.buffersize = buffersize;<a name="line.224"></a>
+<FONT color="green">225</FONT>        this.src = src;<a name="line.225"></a>
+<FONT color="green">226</FONT>        this.peerCache = dfsClient.peerCache;<a name="line.226"></a>
+<FONT color="green">227</FONT>        this.fileInputStreamCache = new FileInputStreamCache(<a name="line.227"></a>
+<FONT color="green">228</FONT>            dfsClient.getConf().shortCircuitStreamsCacheSize,<a name="line.228"></a>
+<FONT color="green">229</FONT>            dfsClient.getConf().shortCircuitStreamsCacheExpiryMs);<a name="line.229"></a>
+<FONT color="green">230</FONT>        this.cachingStrategy =<a name="line.230"></a>
+<FONT color="green">231</FONT>            dfsClient.getDefaultReadCachingStrategy();<a name="line.231"></a>
+<FONT color="green">232</FONT>        openInfo();<a name="line.232"></a>
+<FONT color="green">233</FONT>      }<a name="line.233"></a>
+<FONT color="green">234</FONT>    <a name="line.234"></a>
+<FONT color="green">235</FONT>      /**<a name="line.235"></a>
+<FONT color="green">236</FONT>       * Grab the open-file info from namenode<a name="line.236"></a>
+<FONT color="green">237</FONT>       */<a name="line.237"></a>
+<FONT color="green">238</FONT>      synchronized void openInfo() throws IOException, UnresolvedLinkException {<a name="line.238"></a>
+<FONT color="green">239</FONT>        lastBlockBeingWrittenLength = fetchLocatedBlocksAndGetLastBlockLength();<a name="line.239"></a>
+<FONT color="green">240</FONT>        int retriesForLastBlockLength = dfsClient.getConf().retryTimesForGetLastBlockLength;<a name="line.240"></a>
+<FONT color="green">241</FONT>        while (retriesForLastBlockLength &gt; 0) {<a name="line.241"></a>
+<FONT color="green">242</FONT>          // Getting last block length as -1 is a special case. When cluster<a name="line.242"></a>
+<FONT color="green">243</FONT>          // restarts, DNs may not report immediately. At this time partial block<a name="line.243"></a>
+<FONT color="green">244</FONT>          // locations will not be available with NN for getting the length. Lets<a name="line.244"></a>
+<FONT color="green">245</FONT>          // retry for 3 times to get the length.<a name="line.245"></a>
+<FONT color="green">246</FONT>          if (lastBlockBeingWrittenLength == -1) {<a name="line.246"></a>
+<FONT color="green">247</FONT>            DFSClient.LOG.warn("Last block locations not available. "<a name="line.247"></a>
+<FONT color="green">248</FONT>                + "Datanodes might not have reported blocks completely."<a name="line.248"></a>
+<FONT color="green">249</FONT>                + " Will retry for " + retriesForLastBlockLength + " times");<a name="line.249"></a>
+<FONT color="green">250</FONT>            waitFor(dfsClient.getConf().retryIntervalForGetLastBlockLength);<a name="line.250"></a>
+<FONT color="green">251</FONT>            lastBlockBeingWrittenLength = fetchLocatedBlocksAndGetLastBlockLength();<a name="line.251"></a>
+<FONT color="green">252</FONT>          } else {<a name="line.252"></a>
+<FONT color="green">253</FONT>            break;<a name="line.253"></a>
+<FONT color="green">254</FONT>          }<a name="line.254"></a>
+<FONT color="green">255</FONT>          retriesForLastBlockLength--;<a name="line.255"></a>
+<FONT color="green">256</FONT>        }<a name="line.256"></a>
+<FONT color="green">257</FONT>        if (retriesForLastBlockLength == 0) {<a name="line.257"></a>
+<FONT color="green">258</FONT>          throw new IOException("Could not obtain the last block locations.");<a name="line.258"></a>
+<FONT color="green">259</FONT>        }<a name="line.259"></a>
+<FONT color="green">260</FONT>      }<a name="line.260"></a>
+<FONT color="green">261</FONT>    <a name="line.261"></a>
+<FONT color="green">262</FONT>      private void waitFor(int waitTime) throws IOException {<a name="line.262"></a>
+<FONT color="green">263</FONT>        try {<a name="line.263"></a>
+<FONT color="green">264</FONT>          Thread.sleep(waitTime);<a name="line.264"></a>
+<FONT color="green">265</FONT>        } catch (InterruptedException e) {<a name="line.265"></a>
+<FONT color="green">266</FONT>          throw new IOException(<a name="line.266"></a>
+<FONT color="green">267</FONT>              "Interrupted while getting the last block length.");<a name="line.267"></a>
+<FONT color="green">268</FONT>        }<a name="line.268"></a>
+<FONT color="green">269</FONT>      }<a name="line.269"></a>
+<FONT color="green">270</FONT>    <a name="line.270"></a>
+<FONT color="green">271</FONT>      private long fetchLocatedBlocksAndGetLastBlockLength() throws IOException {<a name="line.271"></a>
+<FONT color="green">272</FONT>        final LocatedBlocks newInfo = dfsClient.getLocatedBlocks(src, 0);<a name="line.272"></a>
+<FONT color="green">273</FONT>        if (DFSClient.LOG.isDebugEnabled()) {<a name="line.273"></a>
+<FONT color="green">274</FONT>          DFSClient.LOG.debug("newInfo = " + newInfo);<a name="line.274"></a>
+<FONT color="green">275</FONT>        }<a name="line.275"></a>
+<FONT color="green">276</FONT>        if (newInfo == null) {<a name="line.276"></a>
+<FONT color="green">277</FONT>          throw new IOException("Cannot open filename " + src);<a name="line.277"></a>
+<FONT color="green">278</FONT>        }<a name="line.278"></a>
+<FONT color="green">279</FONT>    <a name="line.279"></a>
+<FONT color="green">280</FONT>        if (locatedBlocks != null) {<a name="line.280"></a>
+<FONT color="green">281</FONT>          Iterator&lt;LocatedBlock&gt; oldIter = locatedBlocks.getLocatedBlocks().iterator();<a name="line.281"></a>
+<FONT color="green">282</FONT>          Iterator&lt;LocatedBlock&gt; newIter = newInfo.getLocatedBlocks().iterator();<a name="line.282"></a>
+<FONT color="green">283</FONT>          while (oldIter.hasNext() &amp;&amp; newIter.hasNext()) {<a name="line.283"></a>
+<FONT color="green">284</FONT>            if (! oldIter.next().getBlock().equals(newIter.next().getBlock())) {<a name="line.284"></a>
+<FONT color="green">285</FONT>              throw new IOException("Blocklist for " + src + " has changed!");<a name="line.285"></a>
+<FONT color="green">286</FONT>            }<a name="line.286"></a>
+<FONT color="green">287</FONT>          }<a name="line.287"></a>
+<FONT color="green">288</FONT>        }<a name="line.288"></a>
+<FONT color="green">289</FONT>        locatedBlocks = newInfo;<a name="line.289"></a>
+<FONT color="green">290</FONT>        long lastBlockBeingWrittenLength = 0;<a name="line.290"></a>
+<FONT color="green">291</FONT>        if (!locatedBlocks.isLastBlockComplete()) {<a name="line.291"></a>
+<FONT color="green">292</FONT>          final LocatedBlock last = locatedBlocks.getLastLocatedBlock();<a name="line.292"></a>
+<FONT color="green">293</FONT>          if (last != null) {<a name="line.293"></a>
+<FONT color="green">294</FONT>            if (last.getLocations().length == 0) {<a name="line.294"></a>
+<FONT color="green">295</FONT>              if (last.getBlockSize() == 0) {<a name="line.295"></a>
+<FONT color="green">296</FONT>                // if the length is zero, then no data has been written to<a name="line.296"></a>
+<FONT color="green">297</FONT>                // datanode. So no need to wait for the locations.<a name="line.297"></a>
+<FONT color="green">298</FONT>                return 0;<a name="line.298"></a>
+<FONT color="green">299</FONT>              }<a name="line.299"></a>
+<FONT color="green">300</FONT>              return -1;<a name="line.300"></a>
+<FONT color="green">301</FONT>            }<a name="line.301"></a>
+<FONT color="green">302</FONT>            final long len = readBlockLength(last);<a name="line.302"></a>
+<FONT color="green">303</FONT>            last.getBlock().setNumBytes(len);<a name="line.303"></a>
+<FONT color="green">304</FONT>            lastBlockBeingWrittenLength = len; <a name="line.304"></a>
+<FONT color="green">305</FONT>          }<a name="line.305"></a>
+<FONT color="green">306</FONT>        }<a name="line.306"></a>
+<FONT color="green">307</FONT>    <a name="line.307"></a>
+<FONT color="green">308</FONT>        currentNode = null;<a name="line.308"></a>
+<FONT color="green">309</FONT>        return lastBlockBeingWrittenLength;<a name="line.309"></a>
+<FONT color="green">310</FONT>      }<a name="line.310"></a>
+<FONT color="green">311</FONT>    <a name="line.311"></a>
+<FONT color="green">312</FONT>      /** Read the block length from one of the datanodes. */<a name="line.312"></a>
+<FONT color="green">313</FONT>      private long readBlockLength(LocatedBlock locatedblock) throws IOException {<a name="line.313"></a>
+<FONT color="green">314</FONT>        assert locatedblock != null : "LocatedBlock cannot be null";<a name="line.314"></a>
+<FONT color="green">315</FONT>        int replicaNotFoundCount = locatedblock.getLocations().length;<a name="line.315"></a>
+<FONT color="green">316</FONT>        <a name="line.316"></a>
+<FONT color="green">317</FONT>        for(DatanodeInfo datanode : locatedblock.getLocations()) {<a name="line.317"></a>
+<FONT color="green">318</FONT>          ClientDatanodeProtocol cdp = null;<a name="line.318"></a>
+<FONT color="green">319</FONT>          <a name="line.319"></a>
+<FONT color="green">320</FONT>          try {<a name="line.320"></a>
+<FONT color="green">321</FONT>            cdp = DFSUtil.createClientDatanodeProtocolProxy(datanode,<a name="line.321"></a>
+<FONT color="green">322</FONT>                dfsClient.getConfiguration(), dfsClient.getConf().socketTimeout,<a name="line.322"></a>
+<FONT color="green">323</FONT>                dfsClient.getConf().connectToDnViaHostname, locatedblock);<a name="line.323"></a>
+<FONT color="green">324</FONT>            <a name="line.324"></a>
+<FONT color="green">325</FONT>            final long n = cdp.getReplicaVisibleLength(locatedblock.getBlock());<a name="line.325"></a>
+<FONT color="green">326</FONT>            <a name="line.326"></a>
+<FONT color="green">327</FONT>            if (n &gt;= 0) {<a name="line.327"></a>
+<FONT color="green">328</FONT>              return n;<a name="line.328"></a>
+<FONT color="green">329</FONT>            }<a name="line.329"></a>
+<FONT color="green">330</FONT>          }<a name="line.330"></a>
+<FONT color="green">331</FONT>          catch(IOException ioe) {<a name="line.331"></a>
+<FONT color="green">332</FONT>            if (ioe instanceof RemoteException &amp;&amp;<a name="line.332"></a>
+<FONT color="green">333</FONT>              (((RemoteException) ioe).unwrapRemoteException() instanceof<a name="line.333"></a>
+<FONT color="green">334</FONT>                ReplicaNotFoundException)) {<a name="line.334"></a>
+<FONT color="green">335</FONT>              // special case : replica might not be on the DN, treat as 0 length<a name="line.335"></a>
+<FONT color="green">336</FONT>              replicaNotFoundCount--;<a name="line.336"></a>
+<FONT color="green">337</FONT>            }<a name="line.337"></a>
+<FONT color="green">338</FONT>            <a name="line.338"></a>
+<FONT color="green">339</FONT>            if (DFSClient.LOG.isDebugEnabled()) {<a name="line.339"></a>
+<FONT color="green">340</FONT>              DFSClient.LOG.debug("Failed to getReplicaVisibleLength from datanode "<a name="line.340"></a>
+<FONT color="green">341</FONT>                  + datanode + " for block " + locatedblock.getBlock(), ioe);<a name="line.341"></a>
+<FONT color="green">342</FONT>            }<a name="line.342"></a>
+<FONT color="green">343</FONT>          } finally {<a name="line.343"></a>
+<FONT color="green">344</FONT>            if (cdp != null) {<a name="line.344"></a>
+<FONT color="green">345</FONT>              RPC.stopProxy(cdp);<a name="line.345"></a>
+<FONT color="green">346</FONT>            }<a name="line.346"></a>
+<FONT color="green">347</FONT>          }<a name="line.347"></a>
+<FONT color="green">348</FONT>        }<a name="line.348"></a>
+<FONT color="green">349</FONT>    <a name="line.349"></a>
+<FONT color="green">350</FONT>        // Namenode told us about these locations, but none know about the replica<a name="line.350"></a>
+<FONT color="green">351</FONT>        // means that we hit the race between pipeline creation start and end.<a name="line.351"></a>
+<FONT color="green">352</FONT>        // we require all 3 because some other exception could have happened<a name="line.352"></a>
+<FONT color="green">353</FONT>        // on a DN that has it.  we want to report that error<a name="line.353"></a>
+<FONT color="green">354</FONT>        if (replicaNotFoundCount == 0) {<a name="line.354"></a>
+<FONT color="green">355</FONT>          return 0;<a name="line.355"></a>
+<FONT color="green">356</FONT>        }<a name="line.356"></a>
+<FONT color="green">357</FONT>    <a name="line.357"></a>
+<FONT color="green">358</FONT>        throw new IOException("Cannot obtain block length for " + locatedblock);<a name="line.358"></a>
+<FONT color="green">359</FONT>      }<a name="line.359"></a>
+<FONT color="green">360</FONT>      <a name="line.360"></a>
+<FONT color="green">361</FONT>      public synchronized long getFileLength() {<a name="line.361"></a>
+<FONT color="green">362</FONT>        return locatedBlocks == null? 0:<a name="line.362"></a>
+<FONT color="green">363</FONT>            locatedBlocks.getFileLength() + lastBlockBeingWrittenLength;<a name="line.363"></a>
+<FONT color="green">364</FONT>      }<a name="line.364"></a>
+<FONT color="green">365</FONT>    <a name="line.365"></a>
+<FONT color="green">366</FONT>      // Short circuit local reads are forbidden for files that are<a name="line.366"></a>
+<FONT color="green">367</FONT>      // under construction.  See HDFS-2757.<a name="line.367"></a>
+<FONT color="green">368</FONT>      synchronized boolean shortCircuitForbidden() {<a name="line.368"></a>
+<FONT color="green">369</FONT>        return locatedBlocks.isUnderConstruction();<a name="line.369"></a>
+<FONT color="green">370</FONT>      }<a name="line.370"></a>
+<FONT color="green">371</FONT>    <a name="line.371"></a>
+<FONT color="green">372</FONT>      /**<a name="line.372"></a>
+<FONT color="green">373</FONT>       * Returns the datanode from which the stream is currently reading.<a name="line.373"></a>
+<FONT color="green">374</FONT>       */<a name="line.374"></a>
+<FONT color="green">375</FONT>      public DatanodeInfo getCurrentDatanode() {<a name="line.375"></a>
+<FONT color="green">376</FONT>        return currentNode;<a name="line.376"></a>
+<FONT color="green">377</FONT>      }<a name="line.377"></a>
+<FONT color="green">378</FONT>    <a name="line.378"></a>
+<FONT color="green">379</FONT>      /**<a name="line.379"></a>
+<FONT color="green">380</FONT>       * Returns the block containing the target position. <a name="line.380"></a>
+<FONT color="green">381</FONT>       */<a name="line.381"></a>
+<FONT color="green">382</FONT>      synchronized public ExtendedBlock getCurrentBlock() {<a name="line.382"></a>
+<FONT color="green">383</FONT>        if (currentLocatedBlock == null){<a name="line.383"></a>
+<FONT color="green">384</FONT>          return null;<a name="line.384"></a>
+<FONT color="green">385</FONT>        }<a name="line.385"></a>
+<FONT color="green">386</FONT>        return currentLocatedBlock.getBlock();<a name="line.386"></a>
+<FONT color="green">387</FONT>      }<a name="line.387"></a>
+<FONT color="green">388</FONT>    <a name="line.388"></a>
+<FONT color="green">389</FONT>      /**<a name="line.389"></a>
+<FONT color="green">390</FONT>       * Return collection of blocks that has already been located.<a name="line.390"></a>
+<FONT color="green">391</FONT>       */<a name="line.391"></a>
+<FONT color="green">392</FONT>      public synchronized List&lt;LocatedBlock&gt; getAllBlocks() throws IOException {<a name="line.392"></a>
+<FONT color="green">393</FONT>        return getBlockRange(0, getFileLength());<a name="line.393"></a>
+<FONT color="green">394</FONT>      }<a name="line.394"></a>
+<FONT color="green">395</FONT>    <a name="line.395"></a>
+<FONT color="green">396</FONT>      /**<a name="line.396"></a>
+<FONT color="green">397</FONT>       * Get block at the specified position.<a name="line.397"></a>
+<FONT color="green">398</FONT>       * Fetch it from the namenode if not cached.<a name="line.398"></a>
+<FONT color="green">399</FONT>       * <a name="line.399"></a>
+<FONT color="green">400</FONT>       * @param offset<a name="line.400"></a>
+<FONT color="green">401</FONT>       * @param updatePosition whether to update current position<a name="line.401"></a>
+<FONT color="green">402</FONT>       * @return located block<a name="line.402"></a>
+<FONT color="green">403</FONT>       * @throws IOException<a name="line.403"></a>
+<FONT color="green">404</FONT>       */<a name="line.404"></a>
+<FONT color="green">405</FONT>      private synchronized LocatedBlock getBlockAt(long offset,<a name="line.405"></a>
+<FONT color="green">406</FONT>          boolean updatePosition) throws IOException {<a name="line.406"></a>
+<FONT color="green">407</FONT>        assert (locatedBlocks != null) : "locatedBlocks is null";<a name="line.407"></a>
+<FONT color="green">408</FONT>    <a name="line.408"></a>
+<FONT color="green">409</FONT>        final LocatedBlock blk;<a name="line.409"></a>
+<FONT color="green">410</FONT>    <a name="line.410"></a>
+<FONT color="green">411</FONT>        //check offset<a name="line.411"></a>
+<FONT color="green">412</FONT>        if (offset &lt; 0 || offset &gt;= getFileLength()) {<a name="line.412"></a>
+<FONT color="green">413</FONT>          throw new IOException("offset &lt; 0 || offset &gt;= getFileLength(), offset="<a name="line.413"></a>
+<FONT color="green">414</FONT>              + offset<a name="line.414"></a>
+<FONT color="green">415</FONT>              + ", updatePosition=" + updatePosition<a name="line.415"></a>
+<FONT color="green">416</FONT>              + ", locatedBlocks=" + locatedBlocks);<a name="line.416"></a>
+<FONT color="green">417</FONT>        }<a name="line.417"></a>
+<FONT color="green">418</FONT>        else if (offset &gt;= locatedBlocks.getFileLength()) {<a name="line.418"></a>
+<FONT color="green">419</FONT>          // offset to the portion of the last block,<a name="line.419"></a>
+<FONT color="green">420</FONT>          // which is not known to the name-node yet;<a name="line.420"></a>
+<FONT color="green">421</FONT>          // getting the last block <a name="line.421"></a>
+<FONT color="green">422</FONT>          blk = locatedBlocks.getLastLocatedBlock();<a name="line.422"></a>
+<FONT color="green">423</FONT>        }<a name="line.423"></a>
+<FONT color="green">424</FONT>        else {<a name="line.424"></a>
+<FONT color="green">425</FONT>          // search cached blocks first<a name="line.425"></a>
+<FONT color="green">426</FONT>          int targetBlockIdx = locatedBlocks.findBlock(offset);<a name="line.426"></a>
+<FONT color="green">427</FONT>          if (targetBlockIdx &lt; 0) { // block is not cached<a name="line.427"></a>
+<FONT color="green">428</FONT>            targetBlockIdx = LocatedBlocks.getInsertIndex(targetBlockIdx);<a name="line.428"></a>
+<FONT color="green">429</FONT>            // fetch more blocks<a name="line.429"></a>
+<FONT color="green">430</FONT>            final LocatedBlocks newBlocks = dfsClient.getLocatedBlocks(src, offset);<a name="line.430"></a>
+<FONT color="green">431</FONT>            assert (newBlocks != null) : "Could not find target position " + offset;<a name="line.431"></a>
+<FONT color="green">432</FONT>            locatedBlocks.insertRange(targetBlockIdx, newBlocks.getLocatedBlocks());<a name="line.432"></a>
+<FONT color="green">433</FONT>          }<a name="line.433"></a>
+<FONT color="green">434</FONT>          blk = locatedBlocks.get(targetBlockIdx);<a name="line.434"></a>
+<FONT color="green">435</FONT>        }<a name="line.435"></a>
+<FONT color="green">436</FONT>    <a name="line.436"></a>
+<FONT color="green">437</FONT>        // update current position<a name="line.437"></a>
+<FONT color="green">438</FONT>        if (updatePosition) {<a name="line.438"></a>
+<FONT color="green">439</FONT>          pos = offset;<a name="line.439"></a>
+<FONT color="green">440</FONT>          blockEnd = blk.getStartOffset() + blk.getBlockSize() - 1;<a name="line.440"></a>
+<FONT color="green">441</FONT>          currentLocatedBlock = blk;<a name="line.441"></a>
+<FONT color="green">442</FONT>        }<a name="line.442"></a>
+<FONT color="green">443</FONT>        return blk;<a name="line.443"></a>
+<FONT color="green">444</FONT>      }<a name="line.444"></a>
+<FONT color="green">445</FONT>    <a name="line.445"></a>
+<FONT color="green">446</FONT>      /** Fetch a block from namenode and cache it */<a name="line.446"></a>
+<FONT color="green">447</FONT>      private synchronized void fetchBlockAt(long offset) throws IOException {<a name="line.447"></a>
+<FONT color="green">448</FONT>        int targetBlockIdx = locatedBlocks.findBlock(offset);<a name="line.448"></a>
+<FONT color="green">449</FONT>        if (targetBlockIdx &lt; 0) { // block is not cached<a name="line.449"></a>
+<FONT color="green">450</FONT>          targetBlockIdx = LocatedBlocks.getInsertIndex(targetBlockIdx);<a name="line.450"></a>
+<FONT color="green">451</FONT>        }<a name="line.451"></a>
+<FONT color="green">452</FONT>        // fetch blocks<a name="line.452"></a>
+<FONT color="green">453</FONT>        final LocatedBlocks newBlocks = dfsClient.getLocatedBlocks(src, offset);<a name="line.453"></a>
+<FONT color="green">454</FONT>        if (newBlocks == null) {<a name="line.454"></a>
+<FONT color="green">455</FONT>          throw new IOException("Could not find target position " + offset);<a name="line.455"></a>
+<FONT color="green">456</FONT>        }<a name="line.456"></a>
+<FONT color="green">457</FONT>        locatedBlocks.insertRange(targetBlockIdx, newBlocks.getLocatedBlocks());<a name="line.457"></a>
+<FONT color="green">458</FONT>      }<a name="line.458"></a>
+<FONT color="green">459</FONT>    <a name="line.459"></a>
+<FONT color="green">460</FONT>      /**<a name="line.460"></a>
+<FONT color="green">461</FONT>       * Get blocks in the specified range.<a name="line.461"></a>
+<FONT color="green">462</FONT>       * Fetch them from the namenode if not cached. This function<a name="line.462"></a>
+<FONT color="green">463</FONT>       * will not get a read request beyond the EOF.<a name="line.463"></a>
+<FONT color="green">464</FONT>       * @param offset<a name="line.464"></a>
+<FONT color="green">465</FONT>       * @param length<a name="line.465"></a>
+<FONT color="green">466</FONT>       * @return consequent segment of located blocks<a name="line.466"></a>
+<FONT color="green">467</FONT>       * @throws IOException<a name="line.467"></a>
+<FONT color="green">468</FONT>       */<a name="line.468"></a>
+<FONT color="green">469</FONT>      private synchronized List&lt;LocatedBlock&gt; getBlockRange(long offset, <a name="line.469"></a>
+<FONT color="green">470</FONT>                                                            long length) <a name="line.470"></a>
+<FONT color="green">471</FONT>                                                          throws IOException {<a name="line.471"></a>
+<FONT color="green">472</FONT>        // getFileLength(): returns total file length<a name="line.472"></a>
+<FONT color="green">473</FONT>        // locatedBlocks.getFileLength(): returns length of completed blocks<a name="line.473"></a>
+<FONT color="green">474</FONT>        if (offset &gt;= getFileLength()) {<a name="line.474"></a>
+<FONT color="green">475</FONT>          throw new IOException("Offset: " + offset +<a name="line.475"></a>
+<FONT color="green">476</FONT>            " exceeds file length: " + getFileLength());<a name="line.476"></a>
+<FONT color="green">477</FONT>        }<a name="line.477"></a>
+<FONT color="green">478</FONT>    <a name="line.478"></a>
+<FONT color="green">479</FONT>        final List&lt;LocatedBlock&gt; blocks;<a name="line.479"></a>
+<FONT color="green">480</FONT>        final long lengthOfCompleteBlk = locatedBlocks.getFileLength();<a name="line.480"></a>
+<FONT color="green">481</FONT>        final boolean readOffsetWithinCompleteBlk = offset &lt; lengthOfCompleteBlk;<a name="line.481"></a>
+<FONT color="green">482</FONT>        final boolean readLengthPastCompleteBlk = offset + length &gt; lengthOfCompleteBlk;<a name="line.482"></a>
+<FONT color="green">483</FONT>    <a name="line.483"></a>
+<FONT color="green">484</FONT>        if (readOffsetWithinCompleteBlk) {<a name="line.484"></a>
+<FONT color="green">485</FONT>          //get the blocks of finalized (completed) block range<a name="line.485"></a>
+<FONT color="green">486</FONT>          blocks = getFinalizedBlockRange(offset, <a name="line.486"></a>
+<FONT color="green">487</FONT>            Math.min(length, lengthOfCompleteBlk - offset));<a name="line.487"></a>
+<FONT color="green">488</FONT>        } else {<a name="line.488"></a>
+<FONT color="green">489</FONT>          blocks = new ArrayList&lt;LocatedBlock&gt;(1);<a name="line.489"></a>
+<FONT color="green">490</FONT>        }<a name="line.490"></a>
+<FONT color="green">491</FONT>    <a name="line.491"></a>
+<FONT color="green">492</FONT>        // get the blocks from incomplete block range<a name="line.492"></a>
+<FONT color="green">493</FONT>        if (readLengthPastCompleteBlk) {<a name="line.493"></a>
+<FONT color="green">494</FONT>           blocks.add(locatedBlocks.getLastLocatedBlock());<a name="line.494"></a>
+<FONT color="green">495</FONT>        }<a name="line.495"></a>
+<FONT color="green">496</FONT>    <a name="line.496"></a>
+<FONT color="green">497</FONT>        return blocks;<a name="line.497"></a>
+<FONT color="green">498</FONT>      }<a name="line.498"></a>
+<FONT color="green">499</FONT>    <a name="line.499"></a>
+<FONT color="green">500</FONT>      /**<a name="line.500"></a>
+<FONT color="green">501</FONT>       * Get blocks in the specified range.<a name="line.501"></a>
+<FONT color="green">502</FONT>       * Includes only the complete blocks.<a name="line.502"></a>
+<FONT color="green">503</FONT>       * Fetch them from the namenode if not cached.<a name="line.503"></a>
+<FONT color="green">504</FONT>       */<a name="line.504"></a>
+<FONT color="green">505</FONT>      private synchronized List&lt;LocatedBlock&gt; getFinalizedBlockRange(<a name="line.505"></a>
+<FONT color="green">506</FONT>          long offset, long length) throws IOException {<a name="line.506"></a>
+<FONT color="green">507</FONT>        assert (locatedBlocks != null) : "locatedBlocks is null";<a name="line.507"></a>
+<FONT color="green">508</FONT>        List&lt;LocatedBlock&gt; blockRange = new ArrayList&lt;LocatedBlock&gt;();<a name="line.508"></a>
+<FONT color="green">509</FONT>        // search cached blocks first<a name="line.509"></a>
+<FONT color="green">510</FONT>        int blockIdx = locatedBlocks.findBlock(offset);<a name="line.510"></a>
+<FONT color="green">511</FONT>        if (blockIdx &lt; 0) { // block is not cached<a name="line.511"></a>
+<FONT color="green">512</FONT>          blockIdx = LocatedBlocks.getInsertIndex(blockIdx);<a name="line.512"></a>
+<FONT color="green">513</FONT>        }<a name="line.513"></a>
+<FONT color="green">514</FONT>        long remaining = length;<a name="line.514"></a>
+<FONT color="green">515</FONT>        long curOff = offset;<a name="line.515"></a>
+<FONT color="green">516</FONT>        while(remaining &gt; 0) {<a name="line.516"></a>
+<FONT color="green">517</FONT>          LocatedBlock blk = null;<a name="line.517"></a>
+<FONT color="green">518</FONT>          if(blockIdx &lt; locatedBlocks.locatedBlockCount())<a name="line.518"></a>
+<FONT color="green">519</FONT>            blk = locatedBlocks.get(blockIdx);<a name="line.519"></a>
+<FONT color="green">520</FONT>          if (blk == null || curOff &lt; blk.getStartOffset()) {<a name="line.520"></a>
+<FONT color="green">521</FONT>            LocatedBlocks newBlocks;<a name="line.521"></a>
+<FONT color="green">522</FONT>            newBlocks = dfsClient.getLocatedBlocks(src, curOff, remaining);<a name="line.522"></a>
+<FONT color="green">523</FONT>            locatedBlocks.insertRange(blockIdx, newBlocks.getLocatedBlocks());<a name="line.523"></a>
+<FONT color="green">524</FONT>            continue;<a name="line.524"></a>
+<FONT color="green">525</FONT>          }<a name="line.525"></a>
+<FONT color="green">526</FONT>          assert curOff &gt;= blk.getStartOffset() : "Block not found";<a name="line.526"></a>
+<FONT color="green">527</FONT>          blockRange.add(blk);<a name="line.527"></a>
+<FONT color="green">528</FONT>          long bytesRead = blk.getStartOffset() + blk.getBlockSize() - curOff;<a name="line.528"></a>
+<FONT color="green">529</FONT>          remaining -= bytesRead;<a name="line.529"></a>
+<FONT color="green">530</FONT>          curOff += bytesRead;<a name="line.530"></a>
+<FONT color="green">531</FONT>          blockIdx++;<a name="line.531"></a>
+<FONT color="green">532</FONT>        }<a name="line.532"></a>
+<FONT color="green">533</FONT>        return blockRange;<a name="line.533"></a>
+<FONT color="green">534</FONT>      }<a name="line.534"></a>
+<FONT color="green">535</FONT>    <a name="line.535"></a>
+<FONT color="green">536</FONT>      /**<a name="line.536"></a>
+<FONT color="green">537</FONT>       * Open a DataInputStream to a DataNode so that it can be read from.<a name="line.537"></a>
+<FONT color="green">538</FONT>       * We get block ID and the IDs of the destinations at startup, from the namenode.<a name="line.538"></a>
+<FONT color="green">539</FONT>       */<a name="line.539"></a>
+<FONT color="green">540</FONT>      private synchronized DatanodeInfo blockSeekTo(long target) throws IOException {<a name="line.540"></a>
+<FONT color="green">541</FONT>        if (target &gt;= getFileLength()) {<a name="line.541"></a>
+<FONT color="green">542</FONT>          throw new IOException("Attempted to read past end of file");<a name="line.542"></a>
+<FONT color="green">543</FONT>        }<a name="line.543"></a>
+<FONT color="green">544</FONT>    <a name="line.544"></a>
+<FONT color="green">545</FONT>        // Will be getting a new BlockReader.<a name="line.545"></a>
+<FONT color="green">546</FONT>        if (blockReader != null) {<a name="line.546"></a>
+<FONT color="green">547</FONT>          blockReader.close();<a name="line.547"></a>
+<FONT color="green">548</FONT>          blockReader = null;<a name="line.548"></a>
+<FONT color="green">549</FONT>        }<a name="line.549"></a>
+<FONT color="green">550</FONT>    <a name="line.550"></a>
+<FONT color="green">551</FONT>        //<a name="line.551"></a>
+<FONT color="green">552</FONT>        // Connect to best DataNode for desired Block, with potential offset<a name="line.552"></a>
+<FONT color="green">553</FONT>        //<a name="line.553"></a>
+<FONT color="green">554</FONT>        DatanodeInfo chosenNode = null;<a name="line.554"></a>
+<FONT color="green">555</FONT>        int refetchToken = 1; // only need to get a new access token once<a name="line.555"></a>
+<FONT color="green">556</FONT>        int refetchEncryptionKey = 1; // only need to get a new encryption key once<a name="line.556"></a>
+<FONT color="green">557</FONT>        <a name="line.557"></a>
+<FONT color="green">558</FONT>        boolean connectFailedOnce = false;<a name="line.558"></a>
+<FONT color="green">559</FONT>    <a name="line.559"></a>
+<FONT color="green">560</FONT>        while (true) {<a name="line.560"></a>
+<FONT color="green">561</FONT>          //<a name="line.561"></a>
+<FONT color="green">562</FONT>          // Compute desired block<a name="line.562"></a>
+<FONT color="green">563</FONT>          //<a name="line.563"></a>
+<FONT color="green">564</FONT>          LocatedBlock targetBlock = getBlockAt(target, true);<a name="line.564"></a>
+<FONT color="green">565</FONT>          assert (target==pos) : "Wrong postion " + pos + " expect " + target;<a name="line.565"></a>
+<FONT color="green">566</FONT>          long offsetIntoBlock = target - targetBlock.getStartOffset();<a name="line.566"></a>
+<FONT color="green">567</FONT>    <a name="line.567"></a>
+<FONT color="green">568</FONT>          DNAddrPair retval = chooseDataNode(targetBlock);<a name="line.568"></a>
+<FONT color="green">569</FONT>          chosenNode = retval.info;<a name="line.569"></a>
+<FONT color="green">570</FONT>          InetSocketAddress targetAddr = retval.addr;<a name="line.570"></a>
+<FONT color="green">571</FONT>    <a name="line.571"></a>
+<FONT color="green">572</FONT>          try {<a name="line.572"></a>
+<FONT color="green">573</FONT>            ExtendedBlock blk = targetBlock.getBlock();<a name="line.573"></a>
+<FONT color="green">574</FONT>            Token&lt;BlockTokenIdentifier&gt; accessToken = targetBlock.getBlockToken();<a name="line.574"></a>
+<FONT color="green">575</FONT>            blockReader = getBlockReader(targetAddr, chosenNode, src, blk,<a name="line.575"></a>
+<FONT color="green">576</FONT>                accessToken, offsetIntoBlock, blk.getNumBytes() - offsetIntoBlock,<a name="line.576"></a>
+<FONT color="green">577</FONT>                buffersize, verifyChecksum, dfsClient.clientName, cachingStrategy);<a name="line.577"></a>
+<FONT color="green">578</FONT>            if(connectFailedOnce) {<a name="line.578"></a>
+<FONT color="green">579</FONT>              DFSClient.LOG.info("Successfully connected to " + targetAddr +<a name="line.579"></a>
+<FONT color="green">580</FONT>                                 " for " + blk);<a name="line.580"></a>
+<FONT color="green">581</FONT>            }<a name="line.581"></a>
+<FONT color="green">582</FONT>            return chosenNode;<a name="line.582"></a>
+<FONT color="green">583</FONT>          } catch (AccessControlException ex) {<a name="line.583"></a>
+<FONT color="green">584</FONT>            DFSClient.LOG.warn("Short circuit access failed " + ex);<a name="line.584"></a>
+<FONT color="green">585</FONT>            dfsClient.disableLegacyBlockReaderLocal();<a name="line.585"></a>
+<FONT color="green">586</FONT>            continue;<a name="line.586"></a>
+<FONT color="green">587</FONT>          } catch (IOException ex) {<a name="line.587"></a>
+<FONT color="green">588</FONT>            if (ex instanceof InvalidEncryptionKeyException &amp;&amp; refetchEncryptionKey &gt; 0) {<a name="line.588"></a>
+<FONT color="green">589</FONT>              DFSClient.LOG.info("Will fetch a new encryption key and retry, " <a name="line.589"></a>
+<FONT color="green">590</FONT>                  + "encryption key was invalid when connecting to " + targetAddr<a name="line.590"></a>
+<FONT color="green">591</FONT>                  + " : " + ex);<a name="line.591"></a>
+<FONT color="green">592</FONT>              // The encryption key used is invalid.<a name="line.592"></a>
+<FONT color="green">593</FONT>              refetchEncryptionKey--;<a name="line.593"></a>
+<FONT color="green">594</FONT>              dfsClient.clearDataEncryptionKey();<a name="line.594"></a>
+<FONT color="green">595</FONT>            } else if (refetchToken &gt; 0 &amp;&amp; tokenRefetchNeeded(ex, targetAddr)) {<a name="line.595"></a>
+<FONT color="green">596</FONT>              refetchToken--;<a name="line.596"></a>
+<FONT color="green">597</FONT>              fetchBlockAt(target);<a name="line.597"></a>
+<FONT color="green">598</FONT>            } else {<a name="line.598"></a>
+<FONT color="green">599</FONT>              connectFailedOnce = true;<a name="line.599"></a>
+<FONT color="green">600</FONT>              DFSClient.LOG.warn("Failed to connect to " + targetAddr + " for block"<a name="line.600"></a>
+<FONT color="green">601</FONT>                + ", add to deadNodes and continue. " + ex, ex);<a name="line.601"></a>
+<FONT color="green">602</FONT>              // Put chosen node into dead list, continue<a name="line.602"></a>
+<FONT color="green">603</FONT>              addToDeadNodes(chosenNode);<a name="line.603"></a>
+<FONT color="green">604</FONT>            }<a name="line.604"></a>
+<FONT color="green">605</FONT>          }<a name="line.605"></a>
+<FONT color="green">606</FONT>        }<a name="line.606"></a>
+<FONT color="green">607</FONT>      }<a name="line.607"></a>
+<FONT color="green">608</FONT>    <a name="line.608"></a>
+<FONT color="green">609</FONT>      /**<a name="line.609"></a>
+<FONT color="green">610</FONT>       * Close it down!<a name="line.610"></a>
+<FONT color="green">611</FONT>       */<a name="line.611"></a>
+<FONT color="green">612</FONT>      @Override<a name="line.612"></a>
+<FONT color="green">613</FONT>      public synchronized void close() throws IOException {<a name="line.613"></a>
+<FONT color="green">614</FONT>        if (closed) {<a name="line.614"></a>
+<FONT color="green">615</FONT>          return;<a name="line.615"></a>
+<FONT color="green">616</FONT>        }<a name="line.616"></a>
+<FONT color="green">617</FONT>        dfsClient.checkOpen();<a name="line.617"></a>
+<FONT color="green">618</FONT>    <a name="line.618"></a>
+<FONT color="green">619</FONT>        if (!extendedReadBuffers.isEmpty()) {<a name="line.619"></a>
+<FONT color="green">620</FONT>          final StringBuilder builder = new StringBuilder();<a name="line.620"></a>
+<FONT color="green">621</FONT>          extendedReadBuffers.visitAll(new IdentityHashStore.Visitor&lt;ByteBuffer, Object&gt;() {<a name="line.621"></a>
+<FONT color="green">622</FONT>            private String prefix = "";<a name="line.622"></a>
+<FONT color="green">623</FONT>            @Override<a name="line.623"></a>
+<FONT color="green">624</FONT>            public void accept(ByteBuffer k, Object v) {<a name="line.624"></a>
+<FONT color="green">625</FONT>              builder.append(prefix).append(k);<a name="line.625"></a>
+<FONT color="green">626</FONT>              prefix = ", ";<a name="line.626"></a>
+<FONT color="green">627</FONT>            }<a name="line.627"></a>
+<FONT color="green">628</FONT>          });<a name="line.628"></a>
+<FONT color="green">629</FONT>          DFSClient.LOG.warn("closing file " + src + ", but there are still " +<a name="line.629"></a>
+<FONT color="green">630</FONT>              "unreleased ByteBuffers allocated by read().  " +<a name="line.630"></a>
+<FONT color="green">631</FONT>              "Please release " + builder.toString() + ".");<a name="line.631"></a>
+<FONT color="green">632</FONT>        }<a name="line.632"></a>
+<FONT color="green">633</FONT>        if (blockReader != null) {<a name="line.633"></a>
+<FONT color="green">634</FONT>          blockReader.close();<a name="line.634"></a>
+<FONT color="green">635</FONT>          blockReader = null;<a name="line.635"></a>
+<FONT color="green">636</FONT>        }<a name="line.636"></a>
+<FONT color="green">637</FONT>        super.close();<a name="line.637"></a>
+<FONT color="green">638</FONT>        fileInputStreamCache.close();<a name="line.638"></a>
+<FONT color="green">639</FONT>        closed = true;<a name="line.639"></a>
+<FONT color="green">640</FONT>      }<a name="line.640"></a>
+<FONT color="green">641</FONT>    <a name="line.641"></a>
+<FONT color="green">642</FONT>      @Override<a name="line.642"></a>
+<FONT color="green">643</FONT>      public synchronized int read() throws IOException {<a name="line.643"></a>
+<FONT color="green">644</FONT>        int ret = read( oneByteBuf, 0, 1 );<a name="line.644"></a>
+<FONT color="green">645</FONT>        return ( ret &lt;= 0 ) ? -1 : (oneByteBuf[0] &amp; 0xff);<a name="line.645"></a>
+<FONT color="green">646</FONT>      }<a name="line.646"></a>
+<FONT color="green">647</FONT>    <a name="line.647"></a>
+<FONT color="green">648</FONT>      /**<a name="line.648"></a>
+<FONT color="green">649</FONT>       * Wraps different possible read implementations so that readBuffer can be<a name="line.649"></a>
+<FONT color="green">650</FONT>       * strategy-agnostic.<a name="line.650"></a>
+<FONT color="green">651</FONT>       */<a name="line.651"></a>
+<FONT color="green">652</FONT>      private interface ReaderStrategy {<a name="line.652"></a>
+<FONT color="green">653</FONT>        public int doRead(BlockReader blockReader, int off, int len,<a name="line.653"></a>
+<FONT color="green">654</FONT>            ReadStatistics readStatistics) throws ChecksumException, IOException;<a name="line.654"></a>
+<FONT color="green">655</FONT>      }<a name="line.655"></a>
+<FONT color="green">656</FONT>    <a name="line.656"></a>
+<FONT color="green">657</FONT>      private static void updateReadStatistics(ReadStatistics readStatistics, <a name="line.657"></a>
+<FONT color="green">658</FONT>            int nRead, BlockReader blockReader) {<a name="line.658"></a>
+<FONT color="green">659</FONT>        if (nRead &lt;= 0) return;<a name="line.659"></a>
+<FONT color="green">660</FONT>        if (blockReader.isShortCircuit()) {<a name="line.660"></a>
+<FONT color="green">661</FONT>          readStatistics.totalBytesRead += nRead;<a name="line.661"></a>
+<FONT color="green">662</FONT>          readStatistics.totalLocalBytesRead += nRead;<a name="line.662"></a>
+<FONT color="green">663</FONT>          readStatistics.totalShortCircuitBytesRead += nRead;<a name="line.663"></a>
+<FONT color="green">664</FONT>        } else if (blockReader.isLocal()) {<a name="line.664"></a>
+<FONT color="green">665</FONT>          readStatistics.totalBytesRead += nRead;<a name="line.665"></a>
+<FONT color="green">666</FONT>          readStatistics.totalLocalBytesRead += nRead;<a name="line.666"></a>
+<FONT color="green">667</FONT>        } else {<a name="line.667"></a>
+<FONT color="green">668</FONT>          readStatistics.totalBytesRead += nRead;<a name="line.668"></a>
+<FONT color="green">669</FONT>        }<a name="line.669"></a>
+<FONT color="green">670</FONT>      }<a name="line.670"></a>
+<FONT color="green">671</FONT>      <a name="line.671"></a>
+<FONT color="green">672</FONT>      /**<a name="line.672"></a>
+<FONT color="green">673</FONT>       * Used to read bytes into a byte[]<a name="line.673"></a>
+<FONT color="green">674</FONT>       */<a name="line.674"></a>
+<FONT color="green">675</FONT>      private static class ByteArrayStrategy implements ReaderStrategy {<a name="line.675"></a>
+<FONT color="green">676</FONT>        final byte[] buf;<a name="line.676"></a>
+<FONT color="green">677</FONT>    <a name="line.677"></a>
+<FONT color="green">678</FONT>        public ByteArrayStrategy(byte[] buf) {<a name="line.678"></a>
+<FONT color="green">679</FONT>          this.buf = buf;<a name="line.679"></a>
+<FONT color="green">680</FONT>        }<a name="line.680"></a>
+<FONT color="green">681</FONT>    <a name="line.681"></a>
+<FONT color="green">682</FONT>        @Override<a name="line.682"></a>
+<FONT color="green">683</FONT>        public int doRead(BlockReader blockReader, int off, int len,<a name="line.683"></a>
+<FONT color="green">684</FONT>                ReadStatistics readStatistics) throws ChecksumException, IOException {<a name="line.684"></a>
+<FONT color="green">685</FONT>            int nRead = blockReader.read(buf, off, len);<a name="line.685"></a>
+<FONT color="green">686</FONT>            updateReadStatistics(readStatistics, nRead, blockReader);<a name="line.686"></a>
+<FONT color="green">687</FONT>            return nRead;<a name="line.687"></a>
+<FONT color="green">688</FONT>        }<a name="line.688"></a>
+<FONT color="green">689</FONT>      }<a name="line.689"></a>
+<FONT color="green">690</FONT>    <a name="line.690"></a>
+<FONT color="green">691</FONT>      /**<a name="line.691"></a>
+<FONT color="green">692</FONT>       * Used to read bytes into a user-supplied ByteBuffer<a name="line.692"></a>
+<FONT color="green">693</FONT>       */<a name="line.693"></a>
+<FONT color="green">694</FONT>      private static class ByteBufferStrategy implements ReaderStrategy {<a name="line.694"></a>
+<FONT color="green">695</FONT>        final ByteBuffer buf;<a name="line.695"></a>
+<FONT color="green">696</FONT>        ByteBufferStrategy(ByteBuffer buf) {<a name="line.696"></a>
+<FONT color="green">697</FONT>          this.buf = buf;<a name="line.697"></a>
+<FONT color="green">698</FONT>        }<a name="line.698"></a>
+<FONT color="green">699</FONT>    <a name="line.699"></a>
+<FONT color="green">700</FONT>        @Override<a name="line.700"></a>
+<FONT color="green">701</FONT>        public int doRead(BlockReader blockReader, int off, int len,<a name="line.701"></a>
+<FONT color="green">702</FONT>            ReadStatistics readStatistics) throws ChecksumException, IOException {<a name="line.702"></a>
+<FONT color="green">703</FONT>          int oldpos = buf.position();<a name="line.703"></a>
+<FONT color="green">704</FONT>          int oldlimit = buf.limit();<a name="line.704"></a>
+<FONT color="green">705</FONT>          boolean success = false;<a name="line.705"></a>
+<FONT color="green">706</FONT>          try {<a name="line.706"></a>
+<FONT color="green">707</FONT>            int ret = blockReader.read(buf);<a name="line.707"></a>
+<FONT color="green">708</FONT>            success = true;<a name="line.708"></a>
+<FONT color="green">709</FONT>            updateReadStatistics(readStatistics, ret, blockReader);<a name="line.709"></a>
+<FONT color="green">710</FONT>            return ret;<a name="line.710"></a>
+<FONT color="green">711</FONT>          } finally {<a name="line.711"></a>
+<FONT color="green">712</FONT>            if (!success) {<a name="line.712"></a>
+<FONT color="green">713</FONT>              // Reset to original state so that retries work correctly.<a name="line.713"></a>
+<FONT color="green">714</FONT>              buf.position(oldpos);<a name="line.714"></a>
+<FONT color="green">715</FONT>              buf.limit(oldlimit);<a name="line.715"></a>
+<FONT color="green">716</FONT>            }<a name="line.716"></a>
+<FONT color="green">717</FONT>          } <a name="line.717"></a>
+<FONT color="green">718</FONT>        }<a name="line.718"></a>
+<FONT color="green">719</FONT>      }<a name="line.719"></a>
+<FONT color="green">720</FONT>    <a name="line.720"></a>
+<FONT color="green">721</FONT>      /* This is a used by regular read() and handles ChecksumExceptions.<a name="line.721"></a>
+<FONT color="green">722</FONT>       * name readBuffer() is chosen to imply similarity to readBuffer() in<a name="line.722"></a>
+<FONT color="green">723</FONT>       * ChecksumFileSystem<a name="line.723"></a>
+<FONT color="green">724</FONT>       */ <a name="line.724"></a>
+<FONT color="green">725</FONT>      private synchronized int readBuffer(ReaderStrategy reader, int off, int len,<a name="line.725"></a>
+<FONT color="green">726</FONT>          Map&lt;ExtendedBlock, Set&lt;DatanodeInfo&gt;&gt; corruptedBlockMap)<a name="line.726"></a>
+<FONT color="green">727</FONT>          throws IOException {<a name="line.727"></a>
+<FONT color="green">728</FONT>        IOException ioe;<a name="line.728"></a>
+<FONT color="green">729</FONT>        <a name="line.729"></a>
+<FONT color="green">730</FONT>        /* we retry current node only once. So this is set to true only here.<a name="line.730"></a>
+<FONT color="green">731</FONT>         * Intention is to handle one common case of an error that is not a<a name="line.731"></a>
+<FONT color="green">732</FONT>         * failure on datanode or client : when DataNode closes the connection<a name="line.732"></a>
+<FONT color="green">733</FONT>         * since client is idle. If there are other cases of "non-errors" then<a name="line.733"></a>
+<FONT color="green">734</FONT>         * then a datanode might be retried by setting this to true again.<a name="line.734"></a>
+<FONT color="green">735</FONT>         */<a name="line.735"></a>
+<FONT color="green">736</FONT>        boolean retryCurrentNode = true;<a name="line.736"></a>
+<FONT color="green">737</FONT>    <a name="line.737"></a>
+<FONT color="green">738</FONT>        while (true) {<a name="line.738"></a>
+<FONT color="green">739</FONT>          // retry as many times as seekToNewSource allows.<a name="line.739"></a>
+<FONT color="green">740</FONT>          try {<a name="line.740"></a>
+<FONT color="green">741</FONT>            return reader.doRead(blockReader, off, len, readStatistics);<a name="line.741"></a>
+<FONT color="green">742</FONT>          } catch ( ChecksumException ce ) {<a name="line.742"></a>
+<FONT color="green">743</FONT>            DFSClient.LOG.warn("Found Checksum error for "<a name="line.743"></a>
+<FONT color="green">744</FONT>                + getCurrentBlock() + " from " + currentNode<a name="line.744"></a>
+<FONT color="green">745</FONT>                + " at " + ce.getPos());        <a name="line.745"></a>
+<FONT color="green">746</FONT>            ioe = ce;<a name="line.746"></a>
+<FONT color="green">747</FONT>            retryCurrentNode = false;<a name="line.747"></a>
+<FONT color="green">748</FONT>            // we want to remember which block replicas we have tried<a name="line.748"></a>
+<FONT color="green">749</FONT>            addIntoCorruptedBlockMap(getCurrentBlock(), currentNode,<a name="line.749"></a>
+<FONT color="green">750</FONT>                corruptedBlockMap);<a name="line.750"></a>
+<FONT color="green">751</FONT>          } catch ( IOException e ) {<a name="line.751"></a>
+<FONT color="green">752</FONT>            if (!retryCurrentNode) {<a name="line.752"></a>
+<FONT color="green">753</FONT>              DFSClient.LOG.warn("Exception while reading from "<a name="line.753"></a>
+<FONT color="green">754</FONT>                  + getCurrentBlock() + " of " + src + " from "<a name="line.754"></a>
+<FONT color="green">755</FONT>                  + currentNode, e);<a name="line.755"></a>
+<FONT color="green">756</FONT>            }<a name="line.756"></a>
+<FONT color="green">757</FONT>            ioe = e;<a name="line.757"></a>
+<FONT color="green">758</FONT>          }<a name="line.758"></a>
+<FONT color="green">759</FONT>          boolean sourceFound = false;<a name="line.759"></a>
+<FONT color="green">760</FONT>          if (retryCurrentNode) {<a name="line.760"></a>
+<FONT color="green">761</FONT>            /* possibly retry the same node so that transient errors don't<a name="line.761"></a>
+<FONT color="green">762</FONT>             * result in application level failures (e.g. Datanode could have<a name="line.762"></a>
+<FONT color="green">763</FONT>             * closed the connection because the client is idle for too long).<a name="line.763"></a>
+<FONT color="green">764</FONT>             */ <a name="line.764"></a>
+<FONT color="green">765</FONT>            sourceFound = seekToBlockSource(pos);<a name="line.765"></a>
+<FONT color="green">766</FONT>          } else {<a name="line.766"></a>
+<FONT color="green">767</FONT>            addToDeadNodes(currentNode);<a name="line.767"></a>
+<FONT color="green">768</FONT>            sourceFound = seekToNewSource(pos);<a name="line.768"></a>
+<FONT color="green">769</FONT>          }<a name="line.769"></a>
+<FONT color="green">770</FONT>          if (!sourceFound) {<a name="line.770"></a>
+<FONT color="green">771</FONT>            throw ioe;<a name="line.771"></a>
+<FONT color="green">772</FONT>          }<a name="line.772"></a>
+<FONT color="green">773</FONT>          retryCurrentNode = false;<a name="line.773"></a>
+<FONT color="green">774</FONT>        }<a name="line.774"></a>
+<FONT color="green">775</FONT>      }<a name="line.775"></a>
+<FONT color="green">776</FONT>    <a name="line.776"></a>
+<FONT color="green">777</FONT>      private int readWithStrategy(ReaderStrategy strategy, int off, int len) throws IOException {<a name="line.777"></a>
+<FONT color="green">778</FONT>        dfsClient.checkOpen();<a name="line.778"></a>
+<FONT color="green">779</FONT>        if (closed) {<a name="line.779"></a>
+<FONT color="green">780</FONT>          throw new IOException("Stream closed");<a name="line.780"></a>
+<FONT color="green">781</FONT>        }<a name="line.781"></a>
+<FONT color="green">782</FONT>        Map&lt;ExtendedBlock,Set&lt;DatanodeInfo&gt;&gt; corruptedBlockMap <a name="line.782"></a>
+<FONT color="green">783</FONT>          = new HashMap&lt;ExtendedBlock, Set&lt;DatanodeInfo&gt;&gt;();<a name="line.783"></a>
+<FONT color="green">784</FONT>        failures = 0;<a name="line.784"></a>
+<FONT color="green">785</FONT>        if (pos &lt; getFileLength()) {<a name="line.785"></a>
+<FONT color="green">786</FONT>          int retries = 2;<a name="line.786"></a>
+<FONT color="green">787</FONT>          while (retries &gt; 0) {<a name="line.787"></a>
+<FONT color="green">788</FONT>            try {<a name="line.788"></a>
+<FONT color="green">789</FONT>              // currentNode can be left as null if previous read had a checksum<a name="line.789"></a>
+<FONT color="green">790</FONT>              // error on the same block. See HDFS-3067<a name="line.790"></a>
+<FONT color="green">791</FONT>              if (pos &gt; blockEnd || currentNode == null) {<a name="line.791"></a>
+<FONT color="green">792</FONT>                currentNode = blockSeekTo(pos);<a name="line.792"></a>
+<FONT color="green">793</FONT>              }<a name="line.793"></a>
+<FONT color="green">794</FONT>              int realLen = (int) Math.min(len, (blockEnd - pos + 1L));<a name="line.794"></a>
+<FONT color="green">795</FONT>              if (locatedBlocks.isLastBlockComplete()) {<a name="line.795"></a>
+<FONT color="green">796</FONT>                realLen = (int) Math.min(realLen, locatedBlocks.getFileLength());<a name="line.796"></a>
+<FONT color="green">797</FONT>              }<a name="line.797"></a>
+<FONT color="green">798</FONT>              int result = readBuffer(strategy, off, realLen, corruptedBlockMap);<a name="line.798"></a>
+<FONT color="green">799</FONT>              <a name="line.799"></a>
+<FONT color="green">800</FONT>              if (result &gt;= 0) {<a name="line.800"></a>
+<FONT color="green">801</FONT>                pos += result;<a name="line.801"></a>
+<FONT color="green">802</FONT>              } else {<a name="line.802"></a>
+<FONT color="green">803</FONT>                // got a EOS from reader though we expect more data on it.<a name="line.803"></a>
+<FONT color="green">804</FONT>                throw new IOException("Unexpected EOS from the reader");<a name="line.804"></a>
+<FONT color="green">805</FONT>              }<a name="line.805"></a>
+<FONT color="green">806</FONT>              if (dfsClient.stats != null &amp;&amp; result != -1) {<a name="line.806"></a>
+<FONT color="green">807</FONT>                dfsClient.stats.incrementBytesRead(result);<a name="line.807"></a>
+<FONT color="green">808</FONT>              }<a name="line.808"></a>
+<FONT color="green">809</FONT>              return result;<a name="line.809"></a>
+<FONT color="green">810</FONT>            } catch (ChecksumException ce) {<a name="line.810"></a>
+<FONT color="green">811</FONT>              throw ce;            <a name="line.811"></a>
+<FONT color="green">812</FONT>            } catch (IOException e) {<a name="line.812"></a>
+<FONT color="green">813</FONT>              if (retries == 1) {<a name="line.813"></a>
+<FONT color="green">814</FONT>                DFSClient.LOG.warn("DFS Read", e);<a name="line.814"></a>
+<FONT color="green">815</FONT>              }<a name="line.815"></a>
+<FONT color="green">816</FONT>              blockEnd = -1;<a name="line.816"></a>
+<FONT color="green">817</FONT>              if (currentNode != null) { addToDeadNodes(currentNode); }<a name="line.817"></a>
+<FONT color="green">818</FONT>              if (--retries == 0) {<a name="line.818"></a>
+<FONT color="green">819</FONT>                throw e;<a name="line.819"></a>
+<FONT color="green">820</FONT>              }<a name="line.820"></a>
+<FONT color="green">821</FONT>            } finally {<a name="line.821"></a>
+<FONT color="green">822</FONT>              // Check if need to report block replicas corruption either read<a name="line.822"></a>
+<FONT color="green">823</FONT>              // was successful or ChecksumException occured.<a name="line.823"></a>
+<FONT color="green">824</FONT>              reportCheckSumFailure(corruptedBlockMap, <a name="line.824"></a>
+<FONT color="green">825</FONT>                  currentLocatedBlock.getLocations().length);<a name="line.825"></a>
+<FONT color="green">826</FONT>            }<a name="line.826"></a>
+<FONT color="green">827</FONT>          }<a name="line.827"></a>
+<FONT color="green">828</FONT>        }<a name="line.828"></a>
+<FONT color="green">829</FONT>        return -1;<a name="line.829"></a>
+<FONT color="green">830</FONT>      }<a name="line.830"></a>
+<FONT color="green">831</FONT>    <a name="line.831"></a>
+<FONT color="green">832</FONT>      /**<a name="line.832"></a>
+<FONT color="green">833</FONT>       * Read the entire buffer.<a name="line.833"></a>
+<FONT color="green">834</FONT>       */<a name="line.834"></a>
+<FONT color="green">835</FONT>      @Override<a name="line.835"></a>
+<FONT color="green">836</FONT>      public synchronized int read(final byte buf[], int off, int len) throws IOException {<a name="line.836"></a>
+<FONT color="green">837</FONT>        ReaderStrategy byteArrayReader = new ByteArrayStrategy(buf);<a name="line.837"></a>
+<FONT color="green">838</FONT>    <a name="line.838"></a>
+<FONT color="green">839</FONT>        return readWithStrategy(byteArrayReader, off, len);<a name="line.839"></a>
+<FONT color="green">840</FONT>      }<a name="line.840"></a>
+<FONT color="green">841</FONT>    <a name="line.841"></a>
+<FONT color="green">842</FONT>      @Override<a name="line.842"></a>
+<FONT color="green">843</FONT>      public synchronized int read(final ByteBuffer buf) throws IOException {<a name="line.843"></a>
+<FONT color="green">844</FONT>        ReaderStrategy byteBufferReader = new ByteBufferStrategy(buf);<a name="line.844"></a>
+<FONT color="green">845</FONT>    <a name="line.845"></a>
+<FONT color="green">846</FONT>        return readWithStrategy(byteBufferReader, 0, buf.remaining());<a name="line.846"></a>
+<FONT color="green">847</FONT>      }<a name="line.847"></a>
+<FONT color="green">848</FONT>    <a name="line.848"></a>
+<FONT color="green">849</FONT>    <a name="line.849"></a>
+<FONT color="green">850</FONT>      /**<a name="line.850"></a>
+<FONT color="green">851</FONT>       * Add corrupted block replica into map.<a name="line.851"></a>
+<FONT color="green">852</FONT>       * @param corruptedBlockMap <a name="line.852"></a>
+<FONT color="green">853</FONT>       */<a name="line.853"></a>
+<FONT color="green">854</FONT>      private void addIntoCorruptedBlockMap(ExtendedBlock blk, DatanodeInfo node, <a name="line.854"></a>
+<FONT color="green">855</FONT>          Map&lt;ExtendedBlock, Set&lt;DatanodeInfo&gt;&gt; corruptedBlockMap) {<a name="line.855"></a>
+<FONT color="green">856</FONT>        Set&lt;DatanodeInfo&gt; dnSet = null;<a name="line.856"></a>
+<FONT color="green">857</FONT>        if((corruptedBlockMap.containsKey(blk))) {<a name="line.857"></a>
+<FONT color="green">858</FONT>          dnSet = corruptedBlockMap.get(blk);<a name="line.858"></a>
+<FONT color="green">859</FONT>        }else {<a name="line.859"></a>
+<FONT color="green">860</FONT>          dnSet = new HashSet&lt;DatanodeInfo&gt;();<a name="line.860"></a>
+<FONT color="green">861</FONT>        }<a name="line.861"></a>
+<FONT color="green">862</FONT>        if (!dnSet.contains(node)) {<a name="line.862"></a>
+<FONT color="green">863</FONT>          dnSet.add(node);<a name="line.863"></a>
+<FONT color="green">864</FONT>          corruptedBlockMap.put(blk, dnSet);<a name="line.864"></a>
+<FONT color="green">865</FONT>        }<a name="line.865"></a>
+<FONT color="green">866</FONT>      }<a name="line.866"></a>
+<FONT color="green">867</FONT>          <a name="line.867"></a>
+<FONT color="green">868</FONT>      private DNAddrPair chooseDataNode(LocatedBlock block)<a name="line.868"></a>
+<FONT color="green">869</FONT>        throws IOException {<a name="line.869"></a>
+<FONT color="green">870</FONT>        while (true) {<a name="line.870"></a>
+<FONT color="green">871</FONT>          DatanodeInfo[] nodes = block.getLocations();<a name="line.871"></a>
+<FONT color="green">872</FONT>          try {<a name="line.872"></a>
+<FONT color="green">873</FONT>            DatanodeInfo chosenNode = bestNode(nodes, deadNodes);<a name="line.873"></a>
+<FONT color="green">874</FONT>            final String dnAddr =<a name="line.874"></a>
+<FONT color="green">875</FONT>                chosenNode.getXferAddr(dfsClient.getConf().connectToDnViaHostname);<a name="line.875"></a>
+<FONT color="green">876</FONT>            if (DFSClient.LOG.isDebugEnabled()) {<a name="line.876"></a>
+<FONT color="green">877</FONT>              DFSClient.LOG.debug("Connecting to datanode " + dnAddr);<a name="line.877"></a>
+<FONT color="green">878</FONT>            }<a name="line.878"></a>
+<FONT color="green">879</FONT>            InetSocketAddress targetAddr = NetUtils.createSocketAddr(dnAddr);<a name="line.879"></a>
+<FONT color="green">880</FONT>            return new DNAddrPair(chosenNode, targetAddr);<a name="line.880"></a>
+<FONT color="green">881</FONT>          } catch (IOException ie) {<a name="line.881"></a>
+<FONT color="green">882</FONT>            String blockInfo = block.getBlock() + " file=" + src;<a name="line.882"></a>
+<FONT color="green">883</FONT>            if (failures &gt;= dfsClient.getMaxBlockAcquireFailures()) {<a name="line.883"></a>
+<FONT color="green">884</FONT>              throw new BlockMissingException(src, "Could not obtain block: " + blockInfo,<a name="line.884"></a>
+<FONT color="green">885</FONT>                                              block.getStartOffset());<a name="line.885"></a>
+<FONT color="green">886</FONT>            }<a name="line.886"></a>
+<FONT color="green">887</FONT>            <a name="line.887"></a>
+<FONT color="green">888</FONT>            if (nodes == null || nodes.length == 0) {<a name="line.888"></a>
+<FONT color="green">889</FONT>              DFSClient.LOG.info("No node available for " + blockInfo);<a name="line.889"></a>
+<FONT color="green">890</FONT>            }<a name="line.890"></a>
+<FONT color="green">891</FONT>            DFSClient.LOG.info("Could not obtain " + block.getBlock()<a name="line.891"></a>
+<FONT color="green">892</FONT>                + " from any node: " + ie<a name="line.892"></a>
+<FONT color="green">893</FONT>                + ". Will get new block locations from namenode and retry...");<a name="line.893"></a>
+<FONT color="green">894</FONT>            try {<a name="line.894"></a>
+<FONT color="green">895</FONT>              // Introducing a random factor to the wait time before another retry.<a name="line.895"></a>
+<FONT color="green">896</FONT>              // The wait time is dependent on # of failures and a random factor.<a name="line.896"></a>
+<FONT color="green">897</FONT>              // At the first time of getting a BlockMissingException, the wait time<a name="line.897"></a>
+<FONT color="green">898</FONT>              // is a random number between 0..3000 ms. If the first retry<a name="line.898"></a>
+<FONT color="green">899</FONT>              // still fails, we will wait 3000 ms grace period before the 2nd retry.<a name="line.899"></a>
+<FONT color="green">900</FONT>              // Also at the second retry, the waiting window is expanded to 6000 ms<a name="line.900"></a>
+<FONT color="green">901</FONT>              // alleviating the request rate from the server. Similarly the 3rd retry<a name="line.901"></a>
+<FONT color="green">902</FONT>              // will wait 6000ms grace period before retry and the waiting window is<a name="line.902"></a>
+<FONT color="green">903</FONT>              // expanded to 9000ms. <a name="line.903"></a>
+<FONT color="green">904</FONT>              final int timeWindow = dfsClient.getConf().timeWindow;<a name="line.904"></a>
+<FONT color="green">905</FONT>              double waitTime = timeWindow * failures +       // grace period for the last round of attempt<a name="line.905"></a>
+<FONT color="green">906</FONT>                timeWindow * (failures + 1) * DFSUtil.getRandom().nextDouble(); // expanding time window for each failure<a name="line.906"></a>
+<FONT color="green">907</FONT>              DFSClient.LOG.warn("DFS chooseDataNode: got # " + (failures + 1) + " IOException, will wait for " + waitTime + " msec.");<a name="line.907"></a>
+<FONT color="green">908</FONT>              Thread.sleep((long)waitTime);<a name="line.908"></a>
+<FONT color="green">909</FONT>            } catch (InterruptedException iex) {<a name="line.909"></a>
+<FONT color="green">910</FONT>            }<a name="line.910"></a>
+<FONT color="green">911</FONT>            deadNodes.clear(); //2nd option is to remove only nodes[blockId]<a name="line.911"></a>
+<FONT color="green">912</FONT>            openInfo();<a name="line.912"></a>
+<FONT color="green">913</FONT>            block = getBlockAt(block.getStartOffset(), false);<a name="line.913"></a>
+<FONT color="green">914</FONT>            failures++;<a name="line.914"></a>
+<FONT color="green">915</FONT>            continue;<a name="line.915"></a>
+<FONT color="green">916</FONT>          }<a name="line.916"></a>
+<FONT color="green">917</FONT>        }<a name="line.917"></a>
+<FONT color="green">918</FONT>      } <a name="line.918"></a>
+<FONT color="green">919</FONT>          <a name="line.919"></a>
+<FONT color="green">920</FONT>      private void fetchBlockByteRange(LocatedBlock block, long start, long end,<a name="line.920"></a>
+<FONT color="green">921</FONT>          byte[] buf, int offset,<a name="line.921"></a>
+<FONT color="green">922</FONT>          Map&lt;ExtendedBlock, Set&lt;DatanodeInfo&gt;&gt; corruptedBlockMap)<a name="line.922"></a>
+<FONT color="green">923</FONT>          throws IOException {<a name="line.923"></a>
+<FONT color="green">924</FONT>        //<a name="line.924"></a>
+<FONT color="green">925</FONT>        // Connect to best DataNode for desired Block, with potential offset<a name="line.925"></a>
+<FONT color="green">926</FONT>        //<a name="line.926"></a>
+<FONT color="green">927</FONT>        int refetchToken = 1; // only need to get a new access token once<a name="line.927"></a>
+<FONT color="green">928</FONT>        int refetchEncryptionKey = 1; // only need to get a new encryption key once<a name="line.928"></a>
+<FONT color="green">929</FONT>        <a name="line.929"></a>
+<FONT color="green">930</FONT>        while (true) {<a name="line.930"></a>
+<FONT color="green">931</FONT>          // cached block locations may have been updated by chooseDataNode()<a name="line.931"></a>
+<FONT color="green">932</FONT>          // or fetchBlockAt(). Always get the latest list of locations at the <a name="line.932"></a>
+<FONT color="green">933</FONT>          // start of the loop.<a name="line.933"></a>
+<FONT color="green">934</FONT>          CachingStrategy curCachingStrategy;<a name="line.934"></a>
+<FONT color="green">935</FONT>          synchronized (this) {<a name="line.935"></a>
+<FONT color="green">936</FONT>            block = getBlockAt(block.getStartOffset(), false);<a name="line.936"></a>
+<FONT color="green">937</FONT>            curCachingStrategy = cachingStrategy;<a name="line.937"></a>
+<FONT color="green">938</FONT>          }<a name="line.938"></a>
+<FONT color="green">939</FONT>          DNAddrPair retval = chooseDataNode(block);<a name="line.939"></a>
+<FONT color="green">940</FONT>          DatanodeInfo chosenNode = retval.info;<a name="line.940"></a>
+<FONT color="green">941</FONT>          InetSocketAddress targetAddr = retval.addr;<a name="line.941"></a>
+<FONT color="green">942</FONT>          BlockReader reader = null;<a name="line.942"></a>
+<FONT color="green">943</FONT>              <a name="line.943"></a>
+<FONT color="green">944</FONT>          try {<a name="line.944"></a>
+<FONT color="green">945</FONT>            Token&lt;BlockTokenIdentifier&gt; blockToken = block.getBlockToken();<a name="line.945"></a>
+<FONT color="green">946</FONT>                <a name="line.946"></a>
+<FONT color="green">947</FONT>            int len = (int) (end - start + 1);<a name="line.947"></a>
+<FONT color="green">948</FONT>            reader = getBlockReader(targetAddr, chosenNode, src, block.getBlock(),<a name="line.948"></a>
+<FONT color="green">949</FONT>                blockToken, start, len, buffersize, verifyChecksum,<a name="line.949"></a>
+<FONT color="green">950</FONT>                dfsClient.clientName, curCachingStrategy);<a name="line.950"></a>
+<FONT color="green">951</FONT>            int nread = reader.readAll(buf, offset, len);<a name="line.951"></a>
+<FONT color="green">952</FONT>            if (nread != len) {<a name="line.952"></a>
+<FONT color="green">953</FONT>              throw new IOException("truncated return from reader.read(): " +<a name="line.953"></a>
+<FONT color="green">954</FONT>                                    "excpected " + len + ", got " + nread);<a name="line.954"></a>
+<FONT color="green">955</FONT>            }<a name="line.955"></a>
+<FONT color="green">956</FONT>            return;<a name="line.956"></a>
+<FONT color="green">957</FONT>          } catch (ChecksumException e) {<a name="line.957"></a>
+<FONT color="green">958</FONT>            DFSClient.LOG.warn("fetchBlockByteRange(). Got a checksum exception for " +<a name="line.958"></a>
+<FONT color="green">959</FONT>                     src + " at " + block.getBlock() + ":" + <a name="line.959"></a>
+<FONT color="green">960</FONT>                     e.getPos() + " from " + chosenNode);<a name="line.960"></a>
+<FONT color="green">961</FONT>            // we want to remember what we have tried<a name="line.961"></a>
+<FONT color="green">962</FONT>            addIntoCorruptedBlockMap(block.getBlock(), chosenNode, corruptedBlockMap);<a name="line.962"></a>
+<FONT color="green">963</FONT>          } catch (AccessControlException ex) {<a name="line.963"></a>
+<FONT color="green">964</FONT>            DFSClient.LOG.warn("Short circuit access failed " + ex);<a name="line.964"></a>
+<FONT color="green">965</FONT>            dfsClient.disableLegacyBlockReaderLocal();<a name="line.965"></a>
+<FONT color="green">966</FONT>            continue;<a name="line.966"></a>
+<FONT color="green">967</FONT>          } catch (IOException e) {<a name="line.967"></a>
+<FONT color="green">968</FONT>            if (e instanceof InvalidEncryptionKeyException &amp;&amp; refetchEncryptionKey &gt; 0) {<a name="line.968"></a>
+<FONT color="green">969</FONT>              DFSClient.LOG.info("Will fetch a new encryption key and retry, " <a name="line.969"></a>
+<FONT color="green">970</FONT>                  + "encryption key was invalid when connecting to " + targetAddr<a name="line.970"></a>
+<FONT color="green">971</FONT>                  + " : " + e);<a name="line.971"></a>
+<FONT color="green">972</FONT>              // The encryption key used is invalid.<a name="line.972"></a>
+<FONT color="green">973</FONT>              refetchEncryptionKey--;<a name="line.973"></a>
+<FONT color="green">974</FONT>              dfsClient.clearDataEncryptionKey();<a name="line.974"></a>
+<FONT color="green">975</FONT>              continue;<a name="line.975"></a>
+<FONT color="green">976</FONT>            } else if (refetchToken &gt; 0 &amp;&amp; tokenRefetchNeeded(e, targetAddr)) {<a name="line.976"></a>
+<FONT color="green">977</FONT>              refetchToken--;<a name="line.977"></a>
+<FONT color="green">978</FONT>              fetchBlockAt(block.getStartOffset());<a name="line.978"></a>
+<FONT color="green">979</FONT>              continue;<a name="line.979"></a>
+<FONT color="green">980</FONT>            } else {<a name="line.980"></a>
+<FONT color="green">981</FONT>              DFSClient.LOG.warn("Failed to connect to " + targetAddr + <a name="line.981"></a>
+<FONT color="green">982</FONT>                  " for file " + src + " for block " + block.getBlock() + ":" + e);<a name="line.982"></a>
+<FONT color="green">983</FONT>              if (DFSClient.LOG.isDebugEnabled()) {<a name="line.983"></a>
+<FONT color="green">984</FONT>                DFSClient.LOG.debug("Connection failure ", e);<a name="line.984"></a>
+<FONT color="green">985</FONT>              }<a name="line.985"></a>
+<FONT color="green">986</FONT>            }<a name="line.986"></a>
+<FONT color="green">987</FONT>          } finally {<a name="line.987"></a>
+<FONT color="green">988</FONT>            if (reader != null) {<a name="line.988"></a>
+<FONT color="green">989</FONT>              reader.close();<a name="line.989"></a>
+<FONT color="green">990</FONT>            }<a name="line.990"></a>
+<FONT color="green">991</FONT>          }<a name="line.991"></a>
+<FONT color="green">992</FONT>          // Put chosen node into dead list, continue<a name="line.992"></a>
+<FONT color="green">993</FONT>          addToDeadNodes(chosenNode);<a name="line.993"></a>
+<FONT color="green">994</FONT>        }<a name="line.994"></a>
+<FONT color="green">995</FONT>      }<a name="line.995"></a>
+<FONT color="green">996</FONT>    <a name="line.996"></a>
+<FONT color="green">997</FONT>      /**<a name="line.997"></a>
+<FONT color="green">998</FONT>       * Should the block access token be refetched on an exception<a name="line.998"></a>
+<FONT color="green">999</FONT>       * <a name="line.999"></a>
+<FONT color="green">1000</FONT>       * @param ex Exception received<a name="line.1000"></a>
+<FONT color="green">1001</FONT>       * @param targetAddr Target datanode address from where exception was received<a name="line.1001"></a>
+<FONT color="green">1002</FONT>       * @return true if block access token has expired or invalid and it should be<a name="line.1002"></a>
+<FONT color="green">1003</FONT>       *         refetched<a name="line.1003"></a>
+<FONT color="green">1004</FONT>       */<a name="line.1004"></a>
+<FONT color="green">1005</FONT>      private static boolean tokenRefetchNeeded(IOException ex,<a name="line.1005"></a>
+<FONT color="green">1006</FONT>          InetSocketAddress targetAddr) {<a name="line.1006"></a>
+<FONT color="green">1007</FONT>        /*<a name="line.1007"></a>
+<FONT color="green">1008</FONT>         * Get a new access token and retry. Retry is needed in 2 cases. 1)<a name="line.1008"></a>
+<FONT color="green">1009</FONT>         * When both NN and DN re-started while DFSClient holding a cached<a name="line.1009"></a>
+<FONT color="green">1010</FONT>         * access token. 2) In the case that NN fails to update its<a name="line.1010"></a>
+<FONT color="green">1011</FONT>         * access key at pre-set interval (by a wide margin) and<a name="line.1011"></a>
+<FONT color="green">1012</FONT>         * subsequently restarts. In this case, DN re-registers itself with<a name="line.1012"></a>
+<FONT color="green">1013</FONT>         * NN and receives a new access key, but DN will delete the old<a name="line.1013"></a>
+<FONT color="green">1014</FONT>         * access key from its memory since it's considered expired based on<a name="line.1014"></a>
+<FONT color="green">1015</FONT>         * the estimated expiration date.<a name="line.1015"></a>
+<FONT color="green">1016</FONT>         */<a name="line.1016"></a>
+<FONT color="green">1017</FONT>        if (ex instanceof InvalidBlockTokenException || ex instanceof InvalidToken) {<a name="line.1017"></a>
+<FONT color="green">1018</FONT>          DFSClient.LOG.info("Access token was invalid when connecting to "<a name="line.1018"></a>
+<FONT color="green">1019</FONT>              + targetAddr + " : " + ex);<a name="line.1019"></a>
+<FONT color="green">1020</FONT>          return true;<a name="line.1020"></a>
+<FONT color="green">1021</FONT>        }<a name="line.1021"></a>
+<FONT color="green">1022</FONT>        return false;<a name="line.1022"></a>
+<FONT color="green">1023</FONT>      }<a name="line.1023"></a>
+<FONT color="green">1024</FONT>    <a name="line.1024"></a>
+<FONT color="green">1025</FONT>      private Peer newTcpPeer(InetSocketAddress addr) throws IOException {<a name="line.1025"></a>
+<FONT color="green">1026</FONT>        Peer peer = null;<a name="line.1026"></a>
+<FONT color="green">1027</FONT>        boolean success = false;<a name="line.1027"></a>
+<FONT color="green">1028</FONT>        Socket sock = null;<a name="line.1028"></a>
+<FONT color="green">1029</FONT>        try {<a name="line.1029"></a>
+<FONT color="green">1030</FONT>          sock = dfsClient.socketFactory.createSocket();<a name="line.1030"></a>
+<FONT color="green">1031</FONT>          NetUtils.connect(sock, addr,<a name="line.1031"></a>
+<FONT color="green">1032</FONT>            dfsClient.getRandomLocalInterfaceAddr(),<a name="line.1032"></a>
+<FONT color="green">1033</FONT>            dfsClient.getConf().socketTimeout);<a name="line.1033"></a>
+<FONT color="green">1034</FONT>          peer = TcpPeerServer.peerFromSocketAndKey(sock, <a name="line.1034"></a>
+<FONT color="green">1035</FONT>              dfsClient.getDataEncryptionKey());<a name="line.1035"></a>
+<FONT color="green">1036</FONT>          success = true;<a name="line.1036"></a>
+<FONT color="green">1037</FONT>          return peer;<a name="line.1037"></a>
+<FONT color="green">1038</FONT>        } finally {<a name="line.1038"></a>
+<FONT color="green">1039</FONT>          if (!success) {<a name="line.1039"></a>
+<FONT color="green">1040</FONT>            IOUtils.closeQuietly(peer);<a name="line.1040"></a>
+<FONT color="green">1041</FONT>            IOUtils.closeQuietly(sock);<a name="line.1041"></a>
+<FONT color="green">1042</FONT>          }<a name="line.1042"></a>
+<FONT color="green">1043</FONT>        }<a name="line.1043"></a>
+<FONT color="green">1044</FONT>      }<a name="line.1044"></a>
+<FONT color="green">1045</FONT>    <a name="line.1045"></a>
+<FONT color="green">1046</FONT>      /**<a name="line.1046"></a>
+<FONT color="green">1047</FONT>       * Retrieve a BlockReader suitable for reading.<a name="line.1047"></a>
+<FONT color="green">1048</FONT>       * This method will reuse the cached connection to the DN if appropriate.<a name="line.1048"></a>
+<FONT color="green">1049</FONT>       * Otherwise, it will create a new connection.<a name="line.1049"></a>
+<FONT color="green">1050</FONT>       * Throwing an IOException from this method is basically equivalent to <a name="line.1050"></a>
+<FONT color="green">1051</FONT>       * declaring the DataNode bad, so we try to connect a lot of different ways<a name="line.1051"></a>
+<FONT color="green">1052</FONT>       * before doing that.<a name="line.1052"></a>
+<FONT color="green">1053</FONT>       *<a name="line.1053"></a>
+<FONT color="green">1054</FONT>       * @param dnAddr  Address of the datanode<a name="line.1054"></a>
+<FONT color="green">1055</FONT>       * @param chosenNode Chosen datanode information<a name="line.1055"></a>
+<FONT color="green">1056</FONT>       * @param file  File location<a name="line.1056"></a>
+<FONT color="green">1057</FONT>       * @param block  The Block object<a name="line.1057"></a>
+<FONT color="green">1058</FONT>       * @param blockToken  The access token for security<a name="line.1058"></a>
+<FONT color="green">1059</FONT>       * @param startOffset  The read offset, relative to block head<a name="line.1059"></a>
+<FONT color="green">1060</FONT>       * @param len  The number of bytes to read<a name="line.1060"></a>
+<FONT color="green">1061</FONT>       * @param bufferSize  The IO buffer size (not the client buffer size)<a name="line.1061"></a>
+<FONT color="green">1062</FONT>       * @param verifyChecksum  Whether to verify checksum<a name="line.1062"></a>
+<FONT color="green">1063</FONT>       * @param clientName  Client name<a name="line.1063"></a>
+<FONT color="green">1064</FONT>       * @param CachingStrategy  caching strategy to use<a name="line.1064"></a>
+<FONT color="green">1065</FONT>       * @return New BlockReader instance<a name="line.1065"></a>
+<FONT color="green">1066</FONT>       */<a name="line.1066"></a>
+<FONT color="green">1067</FONT>      protected BlockReader getBlockReader(InetSocketAddress dnAddr,<a name="line.1067"></a>
+<FONT color="green">1068</FONT>                                           DatanodeInfo chosenNode,<a name="line.1068"></a>
+<FONT color="green">1069</FONT>                                           String file,<a name="line.1069"></a>
+<FONT color="green">1070</FONT>                                           ExtendedBlock block,<a name="line.1070"></a>
+<FONT color="green">1071</FONT>                                           Token&lt;BlockTokenIdentifier&gt; blockToken,<a name="line.1071"></a>
+<FONT color="green">1072</FONT>                                           long startOffset,<a name="line.1072"></a>
+<FONT color="green">1073</FONT>                                           long len,<a name="line.1073"></a>
+<FONT color="green">1074</FONT>                                           int bufferSize,<a name="line.1074"></a>
+<FONT color="green">1075</FONT>                                           boolean verifyChecksum,<a name="line.1075"></a>
+<FONT color="green">1076</FONT>                                           String clientName,<a name="line.1076"></a>
+<FONT color="green">1077</FONT>                                           CachingStrategy curCachingStrategy)<a name="line.1077"></a>
+<FONT color="green">1078</FONT>          throws IOException {<a name="line.1078"></a>
+<FONT color="green">1079</FONT>        // Firstly, we check to see if we have cached any file descriptors for<a name="line.1079"></a>
+<FONT color="green">1080</FONT>        // local blocks.  If so, we can just re-use those file descriptors.<a name="line.1080"></a>
+<FONT color="green">1081</FONT>        FileInputStream fis[] = fileInputStreamCache.get(chosenNode, block);<a name="line.1081"></a>
+<FONT color="green">1082</FONT>        if (fis != null) {<a name="line.1082"></a>
+<FONT color="green">1083</FONT>          if (DFSClient.LOG.isDebugEnabled()) {<a name="line.1083"></a>
+<FONT color="green">1084</FONT>            DFSClient.LOG.debug("got FileInputStreams for " + block + " from " +<a name="line.1084"></a>
+<FONT color="green">1085</FONT>                "the FileInputStreamCache.");<a name="line.1085"></a>
+<FONT color="green">1086</FONT>          }<a name="line.1086"></a>
+<FONT color="green">1087</FONT>          return new BlockReaderLocal.Builder(dfsClient.getConf()).<a name="line.1087"></a>
+<FONT color="green">1088</FONT>              setFilename(file).<a name="line.1088"></a>
+<FONT color="green">1089</FONT>              setBlock(block).<a name="line.1089"></a>
+<FONT color="green">1090</FONT>              setStartOffset(startOffset).<a name="line.1090"></a>
+<FONT color="green">1091</FONT>              setStreams(fis).<a name="line.1091"></a>
+<FONT color="green">1092</FONT>              setDatanodeID(chosenNode).<a name="line.1092"></a>
+<FONT color="green">1093</FONT>              setVerifyChecksum(verifyChecksum).<a name="line.1093"></a>
+<FONT color="green">1094</FONT>              setBlockMetadataHeader(BlockMetadataHeader.<a name="line.1094"></a>
+<FONT color="green">1095</FONT>                  preadHeader(fis[1].getChannel())).<a name="line.1095"></a>
+<FONT color="green">1096</FONT>              setFileInputStreamCache(fileInputStreamCache).<a name="line.1096"></a>
+<FONT color="green">1097</FONT>              setCachingStrategy(curCachingStrategy).<a name="line.1097"></a>
+<FONT color="green">1098</FONT>              build();<a name="line.1098"></a>
+<FONT color="green">1099</FONT>        }<a name="line.1099"></a>
+<FONT color="green">1100</FONT>        <a name="line.1100"></a>
+<FONT color="green">1101</FONT>        // If the legacy local block reader is enabled and we are reading a local<a name="line.1101"></a>
+<FONT color="green">1102</FONT>        // block, try to create a BlockReaderLocalLegacy.  The legacy local block<a name="line.1102"></a>
+<FONT color="green">1103</FONT>        // reader implements local reads in the style first introduced by HDFS-2246.<a name="line.1103"></a>
+<FONT color="green">1104</FONT>        if ((dfsClient.useLegacyBlockReaderLocal()) &amp;&amp;<a name="line.1104"></a>
+<FONT color="green">1105</FONT>            DFSClient.isLocalAddress(dnAddr) &amp;&amp;<a name="line.1105"></a>
+<FONT color="green">1106</FONT>            (!shortCircuitForbidden())) {<a name="line.1106"></a>
+<FONT color="green">1107</FONT>          try {<a name="line.1107"></a>
+<FONT color="green">1108</FONT>            return BlockReaderFactory.getLegacyBlockReaderLocal(dfsClient,<a name="line.1108"></a>
+<FONT color="green">1109</FONT>                clientName, block, blockToken, chosenNode, startOffset);<a name="line.1109"></a>
+<FONT color="green">1110</FONT>          } catch (IOException e) {<a name="line.1110"></a>
+<FONT color="green">1111</FONT>            DFSClient.LOG.warn("error creating legacy BlockReaderLocal.  " +<a name="line.1111"></a>
+<FONT color="green">1112</FONT>                "Disabling legacy local reads.", e);<a name="line.1112"></a>
+<FONT color="green">1113</FONT>            dfsClient.disableLegacyBlockReaderLocal();<a name="line.1113"></a>
+<FONT color="green">1114</FONT>          }<a name="line.1114"></a>
+<FONT color="green">1115</FONT>        }<a name="line.1115"></a>
+<FONT color="green">1116</FONT>    <a name="line.1116"></a>
+<FONT color="green">1117</FONT>        // Look for cached domain peers.<a name="line.1117"></a>
+<FONT color="green">1118</FONT>        int cacheTries = 0;<a name="line.1118"></a>
+<FONT color="green">1119</FONT>        DomainSocketFactory dsFactory = dfsClient.getDomainSocketFactory();<a name="line.1119"></a>
+<FONT color="green">1120</FONT>        BlockReader reader = null;<a name="line.1120"></a>
+<FONT color="green">1121</FONT>        final int nCachedConnRetry = dfsClient.getConf().nCachedConnRetry;<a name="line.1121"></a>
+<FONT color="green">1122</FONT>        for (; cacheTries &lt; nCachedConnRetry; ++cacheTries) {<a name="line.1122"></a>
+<FONT color="green">1123</FONT>          Peer peer = peerCache.get(chosenNode, true);<a name="line.1123"></a>
+<FONT color="green">1124</FONT>          if (peer == null) break;<a name="line.1124"></a>
+<FONT color="green">1125</FONT>          try {<a name="line.1125"></a>
+<FONT color="green">1126</FONT>            boolean allowShortCircuitLocalReads = dfsClient.getConf().<a name="line.1126"></a>
+<FONT color="green">1127</FONT>                shortCircuitLocalReads &amp;&amp; (!shortCircuitForbidden());<a name="line.1127"></a>
+<FONT color="green">1128</FONT>            reader = BlockReaderFactory.newBlockReader(<a name="line.1128"></a>
+<FONT color="green">1129</FONT>                dfsClient.getConf(), file, block, blockToken, startOffset,<a name="line.1129"></a>
+<FONT color="green">1130</FONT>                len, verifyChecksum, clientName, peer, chosenNode, <a name="line.1130"></a>
+<FONT color="green">1131</FONT>                dsFactory, peerCache, fileInputStreamCache,<a name="line.1131"></a>
+<FONT color="green">1132</FONT>                allowShortCircuitLocalReads, curCachingStrategy);<a name="line.1132"></a>
+<FONT color="green">1133</FONT>            return reader;<a name="line.1133"></a>
+<FONT color="green">1134</FONT>          } catch (IOException ex) {<a name="line.1134"></a>
+<FONT color="green">1135</FONT>            DFSClient.LOG.debug("Error making BlockReader with DomainSocket. " +<a name="line.1135"></a>
+<FONT color="green">1136</FONT>                "Closing stale " + peer, ex);<a name="line.1136"></a>
+<FONT color="green">1137</FONT>          } finally {<a name="line.1137"></a>
+<FONT color="green">1138</FONT>            if (reader == null) {<a name="line.1138"></a>
+<FONT color="green">1139</FONT>              IOUtils.closeQuietly(peer);<a name="line.1139"></a>
+<FONT color="green">1140</FONT>            }<a name="line.1140"></a>
+<FONT color="green">1141</FONT>          }<a name="line.1141"></a>
+<FONT color="green">1142</FONT>        }<a name="line.1142"></a>
+<FONT color="green">1143</FONT>    <a name="line.1143"></a>
+<FONT color="green">1144</FONT>        // Try to create a DomainPeer.<a name="line.1144"></a>
+<FONT color="green">1145</FONT>        DomainSocket domSock = dsFactory.create(dnAddr, this);<a name="line.1145"></a>
+<FONT color="green">1146</FONT>        if (domSock != null) {<a name="line.1146"></a>
+<FONT color="green">1147</FONT>          Peer peer = new DomainPeer(domSock);<a name="line.1147"></a>
+<FONT color="green">1148</FONT>          try {<a name="line.1148"></a>
+<FONT color="green">1149</FONT>            boolean allowShortCircuitLocalReads = dfsClient.getConf().<a name="line.1149"></a>
+<FONT color="green">1150</FONT>                shortCircuitLocalReads &amp;&amp; (!shortCircuitForbidden());<a name="line.1150"></a>
+<FONT color="green">1151</FONT>            reader = BlockReaderFactory.newBlockReader(<a name="line.1151"></a>
+<FONT color="green">1152</FONT>                dfsClient.getConf(), file, block, blockToken, startOffset,<a name="line.1152"></a>
+<FONT color="green">1153</FONT>                len, verifyChecksum, clientName, peer, chosenNode,<a name="line.1153"></a>
+<FONT color="green">1154</FONT>                dsFactory, peerCache, fileInputStreamCache,<a name="line.1154"></a>
+<FONT color="green">1155</FONT>                allowShortCircuitLocalReads, curCachingStrategy);<a name="line.1155"></a>
+<FONT color="green">1156</FONT>            return reader;<a name="line.1156"></a>
+<FONT color="green">1157</FONT>          } catch (IOException e) {<a name="line.1157"></a>
+<FONT color="green">1158</FONT>            DFSClient.LOG.warn("failed to connect to " + domSock, e);<a name="line.1158"></a>
+<FONT color="green">1159</FONT>          } finally {<a name="line.1159"></a>
+<FONT color="green">1160</FONT>            if (reader == null) {<a name="line.1160"></a>
+<FONT color="green">1161</FONT>             // If the Peer that we got the error from was a DomainPeer,<a name="line.1161"></a>
+<FONT color="green">1162</FONT>             // mark the socket path as bad, so that newDataSocket will not try <a name="line.1162"></a>
+<FONT color="green">1163</FONT>             // to re-open this socket for a while.<a name="line.1163"></a>
+<FONT color="green">1164</FONT>             dsFactory.disableDomainSocketPath(domSock.getPath());<a name="line.1164"></a>
+<FONT color="green">1165</FONT>             IOUtils.closeQuietly(peer);<a name="line.1165"></a>
+<FONT color="green">1166</FONT>            }<a name="line.1166"></a>
+<FONT color="green">1167</FONT>          }<a name="line.1167"></a>
+<FONT color="green">1168</FONT>        }<a name="line.1168"></a>
+<FONT color="green">1169</FONT>    <a name="line.1169"></a>
+<FONT color="green">1170</FONT>        // Look for cached peers.<a name="line.1170"></a>
+<FONT color="green">1171</FONT>        for (; cacheTries &lt; nCachedConnRetry; ++cacheTries) {<a name="line.1171"></a>
+<FONT color="green">1172</FONT>          Peer peer = peerCache.get(chosenNode, false);<a name="line.1172"></a>
+<FONT color="green">1173</FONT>          if (peer == null) break;<a name="line.1173"></a>
+<FONT color="green">1174</FONT>          try {<a name="line.1174"></a>
+<FONT color="green">1175</FONT>            reader = BlockReaderFactory.newBlockReader(<a name="line.1175"></a>
+<FONT color="green">1176</FONT>                dfsClient.getConf(), file, block, blockToken, startOffset,<a name="line.1176"></a>
+<FONT color="green">1177</FONT>                len, verifyChecksum, clientName, peer, chosenNode, <a name="line.1177"></a>
+<FONT color="green">1178</FONT>                dsFactory, peerCache, fileInputStreamCache, false,<a name="line.1178"></a>
+<FONT color="green">1179</FONT>                curCachingStrategy);<a name="line.1179"></a>
+<FONT color="green">1180</FONT>            return reader;<a name="line.1180"></a>
+<FONT color="green">1181</FONT>          } catch (IOException ex) {<a name="line.1181"></a>
+<FONT color="green">1182</FONT>            DFSClient.LOG.debug("Error making BlockReader. Closing stale " +<a name="line.1182"></a>
+<FONT color="green">1183</FONT>              peer, ex);<a name="line.1183"></a>
+<FONT color="green">1184</FONT>          } finally {<a name="line.1184"></a>
+<FONT color="green">1185</FONT>            if (reader == null) {<a name="line.1185"></a>
+<FONT color="green">1186</FONT>              IOUtils.closeQuietly(peer);<a name="line.1186"></a>
+<FONT color="green">1187</FONT>            }<a name="line.1187"></a>
+<FONT color="green">1188</FONT>          }<a name="line.1188"></a>
+<FONT color="green">1189</FONT>        }<a name="line.1189"></a>
+<FONT color="green">1190</FONT>        if (tcpReadsDisabledForTesting) {<a name="line.1190"></a>
+<FONT color="green">1191</FONT>          throw new IOException("TCP reads are disabled.");<a name="line.1191"></a>
+<FONT color="green">1192</FONT>        }<a name="line.1192"></a>
+<FONT color="green">1193</FONT>        // Try to create a new remote peer.<a name="line.1193"></a>
+<FONT color="green">1194</FONT>        Peer peer = newTcpPeer(dnAddr);<a name="line.1194"></a>
+<FONT color="green">1195</FONT>        try {<a name="line.1195"></a>
+<FONT color="green">1196</FONT>          reader = BlockReaderFactory.newBlockReader(dfsClient.getConf(), file,<a name="line.1196"></a>
+<FONT color="green">1197</FONT>              block, blockToken, startOffset, len, verifyChecksum, clientName,<a name="line.1197"></a>
+<FONT color="green">1198</FONT>              peer, chosenNode, dsFactory, peerCache, fileInputStreamCache, false,<a name="line.1198"></a>
+<FONT color="green">1199</FONT>            curCachingStrategy);<a name="line.1199"></a>
+<FONT color="green">1200</FONT>          return reader;<a name="line.1200"></a>
+<FONT color="green">1201</FONT>        } catch (IOException ex) {<a name="line.1201"></a>
+<FONT color="green">1202</FONT>          DFSClient.LOG.debug(<a name="line.1202"></a>
+<FONT color="green">1203</FONT>              "Exception while getting block reader, closing stale " + peer, ex);<a name="line.1203"></a>
+<FONT color="green">1204</FONT>          throw ex;<a name="line.1204"></a>
+<FONT color="green">1205</FONT>        } finally {<a name="line.1205"></a>
+<FONT color="green">1206</FONT>          if (reader == null) {<a name="line.1206"></a>
+<FONT color="green">1207</FONT>            IOUtils.closeQuietly(peer);<a name="line.1207"></a>
+<FONT color="green">1208</FONT>      }<a name="line.1208"></a>
+<FONT color="green">1209</FONT>        }<a name="line.1209"></a>
+<FONT color="green">1210</FONT>      }<a name="line.1210"></a>
+<FONT color="green">1211</FONT>    <a name="line.1211"></a>
+<FONT color="green">1212</FONT>    <a name="line.1212"></a>
+<FONT color="green">1213</FONT>      /**<a name="line.1213"></a>
+<FONT color="green">1214</FONT>       * Read bytes starting from the specified position.<a name="line.1214"></a>
+<FONT color="green">1215</FONT>       * <a name="line.1215"></a>
+<FONT color="green">1216</FONT>       * @param position start read from this position<a name="line.1216"></a>
+<FONT color="green">1217</FONT>       * @param buffer read buffer<a name="line.1217"></a>
+<FONT color="green">1218</FONT>       * @param offset offset into buffer<a name="line.1218"></a>
+<FONT color="green">1219</FONT>       * @param length number of bytes to read<a name="line.1219"></a>
+<FONT color="green">1220</FONT>       * <a name="line.1220"></a>
+<FONT color="green">1221</FONT>       * @return actual number of bytes read<a name="line.1221"></a>
+<FONT color="green">1222</FONT>       */<a name="line.1222"></a>
+<FONT color="green">1223</FONT>      @Override<a name="line.1223"></a>
+<FONT color="green">1224</FONT>      public int read(long position, byte[] buffer, int offset, int length)<a name="line.1224"></a>
+<FONT color="green">1225</FONT>        throws IOException {<a name="line.1225"></a>
+<FONT color="green">1226</FONT>        // sanity checks<a name="line.1226"></a>
+<FONT color="green">1227</FONT>        dfsClient.checkOpen();<a name="line.1227"></a>
+<FONT color="green">1228</FONT>        if (closed) {<a name="line.1228"></a>
+<FONT color="green">1229</FONT>          throw new IOException("Stream closed");<a name="line.1229"></a>
+<FONT color="green">1230</FONT>        }<a name="line.1230"></a>
+<FONT color="green">1231</FONT>        failures = 0;<a name="line.1231"></a>
+<FONT color="green">1232</FONT>        long filelen = getFileLength();<a name="line.1232"></a>
+<FONT color="green">1233</FONT>        if ((position &lt; 0) || (position &gt;= filelen)) {<a name="line.1233"></a>
+<FONT color="green">1234</FONT>          return -1;<a name="line.1234"></a>
+<FONT color="green">1235</FONT>        }<a name="line.1235"></a>
+<FONT color="green">1236</FONT>        int realLen = length;<a name="line.1236"></a>
+<FONT color="green">1237</FONT>        if ((position + length) &gt; filelen) {<a name="line.1237"></a>
+<FONT color="green">1238</FONT>          realLen = (int)(filelen - position);<a name="line.1238"></a>
+<FONT color="green">1239</FONT>        }<a name="line.1239"></a>
+<FONT color="green">1240</FONT>        <a name="line.1240"></a>
+<FONT color="green">1241</FONT>        // determine the block and byte range within the block<a name="line.1241"></a>
+<FONT color="green">1242</FONT>        // corresponding to position and realLen<a name="line.1242"></a>
+<FONT color="green">1243</FONT>        List&lt;LocatedBlock&gt; blockRange = getBlockRange(position, realLen);<a name="line.1243"></a>
+<FONT color="green">1244</FONT>        int remaining = realLen;<a name="line.1244"></a>
+<FONT color="green">1245</FONT>        Map&lt;ExtendedBlock,Set&lt;DatanodeInfo&gt;&gt; corruptedBlockMap <a name="line.1245"></a>
+<FONT color="green">1246</FONT>          = new HashMap&lt;ExtendedBlock, Set&lt;DatanodeInfo&gt;&gt;();<a name="line.1246"></a>
+<FONT color="green">1247</FONT>        for (LocatedBlock blk : blockRange) {<a name="line.1247"></a>
+<FONT color="green">1248</FONT>          long targetStart = position - blk.getStartOffset();<a name="line.1248"></a>
+<FONT color="green">1249</FONT>          long bytesToRead = Math.min(remaining, blk.getBlockSize() - targetStart);<a name="line.1249"></a>
+<FONT color="green">1250</FONT>          try {<a name="line.1250"></a>
+<FONT color="green">1251</FONT>            fetchBlockByteRange(blk, targetStart, <a name="line.1251"></a>
+<FONT color="green">1252</FONT>                targetStart + bytesToRead - 1, buffer, offset, corruptedBlockMap);<a name="line.1252"></a>
+<FONT color="green">1253</FONT>          } finally {<a name="line.1253"></a>
+<FONT color="green">1254</FONT>            // Check and report if any block replicas are corrupted.<a name="line.1254"></a>
+<FONT color="green">1255</FONT>            // BlockMissingException may be caught if all block replicas are<a name="line.1255"></a>
+<FONT color="green">1256</FONT>            // corrupted.<a name="line.1256"></a>
+<FONT color="green">1257</FONT>            reportCheckSumFailure(corruptedBlockMap, blk.getLocations().length);<a name="line.1257"></a>
+<FONT color="green">1258</FONT>          }<a name="line.1258"></a>
+<FONT color="green">1259</FONT>    <a name="line.1259"></a>
+<FONT color="green">1260</FONT>          remaining -= bytesToRead;<a name="line.1260"></a>
+<FONT color="green">1261</FONT>          position += bytesToRead;<a name="line.1261"></a>
+<FONT color="green">1262</FONT>          offset += bytesToRead;<a name="line.1262"></a>
+<FONT color="green">1263</FONT>        }<a name="line.1263"></a>
+<FONT color="green">1264</FONT>        assert remaining == 0 : "Wrong number of bytes read.";<a name="line.1264"></a>
+<FONT color="green">1265</FONT>        if (dfsClient.stats != null) {<a name="line.1265"></a>
+<FONT color="green">1266</FONT>          dfsClient.stats.incrementBytesRead(realLen);<a name="line.1266"></a>
+<FONT color="green">1267</FONT>        }<a name="line.1267"></a>
+<FONT color="green">1268</FONT>        return realLen;<a name="line.1268"></a>
+<FONT color="green">1269</FONT>      }<a name="line.1269"></a>
+<FONT color="green">1270</FONT>      <a name="line.1270"></a>
+<FONT color="green">1271</FONT>      /**<a name="line.1271"></a>
+<FONT color="green">1272</FONT>       * DFSInputStream reports checksum failure.<a name="line.1272"></a>
+<FONT color="green">1273</FONT>       * Case I : client has tried multiple data nodes and at least one of the<a name="line.1273"></a>
+<FONT color="green">1274</FONT>       * attempts has succeeded. We report the other failures as corrupted block to<a name="line.1274"></a>
+<FONT color="green">1275</FONT>       * namenode. <a name="line.1275"></a>
+<FONT color="green">1276</FONT>       * Case II: client has tried out all data nodes, but all failed. We<a name="line.1276"></a>
+<FONT color="green">1277</FONT>       * only report if the total number of replica is 1. We do not<a name="line.1277"></a>
+<FONT color="green">1278</FONT>       * report otherwise since this maybe due to the client is a handicapped client<a name="line.1278"></a>
+<FONT color="green">1279</FONT>       * (who can not read).<a name="line.1279"></a>
+<FONT color="green">1280</FONT>       * @param corruptedBlockMap map of corrupted blocks<a name="line.1280"></a>
+<FONT color="green">1281</FONT>       * @param dataNodeCount number of data nodes who contains the block replicas<a name="line.1281"></a>
+<FONT color="green">1282</FONT>       */<a name="line.1282"></a>
+<FONT color="green">1283</FONT>      private void reportCheckSumFailure(<a name="line.1283"></a>
+<FONT color="green">1284</FONT>          Map&lt;ExtendedBlock, Set&lt;DatanodeInfo&gt;&gt; corruptedBlockMap, <a name="line.1284"></a>
+<FONT color="green">1285</FONT>          int dataNodeCount) {<a name="line.1285"></a>
+<FONT color="green">1286</FONT>        if (corruptedBlockMap.isEmpty()) {<a name="line.1286"></a>
+<FONT color="green">1287</FONT>          return;<a name="line.1287"></a>
+<FONT color="green">1288</FONT>        }<a name="line.1288"></a>
+<FONT color="green">1289</FONT>        Iterator&lt;Entry&lt;ExtendedBlock, Set&lt;DatanodeInfo&gt;&gt;&gt; it = corruptedBlockMap<a name="line.1289"></a>
+<FONT color="green">1290</FONT>            .entrySet().iterator();<a name="line.1290"></a>
+<FONT color="green">1291</FONT>        Entry&lt;ExtendedBlock, Set&lt;DatanodeInfo&gt;&gt; entry = it.next();<a name="line.1291"></a>
+<FONT color="green">1292</FONT>        ExtendedBlock blk = entry.getKey();<a name="line.1292"></a>
+<FONT color="green">1293</FONT>        Set&lt;DatanodeInfo&gt; dnSet = entry.getValue();<a name="line.1293"></a>
+<FONT color="green">1294</FONT>        if (((dnSet.size() &lt; dataNodeCount) &amp;&amp; (dnSet.size() &gt; 0))<a name="line.1294"></a>
+<FONT color="green">1295</FONT>            || ((dataNodeCount == 1) &amp;&amp; (dnSet.size() == dataNodeCount))) {<a name="line.1295"></a>
+<FONT color="green">1296</FONT>          DatanodeInfo[] locs = new DatanodeInfo[dnSet.size()];<a name="line.1296"></a>
+<FONT color="green">1297</FONT>          int i = 0;<a name="line.1297"></a>
+<FONT color="green">1298</FONT>          for (DatanodeInfo dn:dnSet) {<a name="line.1298"></a>
+<FONT color="green">1299</FONT>            locs[i++] = dn;<a name="line.1299"></a>
+<FONT color="green">1300</FONT>          }<a name="line.1300"></a>
+<FONT color="green">1301</FONT>          LocatedBlock [] lblocks = { new LocatedBlock(blk, locs) };<a name="line.1301"></a>
+<FONT color="green">1302</FONT>          dfsClient.reportChecksumFailure(src, lblocks);<a name="line.1302"></a>
+<FONT color="green">1303</FONT>        }<a name="line.1303"></a>
+<FONT color="green">1304</FONT>        corruptedBlockMap.clear();<a name="line.1304"></a>
+<FONT color="green">1305</FONT>      }<a name="line.1305"></a>
+<FONT color="green">1306</FONT>    <a name="line.1306"></a>
+<FONT color="green">1307</FONT>      @Override<a name="line.1307"></a>
+<FONT color="green">1308</FONT>      public long skip(long n) throws IOException {<a name="line.1308"></a>
+<FONT color="green">1309</FONT>        if ( n &gt; 0 ) {<a name="line.1309"></a>
+<FONT color="green">1310</FONT>          long curPos = getPos();<a name="line.1310"></a>
+<FONT color="green">1311</FONT>          long fileLen = getFileLength();<a name="line.1311"></a>
+<FONT color="green">1312</FONT>          if( n+curPos &gt; fileLen ) {<a name="line.1312"></a>
+<FONT color="green">1313</FONT>            n = fileLen - curPos;<a name="line.1313"></a>
+<FONT color="green">1314</FONT>          }<a name="line.1314"></a>
+<FONT color="green">1315</FONT>          seek(curPos+n);<a name="line.1315"></a>
+<FONT color="green">1316</FONT>          return n;<a name="line.1316"></a>
+<FONT color="green">1317</FONT>        }<a name="line.1317"></a>
+<FONT color="green">1318</FONT>        return n &lt; 0 ? -1 : 0;<a name="line.1318"></a>
+<FONT color="green">1319</FONT>      }<a name="line.1319"></a>
+<FONT color="green">1320</FONT>    <a name="line.1320"></a>
+<FONT color="green">1321</FONT>      /**<a name="line.1321"></a>
+<FONT color="green">1322</FONT>       * Seek to a new arbitrary location<a name="line.1322"></a>
+<FONT color="green">1323</FONT>       */<a name="line.1323"></a>
+<FONT color="green">1324</FONT>      @Override<a name="line.1324"></a>
+<FONT color="green">1325</FONT>      public synchronized void seek(long targetPos) throws IOException {<a name="line.1325"></a>
+<FONT color="green">1326</FONT>        if (targetPos &gt; getFileLength()) {<a name="line.1326"></a>
+<FONT color="green">1327</FONT>          throw new IOException("Cannot seek after EOF");<a name="line.1327"></a>
+<FONT color="green">1328</FONT>        }<a name="line.1328"></a>
+<FONT color="green">1329</FONT>        if (targetPos &lt; 0) {<a name="line.1329"></a>
+<FONT color="green">1330</FONT>          throw new IOException("Cannot seek to negative offset");<a name="line.1330"></a>
+<FONT color="green">1331</FONT>        }<a name="line.1331"></a>
+<FONT color="green">1332</FONT>        if (closed) {<a name="line.1332"></a>
+<FONT color="green">1333</FONT>          throw new IOException("Stream is closed!");<a name="line.1333"></a>
+<FONT color="green">1334</FONT>        }<a name="line.1334"></a>
+<FONT color="green">1335</FONT>        boolean done = false;<a name="line.1335"></a>
+<FONT color="green">1336</FONT>        if (pos &lt;= targetPos &amp;&amp; targetPos &lt;= blockEnd) {<a name="line.1336"></a>
+<FONT color="green">1337</FONT>          //<a name="line.1337"></a>
+<FONT color="green">1338</FONT>          // If this seek is to a positive position in the current<a name="line.1338"></a>
+<FONT color="green">1339</FONT>          // block, and this piece of data might already be lying in<a name="line.1339"></a>
+<FONT color="green">1340</FONT>          // the TCP buffer, then just eat up the intervening data.<a name="line.1340"></a>
+<FONT color="green">1341</FONT>          //<a name="line.1341"></a>
+<FONT color="green">1342</FONT>          int diff = (int)(targetPos - pos);<a name="line.1342"></a>
+<FONT color="green">1343</FONT>          if (diff &lt;= blockReader.available()) {<a name="line.1343"></a>
+<FONT color="green">1344</FONT>            try {<a name="line.1344"></a>
+<FONT color="green">1345</FONT>              pos += blockReader.skip(diff);<a name="line.1345"></a>
+<FONT color="green">1346</FONT>              if (pos == targetPos) {<a name="line.1346"></a>
+<FONT color="green">1347</FONT>                done = true;<a name="line.1347"></a>
+<FONT color="green">1348</FONT>              }<a name="line.1348"></a>
+<FONT color="green">1349</FONT>            } catch (IOException e) {//make following read to retry<a name="line.1349"></a>
+<FONT color="green">1350</FONT>              if(DFSClient.LOG.isDebugEnabled()) {<a name="line.1350"></a>
+<FONT color="green">1351</FONT>                DFSClient.LOG.debug("Exception while seek to " + targetPos<a name="line.1351"></a>
+<FONT color="green">1352</FONT>                    + " from " + getCurrentBlock() + " of " + src + " from "<a name="line.1352"></a>
+<FONT color="green">1353</FONT>                    + currentNode, e);<a name="line.1353"></a>
+<FONT color="green">1354</FONT>              }<a name="line.1354"></a>
+<FONT color="green">1355</FONT>            }<a name="line.1355"></a>
+<FONT color="green">1356</FONT>          }<a name="line.1356"></a>
+<FONT color="green">1357</FONT>        }<a name="line.1357"></a>
+<FONT color="green">1358</FONT>        if (!done) {<a name="line.1358"></a>
+<FONT color="green">1359</FONT>          pos = targetPos;<a name="line.1359"></a>
+<FONT color="green">1360</FONT>          blockEnd = -1;<a name="line.1360"></a>
+<FONT color="green">1361</FONT>        }<a name="line.1361"></a>
+<FONT color="green">1362</FONT>      }<a name="line.1362"></a>
+<FONT color="green">1363</FONT>    <a name="line.1363"></a>
+<FONT color="green">1364</FONT>      /**<a name="line.1364"></a>
+<FONT color="green">1365</FONT>       * Same as {@link #seekToNewSource(long)} except that it does not exclude<a name="line.1365"></a>
+<FONT color="green">1366</FONT>       * the current datanode and might connect to the same node.<a name="line.1366"></a>
+<FONT color="green">1367</FONT>       */<a name="line.1367"></a>
+<FONT color="green">1368</FONT>      private synchronized boolean seekToBlockSource(long targetPos)<a name="line.1368"></a>
+<FONT color="green">1369</FONT>                                                     throws IOException {<a name="line.1369"></a>
+<FONT color="green">1370</FONT>        currentNode = blockSeekTo(targetPos);<a name="line.1370"></a>
+<FONT color="green">1371</FONT>        return true;<a name="line.1371"></a>
+<FONT color="green">1372</FONT>      }<a name="line.1372"></a>
+<FONT color="green">1373</FONT>      <a name="line.1373"></a>
+<FONT color="green">1374</FONT>      /**<a name="line.1374"></a>
+<FONT color="green">1375</FONT>       * Seek to given position on a node other than the current node.  If<a name="line.1375"></a>
+<FONT color="green">1376</FONT>       * a node other than the current node is found, then returns true. <a name="line.1376"></a>
+<FONT color="green">1377</FONT>       * If another node could not be found, then returns false.<a name="line.1377"></a>
+<FONT color="green">1378</FONT>       */<a name="line.1378"></a>
+<FONT color="green">1379</FONT>      @Override<a name="line.1379"></a>
+<FONT color="green">1380</FONT>      public synchronized boolean seekToNewSource(long targetPos) throws IOException {<a name="line.1380"></a>
+<FONT color="green">1381</FONT>        boolean markedDead = deadNodes.containsKey(currentNode);<a name="line.1381"></a>
+<FONT color="green">1382</FONT>        addToDeadNodes(currentNode);<a name="line.1382"></a>
+<FONT color="green">1383</FONT>        DatanodeInfo oldNode = currentNode;<a name="line.1383"></a>
+<FONT color="green">1384</FONT>        DatanodeInfo newNode = blockSeekTo(targetPos);<a name="line.1384"></a>
+<FONT color="green">1385</FONT>        if (!markedDead) {<a name="line.1385"></a>
+<FONT color="green">1386</FONT>          /* remove it from deadNodes. blockSeekTo could have cleared <a name="line.1386"></a>
+<FONT color="green">1387</FONT>           * deadNodes and added currentNode again. Thats ok. */<a name="line.1387"></a>
+<FONT color="green">1388</FONT>          deadNodes.remove(oldNode);<a name="line.1388"></a>
+<FONT color="green">1389</FONT>        }<a name="line.1389"></a>
+<FONT color="green">1390</FONT>        if (!oldNode.getDatanodeUuid().equals(newNode.getDatanodeUuid())) {<a name="line.1390"></a>
+<FONT color="green">1391</FONT>          currentNode = newNode;<a name="line.1391"></a>
+<FONT color="green">1392</FONT>          return true;<a name="line.1392"></a>
+<FONT color="green">1393</FONT>        } else {<a name="line.1393"></a>
+<FONT color="green">1394</FONT>          return false;<a name="line.1394"></a>
+<FONT color="green">1395</FONT>        }<a name="line.1395"></a>
+<FONT color="green">1396</FONT>      }<a name="line.1396"></a>
+<FONT color="green">1397</FONT>          <a name="line.1397"></a>
+<FONT color="green">1398</FONT>      /**<a name="line.1398"></a>
+<FONT color="green">1399</FONT>       */<a name="line.1399"></a>
+<FONT color="green">1400</FONT>      @Override<a name="line.1400"></a>
+<FONT color="green">1401</FONT>      public synchronized long getPos() throws IOException {<a name="line.1401"></a>
+<FONT color="green">1402</FONT>        return pos;<a name="line.1402"></a>
+<FONT color="green">1403</FONT>      }<a name="line.1403"></a>
+<FONT color="green">1404</FONT>    <a name="line.1404"></a>
+<FONT color="green">1405</FONT>      /** Return the size of the remaining available bytes<a name="line.1405"></a>
+<FONT color="green">1406</FONT>       * if the size is less than or equal to {@link Integer#MAX_VALUE},<a name="line.1406"></a>
+<FONT color="green">1407</FONT>       * otherwise, return {@link Integer#MAX_VALUE}.<a name="line.1407"></a>
+<FONT color="green">1408</FONT>       */<a name="line.1408"></a>
+<FONT color="green">1409</FONT>      @Override<a name="line.1409"></a>
+<FONT color="green">1410</FONT>      public synchronized int available() throws IOException {<a name="line.1410"></a>
+<FONT color="green">1411</FONT>        if (closed) {<a name="line.1411"></a>
+<FONT color="green">1412</FONT>          throw new IOException("Stream closed");<a name="line.1412"></a>
+<FONT color="green">1413</FONT>        }<a name="line.1413"></a>
+<FONT color="green">1414</FONT>    <a name="line.1414"></a>
+<FONT color="green">1415</FONT>        final long remaining = getFileLength() - pos;<a name="line.1415"></a>
+<FONT color="green">1416</FONT>        return remaining &lt;= Integer.MAX_VALUE? (int)remaining: Integer.MAX_VALUE;<a name="line.1416"></a>
+<FONT color="green">1417</FONT>      }<a name="line.1417"></a>
+<FONT color="green">1418</FONT>    <a name="line.1418"></a>
+<FONT color="green">1419</FONT>      /**<a name="line.1419"></a>
+<FONT color="green">1420</FONT>       * We definitely don't support marks<a name="line.1420"></a>
+<FONT color="green">1421</FONT>       */<a name="line.1421"></a>
+<FONT color="green">1422</FONT>      @Override<a name="line.1422"></a>
+<FONT color="green">1423</FONT>      public boolean markSupported() {<a name="line.1423"></a>
+<FONT color="green">1424</FONT>        return false;<a name="line.1424"></a>
+<FONT color="green">1425</FONT>      }<a name="line.1425"></a>
+<FONT color="green">1426</FONT>      @Override<a name="line.1426"></a>
+<FONT color="green">1427</FONT>      public void mark(int readLimit) {<a name="line.1427"></a>
+<FONT color="green">1428</FONT>      }<a name="line.1428"></a>
+<FONT color="green">1429</FONT>      @Override<a name="line.1429"></a>
+<FONT color="green">1430</FONT>      public void reset() throws IOException {<a name="line.1430"></a>
+<FONT color="green">1431</FONT>        throw new IOException("Mark/reset not supported");<a name="line.1431"></a>
+<FONT color="green">1432</FONT>      }<a name="line.1432"></a>
+<FONT color="green">1433</FONT>    <a name="line.1433"></a>
+<FONT color="green">1434</FONT>      /**<a name="line.1434"></a>
+<FONT color="green">1435</FONT>       * Pick the best node from which to stream the data.<a name="line.1435"></a>
+<FONT color="green">1436</FONT>       * Entries in &lt;i&gt;nodes&lt;/i&gt; are already in the priority order<a name="line.1436"></a>
+<FONT color="green">1437</FONT>       */<a name="line.1437"></a>
+<FONT color="green">1438</FONT>      static DatanodeInfo bestNode(DatanodeInfo nodes[], <a name="line.1438"></a>
+<FONT color="green">1439</FONT>                                   AbstractMap&lt;DatanodeInfo, DatanodeInfo&gt; deadNodes)<a name="line.1439"></a>
+<FONT color="green">1440</FONT>                                   throws IOException {<a name="line.1440"></a>
+<FONT color="green">1441</FONT>        if (nodes != null) { <a name="line.1441"></a>
+<FONT color="green">1442</FONT>          for (int i = 0; i &lt; nodes.length; i++) {<a name="line.1442"></a>
+<FONT color="green">1443</FONT>            if (!deadNodes.containsKey(nodes[i])) {<a name="line.1443"></a>
+<FONT color="green">1444</FONT>              return nodes[i];<a name="line.1444"></a>
+<FONT color="green">1445</FONT>            }<a name="line.1445"></a>
+<FONT color="green">1446</FONT>          }<a name="line.1446"></a>
+<FONT color="green">1447</FONT>        }<a name="line.1447"></a>
+<FONT color="green">1448</FONT>        throw new IOException("No live nodes contain current block");<a name="line.1448"></a>
+<FONT color="green">1449</FONT>      }<a name="line.1449"></a>
+<FONT color="green">1450</FONT>    <a name="line.1450"></a>
+<FONT color="green">1451</FONT>      /** Utility class to encapsulate data node info and its address. */<a name="line.1451"></a>
+<FONT color="green">1452</FONT>      static class DNAddrPair {<a name="line.1452"></a>
+<FONT color="green">1453</FONT>        DatanodeInfo info;<a name="line.1453"></a>
+<FONT color="green">1454</FONT>        InetSocketAddress addr;<a name="line.1454"></a>
+<FONT color="green">1455</FONT>        DNAddrPair(DatanodeInfo info, InetSocketAddress addr) {<a name="line.1455"></a>
+<FONT color="green">1456</FONT>          this.info = info;<a name="line.1456"></a>
+<FONT color="green">1457</FONT>          this.addr = addr;<a name="line.1457"></a>
+<FONT color="green">1458</FONT>        }<a name="line.1458"></a>
+<FONT color="green">1459</FONT>      }<a name="line.1459"></a>
+<FONT color="green">1460</FONT>    <a name="line.1460"></a>
+<FONT color="green">1461</FONT>      /**<a name="line.1461"></a>
+<FONT color="green">1462</FONT>       * Get statistics about the reads which this DFSInputStream has done.<a name="line.1462"></a>
+<FONT color="green">1463</FONT>       */<a name="line.1463"></a>
+<FONT color="green">1464</FONT>      public synchronized ReadStatistics getReadStatistics() {<a name="line.1464"></a>
+<FONT color="green">1465</FONT>        return new ReadStatistics(readStatistics);<a name="line.1465"></a>
+<FONT color="green">1466</FONT>      }<a name="line.1466"></a>
+<FONT color="green">1467</FONT>    <a name="line.1467"></a>
+<FONT color="green">1468</FONT>      private synchronized void closeCurrentBlockReader() {<a name="line.1468"></a>
+<FONT color="green">1469</FONT>        if (blockReader == null) return;<a name="line.1469"></a>
+<FONT color="green">1470</FONT>        // Close the current block reader so that the new caching settings can <a name="line.1470"></a>
+<FONT color="green">1471</FONT>        // take effect immediately.<a name="line.1471"></a>
+<FONT color="green">1472</FONT>        try {<a name="line.1472"></a>
+<FONT color="green">1473</FONT>          blockReader.close();<a name="line.1473"></a>
+<FONT color="green">1474</FONT>        } catch (IOException e) {<a name="line.1474"></a>
+<FONT color="green">1475</FONT>          DFSClient.LOG.error("error closing blockReader", e);<a name="line.1475"></a>
+<FONT color="green">1476</FONT>        }<a name="line.1476"></a>
+<FONT color="green">1477</FONT>        blockReader = null;<a name="line.1477"></a>
+<FONT color="green">1478</FONT>      }<a name="line.1478"></a>
+<FONT color="green">1479</FONT>    <a name="line.1479"></a>
+<FONT color="green">1480</FONT>      @Override<a name="line.1480"></a>
+<FONT color="green">1481</FONT>      public synchronized void setReadahead(Long readahead)<a name="line.1481"></a>
+<FONT color="green">1482</FONT>          throws IOException {<a name="line.1482"></a>
+<FONT color="green">1483</FONT>        this.cachingStrategy =<a name="line.1483"></a>
+<FONT color="green">1484</FONT>            new CachingStrategy.Builder(this.cachingStrategy).<a name="line.1484"></a>
+<FONT color="green">1485</FONT>                setReadahead(readahead).build();<a name="line.1485"></a>
+<FONT color="green">1486</FONT>        closeCurrentBlockReader();<a name="line.1486"></a>
+<FONT color="green">1487</FONT>      }<a name="line.1487"></a>
+<FONT color="green">1488</FONT>    <a name="line.1488"></a>
+<FONT color="green">1489</FONT>      @Override<a name="line.1489"></a>
+<FONT color="green">1490</FONT>      public synchronized void setDropBehind(Boolean dropBehind)<a name="line.1490"></a>
+<FONT color="green">1491</FONT>          throws IOException {<a name="line.1491"></a>
+<FONT color="green">1492</FONT>        this.cachingStrategy =<a name="line.1492"></a>
+<FONT color="green">1493</FONT>            new CachingStrategy.Builder(this.cachingStrategy).<a name="line.1493"></a>
+<FONT color="green">1494</FONT>                setDropBehind(dropBehind).build();<a name="line.1494"></a>
+<FONT color="green">1495</FONT>        closeCurrentBlockReader();<a name="line.1495"></a>
+<FONT color="green">1496</FONT>      }<a name="line.1496"></a>
+<FONT color="green">1497</FONT>    <a name="line.1497"></a>
+<FONT color="green">1498</FONT>      @Override<a name="line.1498"></a>
+<FONT color="green">1499</FONT>      public synchronized ByteBuffer read(ByteBufferPool bufferPool,<a name="line.1499"></a>
+<FONT color="green">1500</FONT>          int maxLength, EnumSet&lt;ReadOption&gt; opts) <a name="line.1500"></a>
+<FONT color="green">1501</FONT>              throws IOException, UnsupportedOperationException {<a name="line.1501"></a>
+<FONT color="green">1502</FONT>        assert(maxLength &gt; 0);<a name="line.1502"></a>
+<FONT color="green">1503</FONT>        if (((blockReader == null) || (blockEnd == -1)) &amp;&amp;<a name="line.1503"></a>
+<FONT color="green">1504</FONT>              (pos &lt; getFileLength())) {<a name="line.1504"></a>
+<FONT color="green">1505</FONT>          /*<a name="line.1505"></a>
+<FONT color="green">1506</FONT>           * If we don't have a blockReader, or the one we have has no more bytes<a name="line.1506"></a>
+<FONT color="green">1507</FONT>           * left to read, we call seekToBlockSource to get a new blockReader and<a name="line.1507"></a>
+<FONT color="green">1508</FONT>           * recalculate blockEnd.  Note that we assume we're not at EOF here<a name="line.1508"></a>
+<FONT color="green">1509</FONT>           * (we check this above).<a name="line.1509"></a>
+<FONT color="green">1510</FONT>           */<a name="line.1510"></a>
+<FONT color="green">1511</FONT>          if ((!seekToBlockSource(pos)) || (blockReader == null)) {<a name="line.1511"></a>
+<FONT color="green">1512</FONT>            throw new IOException("failed to allocate new BlockReader " +<a name="line.1512"></a>
+<FONT color="green">1513</FONT>                "at position " + pos);<a name="line.1513"></a>
+<FONT color="green">1514</FONT>          }<a name="line.1514"></a>
+<FONT color="green">1515</FONT>        }<a name="line.1515"></a>
+<FONT color="green">1516</FONT>        ByteBuffer buffer = tryReadZeroCopy(maxLength, opts);<a name="line.1516"></a>
+<FONT color="green">1517</FONT>        if (buffer != null) {<a name="line.1517"></a>
+<FONT color="green">1518</FONT>          return buffer;<a name="line.1518"></a>
+<FONT color="green">1519</FONT>        }<a name="line.1519"></a>
+<FONT color="green">1520</FONT>        buffer = ByteBufferUtil.fallbackRead(this, bufferPool, maxLength);<a name="line.1520"></a>
+<FONT color="green">1521</FONT>        if (buffer != null) {<a name="line.1521"></a>
+<FONT color="green">1522</FONT>          extendedReadBuffers.put(buffer, bufferPool);<a name="line.1522"></a>
+<FONT color="green">1523</FONT>        }<a name="line.1523"></a>
+<FONT color="green">1524</FONT>        return buffer;<a name="line.1524"></a>
+<FONT color="green">1525</FONT>      }<a name="line.1525"></a>
+<FONT color="green">1526</FONT>    <a name="line.1526"></a>
+<FONT color="green">1527</FONT>      private synchronized ByteBuffer tryReadZeroCopy(int maxLength,<a name="line.1527"></a>
+<FONT color="green">1528</FONT>          EnumSet&lt;ReadOption&gt; opts) throws IOException {<a name="line.1528"></a>
+<FONT color="green">1529</FONT>        // Java ByteBuffers can't be longer than 2 GB, because they use<a name="line.1529"></a>
+<FONT color="green">1530</FONT>        // 4-byte signed integers to represent capacity, etc.<a name="line.1530"></a>
+<FONT color="green">1531</FONT>        // So we can't mmap the parts of the block higher than the 2 GB offset.<a name="line.1531"></a>
+<FONT color="green">1532</FONT>        // FIXME: we could work around this with multiple memory maps.<a name="line.1532"></a>
+<FONT color="green">1533</FONT>        // See HDFS-5101.<a name="line.1533"></a>
+<FONT color="green">1534</FONT>        long blockEnd32 = Math.min(Integer.MAX_VALUE, blockEnd);<a name="line.1534"></a>
+<FONT color="green">1535</FONT>        long curPos = pos;<a name="line.1535"></a>
+<FONT color="green">1536</FONT>        long blockLeft = blockEnd32 - curPos + 1;<a name="line.1536"></a>
+<FONT color="green">1537</FONT>        if (blockLeft &lt;= 0) {<a name="line.1537"></a>
+<FONT color="green">1538</FONT>          if (DFSClient.LOG.isDebugEnabled()) {<a name="line.1538"></a>
+<FONT color="green">1539</FONT>            DFSClient.LOG.debug("unable to perform a zero-copy read from offset " +<a name="line.1539"></a>
+<FONT color="green">1540</FONT>              curPos + " of " + src + "; blockLeft = " + blockLeft +<a name="line.1540"></a>
+<FONT color="green">1541</FONT>              "; blockEnd32 = " + blockEnd32 + ", blockEnd = " + blockEnd +<a name="line.1541"></a>
+<FONT color="green">1542</FONT>              "; maxLength = " + maxLength);<a name="line.1542"></a>
+<FONT color="green">1543</FONT>          }<a name="line.1543"></a>
+<FONT color="green">1544</FONT>          return null;<a name="line.1544"></a>
+<FONT color="green">1545</FONT>        }<a name="line.1545"></a>
+<FONT color="green">1546</FONT>        int length = Math.min((int)blockLeft, maxLength);<a name="line.1546"></a>
+<FONT color="green">1547</FONT>        long blockStartInFile = currentLocatedBlock.getStartOffset();<a name="line.1547"></a>
+<FONT color="green">1548</FONT>        long blockPos = curPos - blockStartInFile;<a name="line.1548"></a>
+<FONT color="green">1549</FONT>        long limit = blockPos + length;<a name="line.1549"></a>
+<FONT color="green">1550</FONT>        ClientMmap clientMmap =<a name="line.1550"></a>
+<FONT color="green">1551</FONT>            blockReader.getClientMmap(opts, dfsClient.getMmapManager());<a name="line.1551"></a>
+<FONT color="green">1552</FONT>        if (clientMmap == null) {<a name="line.1552"></a>
+<FONT color="green">1553</FONT>          if (DFSClient.LOG.isDebugEnabled()) {<a name="line.1553"></a>
+<FONT color="green">1554</FONT>            DFSClient.LOG.debug("unable to perform a zero-copy read from offset " +<a name="line.1554"></a>
+<FONT color="green">1555</FONT>              curPos + " of " + src + "; BlockReader#getClientMmap returned " +<a name="line.1555"></a>
+<FONT color="green">1556</FONT>              "null.");<a name="line.1556"></a>
+<FONT color="green">1557</FONT>          }<a name="line.1557"></a>
+<FONT color="green">1558</FONT>          return null;<a name="line.1558"></a>
+<FONT color="green">1559</FONT>        }<a name="line.1559"></a>
+<FONT color="green">1560</FONT>        seek(pos + length);<a name="line.1560"></a>
+<FONT color="green">1561</FONT>        ByteBuffer buffer = clientMmap.getMappedByteBuffer().asReadOnlyBuffer();<a name="line.1561"></a>
+<FONT color="green">1562</FONT>        buffer.position((int)blockPos);<a name="line.1562"></a>
+<FONT color="green">1563</FONT>        buffer.limit((int)limit);<a name="line.1563"></a>
+<FONT color="green">1564</FONT>        clientMmap.ref();<a name="line.1564"></a>
+<FONT color="green">1565</FONT>        extendedReadBuffers.put(buffer, clientMmap);<a name="line.1565"></a>
+<FONT color="green">1566</FONT>        readStatistics.addZeroCopyBytes(length);<a name="line.1566"></a>
+<FONT color="green">1567</FONT>        if (DFSClient.LOG.isDebugEnabled()) {<a name="line.1567"></a>
+<FONT color="green">1568</FONT>          DFSClient.LOG.debug("readZeroCopy read " + maxLength + " bytes from " +<a name="line.1568"></a>
+<FONT color="green">1569</FONT>              "offset " + curPos + " via the zero-copy read path.  " +<a name="line.1569"></a>
+<FONT color="green">1570</FONT>              "blockEnd = " + blockEnd);<a name="line.1570"></a>
+<FONT color="green">1571</FONT>        }<a name="line.1571"></a>
+<FONT color="green">1572</FONT>        return buffer;<a name="line.1572"></a>
+<FONT color="green">1573</FONT>      }<a name="line.1573"></a>
+<FONT color="green">1574</FONT>    <a name="line.1574"></a>
+<FONT color="green">1575</FONT>      @Override<a name="line.1575"></a>
+<FONT color="green">1576</FONT>      public synchronized void releaseBuffer(ByteBuffer buffer) {<a name="line.1576"></a>
+<FONT color="green">1577</FONT>        Object val = extendedReadBuffers.remove(buffer);<a name="line.1577"></a>
+<FONT color="green">1578</FONT>        if (val == null) {<a name="line.1578"></a>
+<FONT color="green">1579</FONT>          throw new IllegalArgumentException("tried to release a buffer " +<a name="line.1579"></a>
+<FONT color="green">1580</FONT>              "that was not created by this stream, " + buffer);<a name="line.1580"></a>
+<FONT color="green">1581</FONT>        }<a name="line.1581"></a>
+<FONT color="green">1582</FONT>        if (val instanceof ClientMmap) {<a name="line.1582"></a>
+<FONT color="green">1583</FONT>          ((ClientMmap)val).unref();<a name="line.1583"></a>
+<FONT color="green">1584</FONT>        } else if (val instanceof ByteBufferPool) {<a name="line.1584"></a>
+<FONT color="green">1585</FONT>          ((ByteBufferPool)val).putBuffer(buffer);<a name="line.1585"></a>
+<FONT color="green">1586</FONT>        }<a name="line.1586"></a>
+<FONT color="green">1587</FONT>      }<a name="line.1587"></a>
+<FONT color="green">1588</FONT>    }<a name="line.1588"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>

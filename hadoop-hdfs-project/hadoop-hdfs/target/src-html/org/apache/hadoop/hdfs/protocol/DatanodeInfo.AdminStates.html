@@ -1,0 +1,536 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    /**<a name="line.1"></a>
+<FONT color="green">002</FONT>     * Licensed to the Apache Software Foundation (ASF) under one<a name="line.2"></a>
+<FONT color="green">003</FONT>     * or more contributor license agreements.  See the NOTICE file<a name="line.3"></a>
+<FONT color="green">004</FONT>     * distributed with this work for additional information<a name="line.4"></a>
+<FONT color="green">005</FONT>     * regarding copyright ownership.  The ASF licenses this file<a name="line.5"></a>
+<FONT color="green">006</FONT>     * to you under the Apache License, Version 2.0 (the<a name="line.6"></a>
+<FONT color="green">007</FONT>     * "License"); you may not use this file except in compliance<a name="line.7"></a>
+<FONT color="green">008</FONT>     * with the License.  You may obtain a copy of the License at<a name="line.8"></a>
+<FONT color="green">009</FONT>     *<a name="line.9"></a>
+<FONT color="green">010</FONT>     *     http://www.apache.org/licenses/LICENSE-2.0<a name="line.10"></a>
+<FONT color="green">011</FONT>     *<a name="line.11"></a>
+<FONT color="green">012</FONT>     * Unless required by applicable law or agreed to in writing, software<a name="line.12"></a>
+<FONT color="green">013</FONT>     * distributed under the License is distributed on an "AS IS" BASIS,<a name="line.13"></a>
+<FONT color="green">014</FONT>     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.14"></a>
+<FONT color="green">015</FONT>     * See the License for the specific language governing permissions and<a name="line.15"></a>
+<FONT color="green">016</FONT>     * limitations under the License.<a name="line.16"></a>
+<FONT color="green">017</FONT>     */<a name="line.17"></a>
+<FONT color="green">018</FONT>    package org.apache.hadoop.hdfs.protocol;<a name="line.18"></a>
+<FONT color="green">019</FONT>    <a name="line.19"></a>
+<FONT color="green">020</FONT>    import org.apache.hadoop.classification.InterfaceAudience;<a name="line.20"></a>
+<FONT color="green">021</FONT>    import org.apache.hadoop.classification.InterfaceStability;<a name="line.21"></a>
+<FONT color="green">022</FONT>    import org.apache.hadoop.hdfs.DFSConfigKeys;<a name="line.22"></a>
+<FONT color="green">023</FONT>    import org.apache.hadoop.hdfs.DFSUtil;<a name="line.23"></a>
+<FONT color="green">024</FONT>    import org.apache.hadoop.net.NetUtils;<a name="line.24"></a>
+<FONT color="green">025</FONT>    import org.apache.hadoop.net.NetworkTopology;<a name="line.25"></a>
+<FONT color="green">026</FONT>    import org.apache.hadoop.net.Node;<a name="line.26"></a>
+<FONT color="green">027</FONT>    import org.apache.hadoop.net.NodeBase;<a name="line.27"></a>
+<FONT color="green">028</FONT>    import org.apache.hadoop.util.StringUtils;<a name="line.28"></a>
+<FONT color="green">029</FONT>    import org.apache.hadoop.util.Time;<a name="line.29"></a>
+<FONT color="green">030</FONT>    <a name="line.30"></a>
+<FONT color="green">031</FONT>    import java.util.Date;<a name="line.31"></a>
+<FONT color="green">032</FONT>    <a name="line.32"></a>
+<FONT color="green">033</FONT>    import static org.apache.hadoop.hdfs.DFSUtil.percent2String;<a name="line.33"></a>
+<FONT color="green">034</FONT>    <a name="line.34"></a>
+<FONT color="green">035</FONT>    /** <a name="line.35"></a>
+<FONT color="green">036</FONT>     * This class extends the primary identifier of a Datanode with ephemeral<a name="line.36"></a>
+<FONT color="green">037</FONT>     * state, eg usage information, current administrative state, and the<a name="line.37"></a>
+<FONT color="green">038</FONT>     * network location that is communicated to clients.<a name="line.38"></a>
+<FONT color="green">039</FONT>     */<a name="line.39"></a>
+<FONT color="green">040</FONT>    @InterfaceAudience.Private<a name="line.40"></a>
+<FONT color="green">041</FONT>    @InterfaceStability.Evolving<a name="line.41"></a>
+<FONT color="green">042</FONT>    public class DatanodeInfo extends DatanodeID implements Node {<a name="line.42"></a>
+<FONT color="green">043</FONT>      private long capacity;<a name="line.43"></a>
+<FONT color="green">044</FONT>      private long dfsUsed;<a name="line.44"></a>
+<FONT color="green">045</FONT>      private long remaining;<a name="line.45"></a>
+<FONT color="green">046</FONT>      private long blockPoolUsed;<a name="line.46"></a>
+<FONT color="green">047</FONT>      private long cacheCapacity;<a name="line.47"></a>
+<FONT color="green">048</FONT>      private long cacheUsed;<a name="line.48"></a>
+<FONT color="green">049</FONT>      private long lastUpdate;<a name="line.49"></a>
+<FONT color="green">050</FONT>      private int xceiverCount;<a name="line.50"></a>
+<FONT color="green">051</FONT>      private String location = NetworkTopology.DEFAULT_RACK;<a name="line.51"></a>
+<FONT color="green">052</FONT>      private String softwareVersion;<a name="line.52"></a>
+<FONT color="green">053</FONT>      <a name="line.53"></a>
+<FONT color="green">054</FONT>      // Datanode administrative states<a name="line.54"></a>
+<FONT color="green">055</FONT>      public enum AdminStates {<a name="line.55"></a>
+<FONT color="green">056</FONT>        NORMAL("In Service"), <a name="line.56"></a>
+<FONT color="green">057</FONT>        DECOMMISSION_INPROGRESS("Decommission In Progress"), <a name="line.57"></a>
+<FONT color="green">058</FONT>        DECOMMISSIONED("Decommissioned");<a name="line.58"></a>
+<FONT color="green">059</FONT>    <a name="line.59"></a>
+<FONT color="green">060</FONT>        final String value;<a name="line.60"></a>
+<FONT color="green">061</FONT>    <a name="line.61"></a>
+<FONT color="green">062</FONT>        AdminStates(final String v) {<a name="line.62"></a>
+<FONT color="green">063</FONT>          this.value = v;<a name="line.63"></a>
+<FONT color="green">064</FONT>        }<a name="line.64"></a>
+<FONT color="green">065</FONT>    <a name="line.65"></a>
+<FONT color="green">066</FONT>        @Override<a name="line.66"></a>
+<FONT color="green">067</FONT>        public String toString() {<a name="line.67"></a>
+<FONT color="green">068</FONT>          return value;<a name="line.68"></a>
+<FONT color="green">069</FONT>        }<a name="line.69"></a>
+<FONT color="green">070</FONT>        <a name="line.70"></a>
+<FONT color="green">071</FONT>        public static AdminStates fromValue(final String value) {<a name="line.71"></a>
+<FONT color="green">072</FONT>          for (AdminStates as : AdminStates.values()) {<a name="line.72"></a>
+<FONT color="green">073</FONT>            if (as.value.equals(value)) return as;<a name="line.73"></a>
+<FONT color="green">074</FONT>          }<a name="line.74"></a>
+<FONT color="green">075</FONT>          return NORMAL;<a name="line.75"></a>
+<FONT color="green">076</FONT>        }<a name="line.76"></a>
+<FONT color="green">077</FONT>      }<a name="line.77"></a>
+<FONT color="green">078</FONT>    <a name="line.78"></a>
+<FONT color="green">079</FONT>      protected AdminStates adminState;<a name="line.79"></a>
+<FONT color="green">080</FONT>    <a name="line.80"></a>
+<FONT color="green">081</FONT>      public DatanodeInfo(DatanodeInfo from) {<a name="line.81"></a>
+<FONT color="green">082</FONT>        super(from);<a name="line.82"></a>
+<FONT color="green">083</FONT>        this.capacity = from.getCapacity();<a name="line.83"></a>
+<FONT color="green">084</FONT>        this.dfsUsed = from.getDfsUsed();<a name="line.84"></a>
+<FONT color="green">085</FONT>        this.remaining = from.getRemaining();<a name="line.85"></a>
+<FONT color="green">086</FONT>        this.blockPoolUsed = from.getBlockPoolUsed();<a name="line.86"></a>
+<FONT color="green">087</FONT>        this.cacheCapacity = from.getCacheCapacity();<a name="line.87"></a>
+<FONT color="green">088</FONT>        this.cacheUsed = from.getCacheUsed();<a name="line.88"></a>
+<FONT color="green">089</FONT>        this.lastUpdate = from.getLastUpdate();<a name="line.89"></a>
+<FONT color="green">090</FONT>        this.xceiverCount = from.getXceiverCount();<a name="line.90"></a>
+<FONT color="green">091</FONT>        this.location = from.getNetworkLocation();<a name="line.91"></a>
+<FONT color="green">092</FONT>        this.adminState = from.getAdminState();<a name="line.92"></a>
+<FONT color="green">093</FONT>      }<a name="line.93"></a>
+<FONT color="green">094</FONT>    <a name="line.94"></a>
+<FONT color="green">095</FONT>      public DatanodeInfo(DatanodeID nodeID) {<a name="line.95"></a>
+<FONT color="green">096</FONT>        super(nodeID);<a name="line.96"></a>
+<FONT color="green">097</FONT>        this.capacity = 0L;<a name="line.97"></a>
+<FONT color="green">098</FONT>        this.dfsUsed = 0L;<a name="line.98"></a>
+<FONT color="green">099</FONT>        this.remaining = 0L;<a name="line.99"></a>
+<FONT color="green">100</FONT>        this.blockPoolUsed = 0L;<a name="line.100"></a>
+<FONT color="green">101</FONT>        this.cacheCapacity = 0L;<a name="line.101"></a>
+<FONT color="green">102</FONT>        this.cacheUsed = 0L;<a name="line.102"></a>
+<FONT color="green">103</FONT>        this.lastUpdate = 0L;<a name="line.103"></a>
+<FONT color="green">104</FONT>        this.xceiverCount = 0;<a name="line.104"></a>
+<FONT color="green">105</FONT>        this.adminState = null;    <a name="line.105"></a>
+<FONT color="green">106</FONT>      }<a name="line.106"></a>
+<FONT color="green">107</FONT>      <a name="line.107"></a>
+<FONT color="green">108</FONT>      public DatanodeInfo(DatanodeID nodeID, String location) {<a name="line.108"></a>
+<FONT color="green">109</FONT>        this(nodeID);<a name="line.109"></a>
+<FONT color="green">110</FONT>        this.location = location;<a name="line.110"></a>
+<FONT color="green">111</FONT>      }<a name="line.111"></a>
+<FONT color="green">112</FONT>      <a name="line.112"></a>
+<FONT color="green">113</FONT>      public DatanodeInfo(DatanodeID nodeID, String location,<a name="line.113"></a>
+<FONT color="green">114</FONT>          final long capacity, final long dfsUsed, final long remaining,<a name="line.114"></a>
+<FONT color="green">115</FONT>          final long blockPoolUsed, final long cacheCapacity, final long cacheUsed,<a name="line.115"></a>
+<FONT color="green">116</FONT>          final long lastUpdate, final int xceiverCount,<a name="line.116"></a>
+<FONT color="green">117</FONT>          final AdminStates adminState) {<a name="line.117"></a>
+<FONT color="green">118</FONT>        this(nodeID.getIpAddr(), nodeID.getHostName(), nodeID.getDatanodeUuid(),<a name="line.118"></a>
+<FONT color="green">119</FONT>            nodeID.getXferPort(), nodeID.getInfoPort(), nodeID.getInfoSecurePort(),<a name="line.119"></a>
+<FONT color="green">120</FONT>            nodeID.getIpcPort(), capacity, dfsUsed, remaining, blockPoolUsed,<a name="line.120"></a>
+<FONT color="green">121</FONT>            cacheCapacity, cacheUsed, lastUpdate, xceiverCount, location, adminState);<a name="line.121"></a>
+<FONT color="green">122</FONT>      }<a name="line.122"></a>
+<FONT color="green">123</FONT>    <a name="line.123"></a>
+<FONT color="green">124</FONT>      /** Constructor */<a name="line.124"></a>
+<FONT color="green">125</FONT>      public DatanodeInfo(final String ipAddr, final String hostName,<a name="line.125"></a>
+<FONT color="green">126</FONT>          final String datanodeUuid, final int xferPort, final int infoPort,<a name="line.126"></a>
+<FONT color="green">127</FONT>          final int infoSecurePort, final int ipcPort,<a name="line.127"></a>
+<FONT color="green">128</FONT>          final long capacity, final long dfsUsed, final long remaining,<a name="line.128"></a>
+<FONT color="green">129</FONT>          final long blockPoolUsed, final long cacheCapacity, final long cacheUsed,<a name="line.129"></a>
+<FONT color="green">130</FONT>          final long lastUpdate, final int xceiverCount,<a name="line.130"></a>
+<FONT color="green">131</FONT>          final String networkLocation, final AdminStates adminState) {<a name="line.131"></a>
+<FONT color="green">132</FONT>        super(ipAddr, hostName, datanodeUuid, xferPort, infoPort,<a name="line.132"></a>
+<FONT color="green">133</FONT>                infoSecurePort, ipcPort);<a name="line.133"></a>
+<FONT color="green">134</FONT>        this.capacity = capacity;<a name="line.134"></a>
+<FONT color="green">135</FONT>        this.dfsUsed = dfsUsed;<a name="line.135"></a>
+<FONT color="green">136</FONT>        this.remaining = remaining;<a name="line.136"></a>
+<FONT color="green">137</FONT>        this.blockPoolUsed = blockPoolUsed;<a name="line.137"></a>
+<FONT color="green">138</FONT>        this.cacheCapacity = cacheCapacity;<a name="line.138"></a>
+<FONT color="green">139</FONT>        this.cacheUsed = cacheUsed;<a name="line.139"></a>
+<FONT color="green">140</FONT>        this.lastUpdate = lastUpdate;<a name="line.140"></a>
+<FONT color="green">141</FONT>        this.xceiverCount = xceiverCount;<a name="line.141"></a>
+<FONT color="green">142</FONT>        this.location = networkLocation;<a name="line.142"></a>
+<FONT color="green">143</FONT>        this.adminState = adminState;<a name="line.143"></a>
+<FONT color="green">144</FONT>      }<a name="line.144"></a>
+<FONT color="green">145</FONT>      <a name="line.145"></a>
+<FONT color="green">146</FONT>      /** Network location name */<a name="line.146"></a>
+<FONT color="green">147</FONT>      @Override<a name="line.147"></a>
+<FONT color="green">148</FONT>      public String getName() {<a name="line.148"></a>
+<FONT color="green">149</FONT>        return getXferAddr();<a name="line.149"></a>
+<FONT color="green">150</FONT>      }<a name="line.150"></a>
+<FONT color="green">151</FONT>      <a name="line.151"></a>
+<FONT color="green">152</FONT>      /** The raw capacity. */<a name="line.152"></a>
+<FONT color="green">153</FONT>      public long getCapacity() { return capacity; }<a name="line.153"></a>
+<FONT color="green">154</FONT>      <a name="line.154"></a>
+<FONT color="green">155</FONT>      /** The used space by the data node. */<a name="line.155"></a>
+<FONT color="green">156</FONT>      public long getDfsUsed() { return dfsUsed; }<a name="line.156"></a>
+<FONT color="green">157</FONT>    <a name="line.157"></a>
+<FONT color="green">158</FONT>      /** The used space by the block pool on data node. */<a name="line.158"></a>
+<FONT color="green">159</FONT>      public long getBlockPoolUsed() { return blockPoolUsed; }<a name="line.159"></a>
+<FONT color="green">160</FONT>    <a name="line.160"></a>
+<FONT color="green">161</FONT>      /** The used space by the data node. */<a name="line.161"></a>
+<FONT color="green">162</FONT>      public long getNonDfsUsed() { <a name="line.162"></a>
+<FONT color="green">163</FONT>        long nonDFSUsed = capacity - dfsUsed - remaining;<a name="line.163"></a>
+<FONT color="green">164</FONT>        return nonDFSUsed &lt; 0 ? 0 : nonDFSUsed;<a name="line.164"></a>
+<FONT color="green">165</FONT>      }<a name="line.165"></a>
+<FONT color="green">166</FONT>    <a name="line.166"></a>
+<FONT color="green">167</FONT>      /** The used space by the data node as percentage of present capacity */<a name="line.167"></a>
+<FONT color="green">168</FONT>      public float getDfsUsedPercent() { <a name="line.168"></a>
+<FONT color="green">169</FONT>        return DFSUtil.getPercentUsed(dfsUsed, capacity);<a name="line.169"></a>
+<FONT color="green">170</FONT>      }<a name="line.170"></a>
+<FONT color="green">171</FONT>    <a name="line.171"></a>
+<FONT color="green">172</FONT>      /** The raw free space. */<a name="line.172"></a>
+<FONT color="green">173</FONT>      public long getRemaining() { return remaining; }<a name="line.173"></a>
+<FONT color="green">174</FONT>    <a name="line.174"></a>
+<FONT color="green">175</FONT>      /** Used space by the block pool as percentage of present capacity */<a name="line.175"></a>
+<FONT color="green">176</FONT>      public float getBlockPoolUsedPercent() {<a name="line.176"></a>
+<FONT color="green">177</FONT>        return DFSUtil.getPercentUsed(blockPoolUsed, capacity);<a name="line.177"></a>
+<FONT color="green">178</FONT>      }<a name="line.178"></a>
+<FONT color="green">179</FONT>      <a name="line.179"></a>
+<FONT color="green">180</FONT>      /** The remaining space as percentage of configured capacity. */<a name="line.180"></a>
+<FONT color="green">181</FONT>      public float getRemainingPercent() { <a name="line.181"></a>
+<FONT color="green">182</FONT>        return DFSUtil.getPercentRemaining(remaining, capacity);<a name="line.182"></a>
+<FONT color="green">183</FONT>      }<a name="line.183"></a>
+<FONT color="green">184</FONT>    <a name="line.184"></a>
+<FONT color="green">185</FONT>      /**<a name="line.185"></a>
+<FONT color="green">186</FONT>       * @return Amount of cache capacity in bytes<a name="line.186"></a>
+<FONT color="green">187</FONT>       */<a name="line.187"></a>
+<FONT color="green">188</FONT>      public long getCacheCapacity() {<a name="line.188"></a>
+<FONT color="green">189</FONT>        return cacheCapacity;<a name="line.189"></a>
+<FONT color="green">190</FONT>      }<a name="line.190"></a>
+<FONT color="green">191</FONT>    <a name="line.191"></a>
+<FONT color="green">192</FONT>      /**<a name="line.192"></a>
+<FONT color="green">193</FONT>       * @return Amount of cache used in bytes<a name="line.193"></a>
+<FONT color="green">194</FONT>       */<a name="line.194"></a>
+<FONT color="green">195</FONT>      public long getCacheUsed() {<a name="line.195"></a>
+<FONT color="green">196</FONT>        return cacheUsed;<a name="line.196"></a>
+<FONT color="green">197</FONT>      }<a name="line.197"></a>
+<FONT color="green">198</FONT>    <a name="line.198"></a>
+<FONT color="green">199</FONT>      /**<a name="line.199"></a>
+<FONT color="green">200</FONT>       * @return Cache used as a percentage of the datanode's total cache capacity<a name="line.200"></a>
+<FONT color="green">201</FONT>       */<a name="line.201"></a>
+<FONT color="green">202</FONT>      public float getCacheUsedPercent() {<a name="line.202"></a>
+<FONT color="green">203</FONT>        return DFSUtil.getPercentUsed(cacheUsed, cacheCapacity);<a name="line.203"></a>
+<FONT color="green">204</FONT>      }<a name="line.204"></a>
+<FONT color="green">205</FONT>    <a name="line.205"></a>
+<FONT color="green">206</FONT>      /**<a name="line.206"></a>
+<FONT color="green">207</FONT>       * @return Amount of cache remaining in bytes<a name="line.207"></a>
+<FONT color="green">208</FONT>       */<a name="line.208"></a>
+<FONT color="green">209</FONT>      public long getCacheRemaining() {<a name="line.209"></a>
+<FONT color="green">210</FONT>        return cacheCapacity - cacheUsed;<a name="line.210"></a>
+<FONT color="green">211</FONT>      }<a name="line.211"></a>
+<FONT color="green">212</FONT>    <a name="line.212"></a>
+<FONT color="green">213</FONT>      /**<a name="line.213"></a>
+<FONT color="green">214</FONT>       * @return Cache remaining as a percentage of the datanode's total cache<a name="line.214"></a>
+<FONT color="green">215</FONT>       * capacity<a name="line.215"></a>
+<FONT color="green">216</FONT>       */<a name="line.216"></a>
+<FONT color="green">217</FONT>      public float getCacheRemainingPercent() {<a name="line.217"></a>
+<FONT color="green">218</FONT>        return DFSUtil.getPercentRemaining(getCacheRemaining(), cacheCapacity);<a name="line.218"></a>
+<FONT color="green">219</FONT>      }<a name="line.219"></a>
+<FONT color="green">220</FONT>    <a name="line.220"></a>
+<FONT color="green">221</FONT>      /** The time when this information was accurate. */<a name="line.221"></a>
+<FONT color="green">222</FONT>      public long getLastUpdate() { return lastUpdate; }<a name="line.222"></a>
+<FONT color="green">223</FONT>    <a name="line.223"></a>
+<FONT color="green">224</FONT>      /** number of active connections */<a name="line.224"></a>
+<FONT color="green">225</FONT>      public int getXceiverCount() { return xceiverCount; }<a name="line.225"></a>
+<FONT color="green">226</FONT>    <a name="line.226"></a>
+<FONT color="green">227</FONT>      /** Sets raw capacity. */<a name="line.227"></a>
+<FONT color="green">228</FONT>      public void setCapacity(long capacity) { <a name="line.228"></a>
+<FONT color="green">229</FONT>        this.capacity = capacity; <a name="line.229"></a>
+<FONT color="green">230</FONT>      }<a name="line.230"></a>
+<FONT color="green">231</FONT>      <a name="line.231"></a>
+<FONT color="green">232</FONT>      /** Sets the used space for the datanode. */<a name="line.232"></a>
+<FONT color="green">233</FONT>      public void setDfsUsed(long dfsUsed) {<a name="line.233"></a>
+<FONT color="green">234</FONT>        this.dfsUsed = dfsUsed;<a name="line.234"></a>
+<FONT color="green">235</FONT>      }<a name="line.235"></a>
+<FONT color="green">236</FONT>    <a name="line.236"></a>
+<FONT color="green">237</FONT>      /** Sets raw free space. */<a name="line.237"></a>
+<FONT color="green">238</FONT>      public void setRemaining(long remaining) { <a name="line.238"></a>
+<FONT color="green">239</FONT>        this.remaining = remaining; <a name="line.239"></a>
+<FONT color="green">240</FONT>      }<a name="line.240"></a>
+<FONT color="green">241</FONT>    <a name="line.241"></a>
+<FONT color="green">242</FONT>      /** Sets block pool used space */<a name="line.242"></a>
+<FONT color="green">243</FONT>      public void setBlockPoolUsed(long bpUsed) { <a name="line.243"></a>
+<FONT color="green">244</FONT>        this.blockPoolUsed = bpUsed; <a name="line.244"></a>
+<FONT color="green">245</FONT>      }<a name="line.245"></a>
+<FONT color="green">246</FONT>    <a name="line.246"></a>
+<FONT color="green">247</FONT>      /** Sets cache capacity. */<a name="line.247"></a>
+<FONT color="green">248</FONT>      public void setCacheCapacity(long cacheCapacity) {<a name="line.248"></a>
+<FONT color="green">249</FONT>        this.cacheCapacity = cacheCapacity;<a name="line.249"></a>
+<FONT color="green">250</FONT>      }<a name="line.250"></a>
+<FONT color="green">251</FONT>    <a name="line.251"></a>
+<FONT color="green">252</FONT>      /** Sets cache used. */<a name="line.252"></a>
+<FONT color="green">253</FONT>      public void setCacheUsed(long cacheUsed) {<a name="line.253"></a>
+<FONT color="green">254</FONT>        this.cacheUsed = cacheUsed;<a name="line.254"></a>
+<FONT color="green">255</FONT>      }<a name="line.255"></a>
+<FONT color="green">256</FONT>    <a name="line.256"></a>
+<FONT color="green">257</FONT>      /** Sets time when this information was accurate. */<a name="line.257"></a>
+<FONT color="green">258</FONT>      public void setLastUpdate(long lastUpdate) { <a name="line.258"></a>
+<FONT color="green">259</FONT>        this.lastUpdate = lastUpdate; <a name="line.259"></a>
+<FONT color="green">260</FONT>      }<a name="line.260"></a>
+<FONT color="green">261</FONT>    <a name="line.261"></a>
+<FONT color="green">262</FONT>      /** Sets number of active connections */<a name="line.262"></a>
+<FONT color="green">263</FONT>      public void setXceiverCount(int xceiverCount) { <a name="line.263"></a>
+<FONT color="green">264</FONT>        this.xceiverCount = xceiverCount; <a name="line.264"></a>
+<FONT color="green">265</FONT>      }<a name="line.265"></a>
+<FONT color="green">266</FONT>    <a name="line.266"></a>
+<FONT color="green">267</FONT>      /** network location */<a name="line.267"></a>
+<FONT color="green">268</FONT>      public synchronized String getNetworkLocation() {return location;}<a name="line.268"></a>
+<FONT color="green">269</FONT>        <a name="line.269"></a>
+<FONT color="green">270</FONT>      /** Sets the network location */<a name="line.270"></a>
+<FONT color="green">271</FONT>      public synchronized void setNetworkLocation(String location) {<a name="line.271"></a>
+<FONT color="green">272</FONT>        this.location = NodeBase.normalize(location);<a name="line.272"></a>
+<FONT color="green">273</FONT>      }<a name="line.273"></a>
+<FONT color="green">274</FONT>        <a name="line.274"></a>
+<FONT color="green">275</FONT>      /** A formatted string for reporting the status of the DataNode. */<a name="line.275"></a>
+<FONT color="green">276</FONT>      public String getDatanodeReport() {<a name="line.276"></a>
+<FONT color="green">277</FONT>        StringBuilder buffer = new StringBuilder();<a name="line.277"></a>
+<FONT color="green">278</FONT>        long c = getCapacity();<a name="line.278"></a>
+<FONT color="green">279</FONT>        long r = getRemaining();<a name="line.279"></a>
+<FONT color="green">280</FONT>        long u = getDfsUsed();<a name="line.280"></a>
+<FONT color="green">281</FONT>        long nonDFSUsed = getNonDfsUsed();<a name="line.281"></a>
+<FONT color="green">282</FONT>        float usedPercent = getDfsUsedPercent();<a name="line.282"></a>
+<FONT color="green">283</FONT>        float remainingPercent = getRemainingPercent();<a name="line.283"></a>
+<FONT color="green">284</FONT>        long cc = getCacheCapacity();<a name="line.284"></a>
+<FONT color="green">285</FONT>        long cr = getCacheRemaining();<a name="line.285"></a>
+<FONT color="green">286</FONT>        long cu = getCacheUsed();<a name="line.286"></a>
+<FONT color="green">287</FONT>        float cacheUsedPercent = getCacheUsedPercent();<a name="line.287"></a>
+<FONT color="green">288</FONT>        float cacheRemainingPercent = getCacheRemainingPercent();<a name="line.288"></a>
+<FONT color="green">289</FONT>        String lookupName = NetUtils.getHostNameOfIP(getName());<a name="line.289"></a>
+<FONT color="green">290</FONT>    <a name="line.290"></a>
+<FONT color="green">291</FONT>        buffer.append("Name: "+ getName());<a name="line.291"></a>
+<FONT color="green">292</FONT>        if (lookupName != null) {<a name="line.292"></a>
+<FONT color="green">293</FONT>          buffer.append(" (" + lookupName + ")");<a name="line.293"></a>
+<FONT color="green">294</FONT>        }<a name="line.294"></a>
+<FONT color="green">295</FONT>        buffer.append("\n");<a name="line.295"></a>
+<FONT color="green">296</FONT>        buffer.append("Hostname: " + getHostName() + "\n");<a name="line.296"></a>
+<FONT color="green">297</FONT>    <a name="line.297"></a>
+<FONT color="green">298</FONT>        if (!NetworkTopology.DEFAULT_RACK.equals(location)) {<a name="line.298"></a>
+<FONT color="green">299</FONT>          buffer.append("Rack: "+location+"\n");<a name="line.299"></a>
+<FONT color="green">300</FONT>        }<a name="line.300"></a>
+<FONT color="green">301</FONT>        buffer.append("Decommission Status : ");<a name="line.301"></a>
+<FONT color="green">302</FONT>        if (isDecommissioned()) {<a name="line.302"></a>
+<FONT color="green">303</FONT>          buffer.append("Decommissioned\n");<a name="line.303"></a>
+<FONT color="green">304</FONT>        } else if (isDecommissionInProgress()) {<a name="line.304"></a>
+<FONT color="green">305</FONT>          buffer.append("Decommission in progress\n");<a name="line.305"></a>
+<FONT color="green">306</FONT>        } else {<a name="line.306"></a>
+<FONT color="green">307</FONT>          buffer.append("Normal\n");<a name="line.307"></a>
+<FONT color="green">308</FONT>        }<a name="line.308"></a>
+<FONT color="green">309</FONT>        buffer.append("Configured Capacity: "+c+" ("+StringUtils.byteDesc(c)+")"+"\n");<a name="line.309"></a>
+<FONT color="green">310</FONT>        buffer.append("DFS Used: "+u+" ("+StringUtils.byteDesc(u)+")"+"\n");<a name="line.310"></a>
+<FONT color="green">311</FONT>        buffer.append("Non DFS Used: "+nonDFSUsed+" ("+StringUtils.byteDesc(nonDFSUsed)+")"+"\n");<a name="line.311"></a>
+<FONT color="green">312</FONT>        buffer.append("DFS Remaining: " +r+ " ("+StringUtils.byteDesc(r)+")"+"\n");<a name="line.312"></a>
+<FONT color="green">313</FONT>        buffer.append("DFS Used%: "+percent2String(usedPercent) + "\n");<a name="line.313"></a>
+<FONT color="green">314</FONT>        buffer.append("DFS Remaining%: "+percent2String(remainingPercent) + "\n");<a name="line.314"></a>
+<FONT color="green">315</FONT>        buffer.append("Configured Cache Capacity: "+cc+" ("+StringUtils.byteDesc(cc)+")"+"\n");<a name="line.315"></a>
+<FONT color="green">316</FONT>        buffer.append("Cache Used: "+cu+" ("+StringUtils.byteDesc(cu)+")"+"\n");<a name="line.316"></a>
+<FONT color="green">317</FONT>        buffer.append("Cache Remaining: " +cr+ " ("+StringUtils.byteDesc(cr)+")"+"\n");<a name="line.317"></a>
+<FONT color="green">318</FONT>        buffer.append("Cache Used%: "+percent2String(cacheUsedPercent) + "\n");<a name="line.318"></a>
+<FONT color="green">319</FONT>        buffer.append("Cache Remaining%: "+percent2String(cacheRemainingPercent) + "\n");<a name="line.319"></a>
+<FONT color="green">320</FONT>    <a name="line.320"></a>
+<FONT color="green">321</FONT>        buffer.append("Last contact: "+new Date(lastUpdate)+"\n");<a name="line.321"></a>
+<FONT color="green">322</FONT>        return buffer.toString();<a name="line.322"></a>
+<FONT color="green">323</FONT>      }<a name="line.323"></a>
+<FONT color="green">324</FONT>    <a name="line.324"></a>
+<FONT color="green">325</FONT>      /** A formatted string for printing the status of the DataNode. */<a name="line.325"></a>
+<FONT color="green">326</FONT>      public String dumpDatanode() {<a name="line.326"></a>
+<FONT color="green">327</FONT>        StringBuilder buffer = new StringBuilder();<a name="line.327"></a>
+<FONT color="green">328</FONT>        long c = getCapacity();<a name="line.328"></a>
+<FONT color="green">329</FONT>        long r = getRemaining();<a name="line.329"></a>
+<FONT color="green">330</FONT>        long u = getDfsUsed();<a name="line.330"></a>
+<FONT color="green">331</FONT>        long cc = getCacheCapacity();<a name="line.331"></a>
+<FONT color="green">332</FONT>        long cr = getCacheRemaining();<a name="line.332"></a>
+<FONT color="green">333</FONT>        long cu = getCacheUsed();<a name="line.333"></a>
+<FONT color="green">334</FONT>        buffer.append(getName());<a name="line.334"></a>
+<FONT color="green">335</FONT>        if (!NetworkTopology.DEFAULT_RACK.equals(location)) {<a name="line.335"></a>
+<FONT color="green">336</FONT>          buffer.append(" "+location);<a name="line.336"></a>
+<FONT color="green">337</FONT>        }<a name="line.337"></a>
+<FONT color="green">338</FONT>        if (isDecommissioned()) {<a name="line.338"></a>
+<FONT color="green">339</FONT>          buffer.append(" DD");<a name="line.339"></a>
+<FONT color="green">340</FONT>        } else if (isDecommissionInProgress()) {<a name="line.340"></a>
+<FONT color="green">341</FONT>          buffer.append(" DP");<a name="line.341"></a>
+<FONT color="green">342</FONT>        } else {<a name="line.342"></a>
+<FONT color="green">343</FONT>          buffer.append(" IN");<a name="line.343"></a>
+<FONT color="green">344</FONT>        }<a name="line.344"></a>
+<FONT color="green">345</FONT>        buffer.append(" " + c + "(" + StringUtils.byteDesc(c)+")");<a name="line.345"></a>
+<FONT color="green">346</FONT>        buffer.append(" " + u + "(" + StringUtils.byteDesc(u)+")");<a name="line.346"></a>
+<FONT color="green">347</FONT>        buffer.append(" " + percent2String(u/(double)c));<a name="line.347"></a>
+<FONT color="green">348</FONT>        buffer.append(" " + r + "(" + StringUtils.byteDesc(r)+")");<a name="line.348"></a>
+<FONT color="green">349</FONT>        buffer.append(" " + cc + "(" + StringUtils.byteDesc(cc)+")");<a name="line.349"></a>
+<FONT color="green">350</FONT>        buffer.append(" " + cu + "(" + StringUtils.byteDesc(cu)+")");<a name="line.350"></a>
+<FONT color="green">351</FONT>        buffer.append(" " + percent2String(cu/(double)cc));<a name="line.351"></a>
+<FONT color="green">352</FONT>        buffer.append(" " + cr + "(" + StringUtils.byteDesc(cr)+")");<a name="line.352"></a>
+<FONT color="green">353</FONT>        buffer.append(" " + new Date(lastUpdate));<a name="line.353"></a>
+<FONT color="green">354</FONT>        return buffer.toString();<a name="line.354"></a>
+<FONT color="green">355</FONT>      }<a name="line.355"></a>
+<FONT color="green">356</FONT>    <a name="line.356"></a>
+<FONT color="green">357</FONT>      /**<a name="line.357"></a>
+<FONT color="green">358</FONT>       * Start decommissioning a node.<a name="line.358"></a>
+<FONT color="green">359</FONT>       * old state.<a name="line.359"></a>
+<FONT color="green">360</FONT>       */<a name="line.360"></a>
+<FONT color="green">361</FONT>      public void startDecommission() {<a name="line.361"></a>
+<FONT color="green">362</FONT>        adminState = AdminStates.DECOMMISSION_INPROGRESS;<a name="line.362"></a>
+<FONT color="green">363</FONT>      }<a name="line.363"></a>
+<FONT color="green">364</FONT>    <a name="line.364"></a>
+<FONT color="green">365</FONT>      /**<a name="line.365"></a>
+<FONT color="green">366</FONT>       * Stop decommissioning a node.<a name="line.366"></a>
+<FONT color="green">367</FONT>       * old state.<a name="line.367"></a>
+<FONT color="green">368</FONT>       */<a name="line.368"></a>
+<FONT color="green">369</FONT>      public void stopDecommission() {<a name="line.369"></a>
+<FONT color="green">370</FONT>        adminState = null;<a name="line.370"></a>
+<FONT color="green">371</FONT>      }<a name="line.371"></a>
+<FONT color="green">372</FONT>    <a name="line.372"></a>
+<FONT color="green">373</FONT>      /**<a name="line.373"></a>
+<FONT color="green">374</FONT>       * Returns true if the node is in the process of being decommissioned<a name="line.374"></a>
+<FONT color="green">375</FONT>       */<a name="line.375"></a>
+<FONT color="green">376</FONT>      public boolean isDecommissionInProgress() {<a name="line.376"></a>
+<FONT color="green">377</FONT>        return adminState == AdminStates.DECOMMISSION_INPROGRESS;<a name="line.377"></a>
+<FONT color="green">378</FONT>      }<a name="line.378"></a>
+<FONT color="green">379</FONT>    <a name="line.379"></a>
+<FONT color="green">380</FONT>      /**<a name="line.380"></a>
+<FONT color="green">381</FONT>       * Returns true if the node has been decommissioned.<a name="line.381"></a>
+<FONT color="green">382</FONT>       */<a name="line.382"></a>
+<FONT color="green">383</FONT>      public boolean isDecommissioned() {<a name="line.383"></a>
+<FONT color="green">384</FONT>        return adminState == AdminStates.DECOMMISSIONED;<a name="line.384"></a>
+<FONT color="green">385</FONT>      }<a name="line.385"></a>
+<FONT color="green">386</FONT>    <a name="line.386"></a>
+<FONT color="green">387</FONT>      /**<a name="line.387"></a>
+<FONT color="green">388</FONT>       * Sets the admin state to indicate that decommission is complete.<a name="line.388"></a>
+<FONT color="green">389</FONT>       */<a name="line.389"></a>
+<FONT color="green">390</FONT>      public void setDecommissioned() {<a name="line.390"></a>
+<FONT color="green">391</FONT>        adminState = AdminStates.DECOMMISSIONED;<a name="line.391"></a>
+<FONT color="green">392</FONT>      }<a name="line.392"></a>
+<FONT color="green">393</FONT>    <a name="line.393"></a>
+<FONT color="green">394</FONT>      /**<a name="line.394"></a>
+<FONT color="green">395</FONT>       * Retrieves the admin state of this node.<a name="line.395"></a>
+<FONT color="green">396</FONT>       */<a name="line.396"></a>
+<FONT color="green">397</FONT>      public AdminStates getAdminState() {<a name="line.397"></a>
+<FONT color="green">398</FONT>        if (adminState == null) {<a name="line.398"></a>
+<FONT color="green">399</FONT>          return AdminStates.NORMAL;<a name="line.399"></a>
+<FONT color="green">400</FONT>        }<a name="line.400"></a>
+<FONT color="green">401</FONT>        return adminState;<a name="line.401"></a>
+<FONT color="green">402</FONT>      }<a name="line.402"></a>
+<FONT color="green">403</FONT>     <a name="line.403"></a>
+<FONT color="green">404</FONT>      /**<a name="line.404"></a>
+<FONT color="green">405</FONT>       * Check if the datanode is in stale state. Here if <a name="line.405"></a>
+<FONT color="green">406</FONT>       * the namenode has not received heartbeat msg from a <a name="line.406"></a>
+<FONT color="green">407</FONT>       * datanode for more than staleInterval (default value is<a name="line.407"></a>
+<FONT color="green">408</FONT>       * {@link DFSConfigKeys#DFS_NAMENODE_STALE_DATANODE_INTERVAL_DEFAULT}),<a name="line.408"></a>
+<FONT color="green">409</FONT>       * the datanode will be treated as stale node.<a name="line.409"></a>
+<FONT color="green">410</FONT>       * <a name="line.410"></a>
+<FONT color="green">411</FONT>       * @param staleInterval<a name="line.411"></a>
+<FONT color="green">412</FONT>       *          the time interval for marking the node as stale. If the last<a name="line.412"></a>
+<FONT color="green">413</FONT>       *          update time is beyond the given time interval, the node will be<a name="line.413"></a>
+<FONT color="green">414</FONT>       *          marked as stale.<a name="line.414"></a>
+<FONT color="green">415</FONT>       * @return true if the node is stale<a name="line.415"></a>
+<FONT color="green">416</FONT>       */<a name="line.416"></a>
+<FONT color="green">417</FONT>      public boolean isStale(long staleInterval) {<a name="line.417"></a>
+<FONT color="green">418</FONT>        return (Time.now() - lastUpdate) &gt;= staleInterval;<a name="line.418"></a>
+<FONT color="green">419</FONT>      }<a name="line.419"></a>
+<FONT color="green">420</FONT>      <a name="line.420"></a>
+<FONT color="green">421</FONT>      /**<a name="line.421"></a>
+<FONT color="green">422</FONT>       * Sets the admin state of this node.<a name="line.422"></a>
+<FONT color="green">423</FONT>       */<a name="line.423"></a>
+<FONT color="green">424</FONT>      protected void setAdminState(AdminStates newState) {<a name="line.424"></a>
+<FONT color="green">425</FONT>        if (newState == AdminStates.NORMAL) {<a name="line.425"></a>
+<FONT color="green">426</FONT>          adminState = null;<a name="line.426"></a>
+<FONT color="green">427</FONT>        }<a name="line.427"></a>
+<FONT color="green">428</FONT>        else {<a name="line.428"></a>
+<FONT color="green">429</FONT>          adminState = newState;<a name="line.429"></a>
+<FONT color="green">430</FONT>        }<a name="line.430"></a>
+<FONT color="green">431</FONT>      }<a name="line.431"></a>
+<FONT color="green">432</FONT>    <a name="line.432"></a>
+<FONT color="green">433</FONT>      private transient int level; //which level of the tree the node resides<a name="line.433"></a>
+<FONT color="green">434</FONT>      private transient Node parent; //its parent<a name="line.434"></a>
+<FONT color="green">435</FONT>    <a name="line.435"></a>
+<FONT color="green">436</FONT>      /** Return this node's parent */<a name="line.436"></a>
+<FONT color="green">437</FONT>      @Override<a name="line.437"></a>
+<FONT color="green">438</FONT>      public Node getParent() { return parent; }<a name="line.438"></a>
+<FONT color="green">439</FONT>      @Override<a name="line.439"></a>
+<FONT color="green">440</FONT>      public void setParent(Node parent) {this.parent = parent;}<a name="line.440"></a>
+<FONT color="green">441</FONT>       <a name="line.441"></a>
+<FONT color="green">442</FONT>      /** Return this node's level in the tree.<a name="line.442"></a>
+<FONT color="green">443</FONT>       * E.g. the root of a tree returns 0 and its children return 1<a name="line.443"></a>
+<FONT color="green">444</FONT>       */<a name="line.444"></a>
+<FONT color="green">445</FONT>      @Override<a name="line.445"></a>
+<FONT color="green">446</FONT>      public int getLevel() { return level; }<a name="line.446"></a>
+<FONT color="green">447</FONT>      @Override<a name="line.447"></a>
+<FONT color="green">448</FONT>      public void setLevel(int level) {this.level = level;}<a name="line.448"></a>
+<FONT color="green">449</FONT>    <a name="line.449"></a>
+<FONT color="green">450</FONT>      @Override<a name="line.450"></a>
+<FONT color="green">451</FONT>      public int hashCode() {<a name="line.451"></a>
+<FONT color="green">452</FONT>        // Super implementation is sufficient<a name="line.452"></a>
+<FONT color="green">453</FONT>        return super.hashCode();<a name="line.453"></a>
+<FONT color="green">454</FONT>      }<a name="line.454"></a>
+<FONT color="green">455</FONT>      <a name="line.455"></a>
+<FONT color="green">456</FONT>      @Override<a name="line.456"></a>
+<FONT color="green">457</FONT>      public boolean equals(Object obj) {<a name="line.457"></a>
+<FONT color="green">458</FONT>        // Sufficient to use super equality as datanodes are uniquely identified<a name="line.458"></a>
+<FONT color="green">459</FONT>        // by DatanodeID<a name="line.459"></a>
+<FONT color="green">460</FONT>        return (this == obj) || super.equals(obj);<a name="line.460"></a>
+<FONT color="green">461</FONT>      }<a name="line.461"></a>
+<FONT color="green">462</FONT>    <a name="line.462"></a>
+<FONT color="green">463</FONT>      public String getSoftwareVersion() {<a name="line.463"></a>
+<FONT color="green">464</FONT>        return softwareVersion;<a name="line.464"></a>
+<FONT color="green">465</FONT>      }<a name="line.465"></a>
+<FONT color="green">466</FONT>    <a name="line.466"></a>
+<FONT color="green">467</FONT>      public void setSoftwareVersion(String softwareVersion) {<a name="line.467"></a>
+<FONT color="green">468</FONT>        this.softwareVersion = softwareVersion;<a name="line.468"></a>
+<FONT color="green">469</FONT>      }<a name="line.469"></a>
+<FONT color="green">470</FONT>    }<a name="line.470"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>

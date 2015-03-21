@@ -1,0 +1,1957 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    /**<a name="line.1"></a>
+<FONT color="green">002</FONT>     * Licensed to the Apache Software Foundation (ASF) under one<a name="line.2"></a>
+<FONT color="green">003</FONT>     * or more contributor license agreements.  See the NOTICE file<a name="line.3"></a>
+<FONT color="green">004</FONT>     * distributed with this work for additional information<a name="line.4"></a>
+<FONT color="green">005</FONT>     * regarding copyright ownership.  The ASF licenses this file<a name="line.5"></a>
+<FONT color="green">006</FONT>     * to you under the Apache License, Version 2.0 (the<a name="line.6"></a>
+<FONT color="green">007</FONT>     * "License"); you may not use this file except in compliance<a name="line.7"></a>
+<FONT color="green">008</FONT>     * with the License.  You may obtain a copy of the License at<a name="line.8"></a>
+<FONT color="green">009</FONT>     *<a name="line.9"></a>
+<FONT color="green">010</FONT>     *     http://www.apache.org/licenses/LICENSE-2.0<a name="line.10"></a>
+<FONT color="green">011</FONT>     *<a name="line.11"></a>
+<FONT color="green">012</FONT>     * Unless required by applicable law or agreed to in writing, software<a name="line.12"></a>
+<FONT color="green">013</FONT>     * distributed under the License is distributed on an "AS IS" BASIS,<a name="line.13"></a>
+<FONT color="green">014</FONT>     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.14"></a>
+<FONT color="green">015</FONT>     * See the License for the specific language governing permissions and<a name="line.15"></a>
+<FONT color="green">016</FONT>     * limitations under the License.<a name="line.16"></a>
+<FONT color="green">017</FONT>     */<a name="line.17"></a>
+<FONT color="green">018</FONT>    package org.apache.hadoop.hdfs.protocolPB;<a name="line.18"></a>
+<FONT color="green">019</FONT>    <a name="line.19"></a>
+<FONT color="green">020</FONT>    import static com.google.common.base.Preconditions.checkNotNull;<a name="line.20"></a>
+<FONT color="green">021</FONT>    <a name="line.21"></a>
+<FONT color="green">022</FONT>    import java.io.EOFException;<a name="line.22"></a>
+<FONT color="green">023</FONT>    import java.io.IOException;<a name="line.23"></a>
+<FONT color="green">024</FONT>    import java.io.InputStream;<a name="line.24"></a>
+<FONT color="green">025</FONT>    import java.util.ArrayList;<a name="line.25"></a>
+<FONT color="green">026</FONT>    import java.util.Arrays;<a name="line.26"></a>
+<FONT color="green">027</FONT>    import java.util.EnumSet;<a name="line.27"></a>
+<FONT color="green">028</FONT>    import java.util.List;<a name="line.28"></a>
+<FONT color="green">029</FONT>    <a name="line.29"></a>
+<FONT color="green">030</FONT>    import com.google.common.base.Preconditions;<a name="line.30"></a>
+<FONT color="green">031</FONT>    import org.apache.hadoop.fs.CacheFlag;<a name="line.31"></a>
+<FONT color="green">032</FONT>    import org.apache.hadoop.fs.ContentSummary;<a name="line.32"></a>
+<FONT color="green">033</FONT>    import org.apache.hadoop.fs.CreateFlag;<a name="line.33"></a>
+<FONT color="green">034</FONT>    import org.apache.hadoop.fs.FsServerDefaults;<a name="line.34"></a>
+<FONT color="green">035</FONT>    import org.apache.hadoop.fs.Path;<a name="line.35"></a>
+<FONT color="green">036</FONT>    import org.apache.hadoop.fs.permission.FsPermission;<a name="line.36"></a>
+<FONT color="green">037</FONT>    import org.apache.hadoop.ha.HAServiceProtocol.HAServiceState;<a name="line.37"></a>
+<FONT color="green">038</FONT>    import org.apache.hadoop.hdfs.DFSUtil;<a name="line.38"></a>
+<FONT color="green">039</FONT>    import org.apache.hadoop.hdfs.StorageType;<a name="line.39"></a>
+<FONT color="green">040</FONT>    import org.apache.hadoop.hdfs.protocol.Block;<a name="line.40"></a>
+<FONT color="green">041</FONT>    import org.apache.hadoop.hdfs.protocol.CacheDirectiveEntry;<a name="line.41"></a>
+<FONT color="green">042</FONT>    import org.apache.hadoop.hdfs.protocol.CacheDirectiveStats;<a name="line.42"></a>
+<FONT color="green">043</FONT>    import org.apache.hadoop.hdfs.protocol.CachePoolEntry;<a name="line.43"></a>
+<FONT color="green">044</FONT>    import org.apache.hadoop.hdfs.protocol.CachePoolInfo;<a name="line.44"></a>
+<FONT color="green">045</FONT>    import org.apache.hadoop.hdfs.protocol.CachePoolStats;<a name="line.45"></a>
+<FONT color="green">046</FONT>    import org.apache.hadoop.hdfs.protocol.ClientProtocol;<a name="line.46"></a>
+<FONT color="green">047</FONT>    import org.apache.hadoop.hdfs.protocol.CorruptFileBlocks;<a name="line.47"></a>
+<FONT color="green">048</FONT>    import org.apache.hadoop.hdfs.protocol.DatanodeID;<a name="line.48"></a>
+<FONT color="green">049</FONT>    import org.apache.hadoop.hdfs.protocol.DatanodeInfo;<a name="line.49"></a>
+<FONT color="green">050</FONT>    import org.apache.hadoop.hdfs.protocol.CacheDirectiveInfo;<a name="line.50"></a>
+<FONT color="green">051</FONT>    import org.apache.hadoop.hdfs.protocol.SnapshotDiffReport;<a name="line.51"></a>
+<FONT color="green">052</FONT>    import org.apache.hadoop.hdfs.protocol.DatanodeInfo.AdminStates;<a name="line.52"></a>
+<FONT color="green">053</FONT>    import org.apache.hadoop.hdfs.protocol.DirectoryListing;<a name="line.53"></a>
+<FONT color="green">054</FONT>    import org.apache.hadoop.hdfs.protocol.ExtendedBlock;<a name="line.54"></a>
+<FONT color="green">055</FONT>    import org.apache.hadoop.hdfs.protocol.HdfsConstants.DatanodeReportType;<a name="line.55"></a>
+<FONT color="green">056</FONT>    import org.apache.hadoop.hdfs.protocol.HdfsConstants.SafeModeAction;<a name="line.56"></a>
+<FONT color="green">057</FONT>    import org.apache.hadoop.hdfs.protocol.HdfsFileStatus;<a name="line.57"></a>
+<FONT color="green">058</FONT>    import org.apache.hadoop.hdfs.protocol.HdfsLocatedFileStatus;<a name="line.58"></a>
+<FONT color="green">059</FONT>    import org.apache.hadoop.hdfs.protocol.LocatedBlock;<a name="line.59"></a>
+<FONT color="green">060</FONT>    import org.apache.hadoop.hdfs.protocol.LocatedBlocks;<a name="line.60"></a>
+<FONT color="green">061</FONT>    import org.apache.hadoop.hdfs.protocol.SnapshotDiffReport.DiffReportEntry;<a name="line.61"></a>
+<FONT color="green">062</FONT>    import org.apache.hadoop.hdfs.protocol.SnapshotDiffReport.DiffType;<a name="line.62"></a>
+<FONT color="green">063</FONT>    import org.apache.hadoop.hdfs.protocol.SnapshottableDirectoryStatus;<a name="line.63"></a>
+<FONT color="green">064</FONT>    import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos;<a name="line.64"></a>
+<FONT color="green">065</FONT>    import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.CacheDirectiveEntryProto;<a name="line.65"></a>
+<FONT color="green">066</FONT>    import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.CacheDirectiveInfoExpirationProto;<a name="line.66"></a>
+<FONT color="green">067</FONT>    import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.CacheDirectiveStatsProto;<a name="line.67"></a>
+<FONT color="green">068</FONT>    import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.CacheFlagProto;<a name="line.68"></a>
+<FONT color="green">069</FONT>    import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.CachePoolEntryProto;<a name="line.69"></a>
+<FONT color="green">070</FONT>    import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.CachePoolInfoProto;<a name="line.70"></a>
+<FONT color="green">071</FONT>    import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.CachePoolStatsProto;<a name="line.71"></a>
+<FONT color="green">072</FONT>    import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.CreateFlagProto;<a name="line.72"></a>
+<FONT color="green">073</FONT>    import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.DatanodeReportTypeProto;<a name="line.73"></a>
+<FONT color="green">074</FONT>    import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetFsStatsResponseProto;<a name="line.74"></a>
+<FONT color="green">075</FONT>    import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.SafeModeActionProto;<a name="line.75"></a>
+<FONT color="green">076</FONT>    import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.CacheDirectiveInfoProto;<a name="line.76"></a>
+<FONT color="green">077</FONT>    import org.apache.hadoop.hdfs.protocol.proto.DatanodeProtocolProtos.BalancerBandwidthCommandProto;<a name="line.77"></a>
+<FONT color="green">078</FONT>    import org.apache.hadoop.hdfs.protocol.proto.DatanodeProtocolProtos.BlockCommandProto;<a name="line.78"></a>
+<FONT color="green">079</FONT>    import org.apache.hadoop.hdfs.protocol.proto.DatanodeProtocolProtos.BlockIdCommandProto;<a name="line.79"></a>
+<FONT color="green">080</FONT>    import org.apache.hadoop.hdfs.protocol.proto.DatanodeProtocolProtos.BlockRecoveryCommandProto;<a name="line.80"></a>
+<FONT color="green">081</FONT>    import org.apache.hadoop.hdfs.protocol.proto.DatanodeProtocolProtos.DatanodeCommandProto;<a name="line.81"></a>
+<FONT color="green">082</FONT>    import org.apache.hadoop.hdfs.protocol.proto.DatanodeProtocolProtos.DatanodeRegistrationProto;<a name="line.82"></a>
+<FONT color="green">083</FONT>    import org.apache.hadoop.hdfs.protocol.proto.DatanodeProtocolProtos.DatanodeStorageProto;<a name="line.83"></a>
+<FONT color="green">084</FONT>    import org.apache.hadoop.hdfs.protocol.proto.DatanodeProtocolProtos.DatanodeStorageProto.StorageState;<a name="line.84"></a>
+<FONT color="green">085</FONT>    import org.apache.hadoop.hdfs.protocol.proto.DatanodeProtocolProtos.FinalizeCommandProto;<a name="line.85"></a>
+<FONT color="green">086</FONT>    import org.apache.hadoop.hdfs.protocol.proto.DatanodeProtocolProtos.KeyUpdateCommandProto;<a name="line.86"></a>
+<FONT color="green">087</FONT>    import org.apache.hadoop.hdfs.protocol.proto.DatanodeProtocolProtos.NNHAStatusHeartbeatProto;<a name="line.87"></a>
+<FONT color="green">088</FONT>    import org.apache.hadoop.hdfs.protocol.proto.DatanodeProtocolProtos.ReceivedDeletedBlockInfoProto;<a name="line.88"></a>
+<FONT color="green">089</FONT>    import org.apache.hadoop.hdfs.protocol.proto.DatanodeProtocolProtos.RegisterCommandProto;<a name="line.89"></a>
+<FONT color="green">090</FONT>    import org.apache.hadoop.hdfs.protocol.proto.DatanodeProtocolProtos.StorageReportProto;<a name="line.90"></a>
+<FONT color="green">091</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos;<a name="line.91"></a>
+<FONT color="green">092</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.BlockKeyProto;<a name="line.92"></a>
+<FONT color="green">093</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.BlockProto;<a name="line.93"></a>
+<FONT color="green">094</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.BlockWithLocationsProto;<a name="line.94"></a>
+<FONT color="green">095</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.BlocksWithLocationsProto;<a name="line.95"></a>
+<FONT color="green">096</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.CheckpointCommandProto;<a name="line.96"></a>
+<FONT color="green">097</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.CheckpointSignatureProto;<a name="line.97"></a>
+<FONT color="green">098</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.ContentSummaryProto;<a name="line.98"></a>
+<FONT color="green">099</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.CorruptFileBlocksProto;<a name="line.99"></a>
+<FONT color="green">100</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DataEncryptionKeyProto;<a name="line.100"></a>
+<FONT color="green">101</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeIDProto;<a name="line.101"></a>
+<FONT color="green">102</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto;<a name="line.102"></a>
+<FONT color="green">103</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.AdminState;<a name="line.103"></a>
+<FONT color="green">104</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfosProto;<a name="line.104"></a>
+<FONT color="green">105</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DirectoryListingProto;<a name="line.105"></a>
+<FONT color="green">106</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.ExportedBlockKeysProto;<a name="line.106"></a>
+<FONT color="green">107</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.ExtendedBlockProto;<a name="line.107"></a>
+<FONT color="green">108</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.FsPermissionProto;<a name="line.108"></a>
+<FONT color="green">109</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.FsServerDefaultsProto;<a name="line.109"></a>
+<FONT color="green">110</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.HdfsFileStatusProto;<a name="line.110"></a>
+<FONT color="green">111</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.HdfsFileStatusProto.FileType;<a name="line.111"></a>
+<FONT color="green">112</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.LocatedBlockProto;<a name="line.112"></a>
+<FONT color="green">113</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.LocatedBlockProto.Builder;<a name="line.113"></a>
+<FONT color="green">114</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.LocatedBlocksProto;<a name="line.114"></a>
+<FONT color="green">115</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.NamenodeCommandProto;<a name="line.115"></a>
+<FONT color="green">116</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.NamenodeRegistrationProto;<a name="line.116"></a>
+<FONT color="green">117</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.NamenodeRegistrationProto.NamenodeRoleProto;<a name="line.117"></a>
+<FONT color="green">118</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.NamespaceInfoProto;<a name="line.118"></a>
+<FONT color="green">119</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.RecoveringBlockProto;<a name="line.119"></a>
+<FONT color="green">120</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.RemoteEditLogManifestProto;<a name="line.120"></a>
+<FONT color="green">121</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.RemoteEditLogProto;<a name="line.121"></a>
+<FONT color="green">122</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.ReplicaStateProto;<a name="line.122"></a>
+<FONT color="green">123</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.SnapshotDiffReportEntryProto;<a name="line.123"></a>
+<FONT color="green">124</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.SnapshotDiffReportProto;<a name="line.124"></a>
+<FONT color="green">125</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.SnapshottableDirectoryListingProto;<a name="line.125"></a>
+<FONT color="green">126</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.SnapshottableDirectoryStatusProto;<a name="line.126"></a>
+<FONT color="green">127</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.StorageInfoProto;<a name="line.127"></a>
+<FONT color="green">128</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.StorageTypeProto;<a name="line.128"></a>
+<FONT color="green">129</FONT>    import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.StorageUuidsProto;<a name="line.129"></a>
+<FONT color="green">130</FONT>    import org.apache.hadoop.hdfs.protocol.proto.JournalProtocolProtos.JournalInfoProto;<a name="line.130"></a>
+<FONT color="green">131</FONT>    import org.apache.hadoop.hdfs.security.token.block.BlockKey;<a name="line.131"></a>
+<FONT color="green">132</FONT>    import org.apache.hadoop.hdfs.security.token.block.BlockTokenIdentifier;<a name="line.132"></a>
+<FONT color="green">133</FONT>    import org.apache.hadoop.hdfs.security.token.block.DataEncryptionKey;<a name="line.133"></a>
+<FONT color="green">134</FONT>    import org.apache.hadoop.hdfs.security.token.block.ExportedBlockKeys;<a name="line.134"></a>
+<FONT color="green">135</FONT>    import org.apache.hadoop.hdfs.security.token.delegation.DelegationTokenIdentifier;<a name="line.135"></a>
+<FONT color="green">136</FONT>    import org.apache.hadoop.hdfs.server.common.HdfsServerConstants.NamenodeRole;<a name="line.136"></a>
+<FONT color="green">137</FONT>    import org.apache.hadoop.hdfs.server.common.HdfsServerConstants.ReplicaState;<a name="line.137"></a>
+<FONT color="green">138</FONT>    import org.apache.hadoop.hdfs.server.common.StorageInfo;<a name="line.138"></a>
+<FONT color="green">139</FONT>    import org.apache.hadoop.hdfs.server.namenode.CheckpointSignature;<a name="line.139"></a>
+<FONT color="green">140</FONT>    import org.apache.hadoop.hdfs.server.namenode.INodeId;<a name="line.140"></a>
+<FONT color="green">141</FONT>    import org.apache.hadoop.hdfs.server.protocol.BalancerBandwidthCommand;<a name="line.141"></a>
+<FONT color="green">142</FONT>    import org.apache.hadoop.hdfs.server.protocol.BlockCommand;<a name="line.142"></a>
+<FONT color="green">143</FONT>    import org.apache.hadoop.hdfs.server.protocol.BlockIdCommand;<a name="line.143"></a>
+<FONT color="green">144</FONT>    import org.apache.hadoop.hdfs.server.protocol.BlockRecoveryCommand;<a name="line.144"></a>
+<FONT color="green">145</FONT>    import org.apache.hadoop.hdfs.server.protocol.BlockRecoveryCommand.RecoveringBlock;<a name="line.145"></a>
+<FONT color="green">146</FONT>    import org.apache.hadoop.hdfs.server.protocol.BlocksWithLocations;<a name="line.146"></a>
+<FONT color="green">147</FONT>    import org.apache.hadoop.hdfs.server.protocol.BlocksWithLocations.BlockWithLocations;<a name="line.147"></a>
+<FONT color="green">148</FONT>    import org.apache.hadoop.hdfs.server.protocol.CheckpointCommand;<a name="line.148"></a>
+<FONT color="green">149</FONT>    import org.apache.hadoop.hdfs.server.protocol.DatanodeCommand;<a name="line.149"></a>
+<FONT color="green">150</FONT>    import org.apache.hadoop.hdfs.server.protocol.DatanodeProtocol;<a name="line.150"></a>
+<FONT color="green">151</FONT>    import org.apache.hadoop.hdfs.server.protocol.DatanodeRegistration;<a name="line.151"></a>
+<FONT color="green">152</FONT>    import org.apache.hadoop.hdfs.server.protocol.DatanodeStorage;<a name="line.152"></a>
+<FONT color="green">153</FONT>    import org.apache.hadoop.hdfs.server.protocol.DatanodeStorage.State;<a name="line.153"></a>
+<FONT color="green">154</FONT>    import org.apache.hadoop.hdfs.server.protocol.FinalizeCommand;<a name="line.154"></a>
+<FONT color="green">155</FONT>    import org.apache.hadoop.hdfs.server.protocol.JournalInfo;<a name="line.155"></a>
+<FONT color="green">156</FONT>    import org.apache.hadoop.hdfs.server.protocol.KeyUpdateCommand;<a name="line.156"></a>
+<FONT color="green">157</FONT>    import org.apache.hadoop.hdfs.server.protocol.NNHAStatusHeartbeat;<a name="line.157"></a>
+<FONT color="green">158</FONT>    import org.apache.hadoop.hdfs.server.protocol.NamenodeCommand;<a name="line.158"></a>
+<FONT color="green">159</FONT>    import org.apache.hadoop.hdfs.server.protocol.NamenodeRegistration;<a name="line.159"></a>
+<FONT color="green">160</FONT>    import org.apache.hadoop.hdfs.server.protocol.NamespaceInfo;<a name="line.160"></a>
+<FONT color="green">161</FONT>    import org.apache.hadoop.hdfs.server.protocol.ReceivedDeletedBlockInfo;<a name="line.161"></a>
+<FONT color="green">162</FONT>    import org.apache.hadoop.hdfs.server.protocol.ReceivedDeletedBlockInfo.BlockStatus;<a name="line.162"></a>
+<FONT color="green">163</FONT>    import org.apache.hadoop.hdfs.server.protocol.RegisterCommand;<a name="line.163"></a>
+<FONT color="green">164</FONT>    import org.apache.hadoop.hdfs.server.protocol.RemoteEditLog;<a name="line.164"></a>
+<FONT color="green">165</FONT>    import org.apache.hadoop.hdfs.server.protocol.RemoteEditLogManifest;<a name="line.165"></a>
+<FONT color="green">166</FONT>    import org.apache.hadoop.hdfs.server.protocol.StorageReport;<a name="line.166"></a>
+<FONT color="green">167</FONT>    import org.apache.hadoop.hdfs.util.ExactSizeInputStream;<a name="line.167"></a>
+<FONT color="green">168</FONT>    import org.apache.hadoop.io.EnumSetWritable;<a name="line.168"></a>
+<FONT color="green">169</FONT>    import org.apache.hadoop.io.Text;<a name="line.169"></a>
+<FONT color="green">170</FONT>    import org.apache.hadoop.security.proto.SecurityProtos.TokenProto;<a name="line.170"></a>
+<FONT color="green">171</FONT>    import org.apache.hadoop.security.token.Token;<a name="line.171"></a>
+<FONT color="green">172</FONT>    import org.apache.hadoop.util.DataChecksum;<a name="line.172"></a>
+<FONT color="green">173</FONT>    <a name="line.173"></a>
+<FONT color="green">174</FONT>    import com.google.common.base.Preconditions;<a name="line.174"></a>
+<FONT color="green">175</FONT>    import com.google.common.collect.Lists;<a name="line.175"></a>
+<FONT color="green">176</FONT>    import com.google.common.primitives.Shorts;<a name="line.176"></a>
+<FONT color="green">177</FONT>    import com.google.protobuf.ByteString;<a name="line.177"></a>
+<FONT color="green">178</FONT>    import com.google.protobuf.CodedInputStream;<a name="line.178"></a>
+<FONT color="green">179</FONT>    <a name="line.179"></a>
+<FONT color="green">180</FONT>    /**<a name="line.180"></a>
+<FONT color="green">181</FONT>     * Utilities for converting protobuf classes to and from implementation classes<a name="line.181"></a>
+<FONT color="green">182</FONT>     * and other helper utilities to help in dealing with protobuf.<a name="line.182"></a>
+<FONT color="green">183</FONT>     * <a name="line.183"></a>
+<FONT color="green">184</FONT>     * Note that when converting from an internal type to protobuf type, the<a name="line.184"></a>
+<FONT color="green">185</FONT>     * converter never return null for protobuf type. The check for internal type<a name="line.185"></a>
+<FONT color="green">186</FONT>     * being null must be done before calling the convert() method.<a name="line.186"></a>
+<FONT color="green">187</FONT>     */<a name="line.187"></a>
+<FONT color="green">188</FONT>    public class PBHelper {<a name="line.188"></a>
+<FONT color="green">189</FONT>      private static final RegisterCommandProto REG_CMD_PROTO = <a name="line.189"></a>
+<FONT color="green">190</FONT>          RegisterCommandProto.newBuilder().build();<a name="line.190"></a>
+<FONT color="green">191</FONT>      private static final RegisterCommand REG_CMD = new RegisterCommand();<a name="line.191"></a>
+<FONT color="green">192</FONT>    <a name="line.192"></a>
+<FONT color="green">193</FONT>      private PBHelper() {<a name="line.193"></a>
+<FONT color="green">194</FONT>        /** Hidden constructor */<a name="line.194"></a>
+<FONT color="green">195</FONT>      }<a name="line.195"></a>
+<FONT color="green">196</FONT>    <a name="line.196"></a>
+<FONT color="green">197</FONT>      public static ByteString getByteString(byte[] bytes) {<a name="line.197"></a>
+<FONT color="green">198</FONT>        return ByteString.copyFrom(bytes);<a name="line.198"></a>
+<FONT color="green">199</FONT>      }<a name="line.199"></a>
+<FONT color="green">200</FONT>    <a name="line.200"></a>
+<FONT color="green">201</FONT>      public static NamenodeRole convert(NamenodeRoleProto role) {<a name="line.201"></a>
+<FONT color="green">202</FONT>        switch (role) {<a name="line.202"></a>
+<FONT color="green">203</FONT>        case NAMENODE:<a name="line.203"></a>
+<FONT color="green">204</FONT>          return NamenodeRole.NAMENODE;<a name="line.204"></a>
+<FONT color="green">205</FONT>        case BACKUP:<a name="line.205"></a>
+<FONT color="green">206</FONT>          return NamenodeRole.BACKUP;<a name="line.206"></a>
+<FONT color="green">207</FONT>        case CHECKPOINT:<a name="line.207"></a>
+<FONT color="green">208</FONT>          return NamenodeRole.CHECKPOINT;<a name="line.208"></a>
+<FONT color="green">209</FONT>        }<a name="line.209"></a>
+<FONT color="green">210</FONT>        return null;<a name="line.210"></a>
+<FONT color="green">211</FONT>      }<a name="line.211"></a>
+<FONT color="green">212</FONT>    <a name="line.212"></a>
+<FONT color="green">213</FONT>      public static NamenodeRoleProto convert(NamenodeRole role) {<a name="line.213"></a>
+<FONT color="green">214</FONT>        switch (role) {<a name="line.214"></a>
+<FONT color="green">215</FONT>        case NAMENODE:<a name="line.215"></a>
+<FONT color="green">216</FONT>          return NamenodeRoleProto.NAMENODE;<a name="line.216"></a>
+<FONT color="green">217</FONT>        case BACKUP:<a name="line.217"></a>
+<FONT color="green">218</FONT>          return NamenodeRoleProto.BACKUP;<a name="line.218"></a>
+<FONT color="green">219</FONT>        case CHECKPOINT:<a name="line.219"></a>
+<FONT color="green">220</FONT>          return NamenodeRoleProto.CHECKPOINT;<a name="line.220"></a>
+<FONT color="green">221</FONT>        }<a name="line.221"></a>
+<FONT color="green">222</FONT>        return null;<a name="line.222"></a>
+<FONT color="green">223</FONT>      }<a name="line.223"></a>
+<FONT color="green">224</FONT>    <a name="line.224"></a>
+<FONT color="green">225</FONT>      public static StorageInfoProto convert(StorageInfo info) {<a name="line.225"></a>
+<FONT color="green">226</FONT>        return StorageInfoProto.newBuilder().setClusterID(info.getClusterID())<a name="line.226"></a>
+<FONT color="green">227</FONT>            .setCTime(info.getCTime()).setLayoutVersion(info.getLayoutVersion())<a name="line.227"></a>
+<FONT color="green">228</FONT>            .setNamespceID(info.getNamespaceID()).build();<a name="line.228"></a>
+<FONT color="green">229</FONT>      }<a name="line.229"></a>
+<FONT color="green">230</FONT>    <a name="line.230"></a>
+<FONT color="green">231</FONT>      public static StorageInfo convert(StorageInfoProto info) {<a name="line.231"></a>
+<FONT color="green">232</FONT>        return new StorageInfo(info.getLayoutVersion(), info.getNamespceID(),<a name="line.232"></a>
+<FONT color="green">233</FONT>            info.getClusterID(), info.getCTime());<a name="line.233"></a>
+<FONT color="green">234</FONT>      }<a name="line.234"></a>
+<FONT color="green">235</FONT>    <a name="line.235"></a>
+<FONT color="green">236</FONT>      public static NamenodeRegistrationProto convert(NamenodeRegistration reg) {<a name="line.236"></a>
+<FONT color="green">237</FONT>        return NamenodeRegistrationProto.newBuilder()<a name="line.237"></a>
+<FONT color="green">238</FONT>            .setHttpAddress(reg.getHttpAddress()).setRole(convert(reg.getRole()))<a name="line.238"></a>
+<FONT color="green">239</FONT>            .setRpcAddress(reg.getAddress())<a name="line.239"></a>
+<FONT color="green">240</FONT>            .setStorageInfo(convert((StorageInfo) reg)).build();<a name="line.240"></a>
+<FONT color="green">241</FONT>      }<a name="line.241"></a>
+<FONT color="green">242</FONT>    <a name="line.242"></a>
+<FONT color="green">243</FONT>      public static NamenodeRegistration convert(NamenodeRegistrationProto reg) {<a name="line.243"></a>
+<FONT color="green">244</FONT>        return new NamenodeRegistration(reg.getRpcAddress(), reg.getHttpAddress(),<a name="line.244"></a>
+<FONT color="green">245</FONT>            convert(reg.getStorageInfo()), convert(reg.getRole()));<a name="line.245"></a>
+<FONT color="green">246</FONT>      }<a name="line.246"></a>
+<FONT color="green">247</FONT>    <a name="line.247"></a>
+<FONT color="green">248</FONT>      // DatanodeId<a name="line.248"></a>
+<FONT color="green">249</FONT>      public static DatanodeID convert(DatanodeIDProto dn) {<a name="line.249"></a>
+<FONT color="green">250</FONT>        return new DatanodeID(dn.getIpAddr(), dn.getHostName(), dn.getDatanodeUuid(),<a name="line.250"></a>
+<FONT color="green">251</FONT>            dn.getXferPort(), dn.getInfoPort(), dn.hasInfoSecurePort() ? dn<a name="line.251"></a>
+<FONT color="green">252</FONT>            .getInfoSecurePort() : 0, dn.getIpcPort());<a name="line.252"></a>
+<FONT color="green">253</FONT>      }<a name="line.253"></a>
+<FONT color="green">254</FONT>    <a name="line.254"></a>
+<FONT color="green">255</FONT>      public static DatanodeIDProto convert(DatanodeID dn) {<a name="line.255"></a>
+<FONT color="green">256</FONT>        // For wire compatibility with older versions we transmit the StorageID<a name="line.256"></a>
+<FONT color="green">257</FONT>        // which is the same as the DatanodeUuid. Since StorageID is a required<a name="line.257"></a>
+<FONT color="green">258</FONT>        // field we pass the empty string if the DatanodeUuid is not yet known.<a name="line.258"></a>
+<FONT color="green">259</FONT>        return DatanodeIDProto.newBuilder()<a name="line.259"></a>
+<FONT color="green">260</FONT>            .setIpAddr(dn.getIpAddr())<a name="line.260"></a>
+<FONT color="green">261</FONT>            .setHostName(dn.getHostName())<a name="line.261"></a>
+<FONT color="green">262</FONT>            .setXferPort(dn.getXferPort())<a name="line.262"></a>
+<FONT color="green">263</FONT>            .setDatanodeUuid(dn.getDatanodeUuid() != null ? dn.getDatanodeUuid() : "")<a name="line.263"></a>
+<FONT color="green">264</FONT>            .setInfoPort(dn.getInfoPort())<a name="line.264"></a>
+<FONT color="green">265</FONT>            .setInfoSecurePort(dn.getInfoSecurePort())<a name="line.265"></a>
+<FONT color="green">266</FONT>            .setIpcPort(dn.getIpcPort()).build();<a name="line.266"></a>
+<FONT color="green">267</FONT>      }<a name="line.267"></a>
+<FONT color="green">268</FONT>    <a name="line.268"></a>
+<FONT color="green">269</FONT>      // Arrays of DatanodeId<a name="line.269"></a>
+<FONT color="green">270</FONT>      public static DatanodeIDProto[] convert(DatanodeID[] did) {<a name="line.270"></a>
+<FONT color="green">271</FONT>        if (did == null)<a name="line.271"></a>
+<FONT color="green">272</FONT>          return null;<a name="line.272"></a>
+<FONT color="green">273</FONT>        final int len = did.length;<a name="line.273"></a>
+<FONT color="green">274</FONT>        DatanodeIDProto[] result = new DatanodeIDProto[len];<a name="line.274"></a>
+<FONT color="green">275</FONT>        for (int i = 0; i &lt; len; ++i) {<a name="line.275"></a>
+<FONT color="green">276</FONT>          result[i] = convert(did[i]);<a name="line.276"></a>
+<FONT color="green">277</FONT>        }<a name="line.277"></a>
+<FONT color="green">278</FONT>        return result;<a name="line.278"></a>
+<FONT color="green">279</FONT>      }<a name="line.279"></a>
+<FONT color="green">280</FONT>      <a name="line.280"></a>
+<FONT color="green">281</FONT>      public static DatanodeID[] convert(DatanodeIDProto[] did) {<a name="line.281"></a>
+<FONT color="green">282</FONT>        if (did == null) return null;<a name="line.282"></a>
+<FONT color="green">283</FONT>        final int len = did.length;<a name="line.283"></a>
+<FONT color="green">284</FONT>        DatanodeID[] result = new DatanodeID[len];<a name="line.284"></a>
+<FONT color="green">285</FONT>        for (int i = 0; i &lt; len; ++i) {<a name="line.285"></a>
+<FONT color="green">286</FONT>          result[i] = convert(did[i]);<a name="line.286"></a>
+<FONT color="green">287</FONT>        }<a name="line.287"></a>
+<FONT color="green">288</FONT>        return result;<a name="line.288"></a>
+<FONT color="green">289</FONT>      }<a name="line.289"></a>
+<FONT color="green">290</FONT>      <a name="line.290"></a>
+<FONT color="green">291</FONT>      // Block<a name="line.291"></a>
+<FONT color="green">292</FONT>      public static BlockProto convert(Block b) {<a name="line.292"></a>
+<FONT color="green">293</FONT>        return BlockProto.newBuilder().setBlockId(b.getBlockId())<a name="line.293"></a>
+<FONT color="green">294</FONT>            .setGenStamp(b.getGenerationStamp()).setNumBytes(b.getNumBytes())<a name="line.294"></a>
+<FONT color="green">295</FONT>            .build();<a name="line.295"></a>
+<FONT color="green">296</FONT>      }<a name="line.296"></a>
+<FONT color="green">297</FONT>    <a name="line.297"></a>
+<FONT color="green">298</FONT>      public static Block convert(BlockProto b) {<a name="line.298"></a>
+<FONT color="green">299</FONT>        return new Block(b.getBlockId(), b.getNumBytes(), b.getGenStamp());<a name="line.299"></a>
+<FONT color="green">300</FONT>      }<a name="line.300"></a>
+<FONT color="green">301</FONT>    <a name="line.301"></a>
+<FONT color="green">302</FONT>      public static BlockWithLocationsProto convert(BlockWithLocations blk) {<a name="line.302"></a>
+<FONT color="green">303</FONT>        return BlockWithLocationsProto.newBuilder()<a name="line.303"></a>
+<FONT color="green">304</FONT>            .setBlock(convert(blk.getBlock()))<a name="line.304"></a>
+<FONT color="green">305</FONT>            .addAllDatanodeUuids(Arrays.asList(blk.getDatanodeUuids()))<a name="line.305"></a>
+<FONT color="green">306</FONT>            .addAllStorageUuids(Arrays.asList(blk.getStorageIDs())).build();<a name="line.306"></a>
+<FONT color="green">307</FONT>      }<a name="line.307"></a>
+<FONT color="green">308</FONT>    <a name="line.308"></a>
+<FONT color="green">309</FONT>      public static BlockWithLocations convert(BlockWithLocationsProto b) {<a name="line.309"></a>
+<FONT color="green">310</FONT>        final List&lt;String&gt; datanodeUuids = b.getDatanodeUuidsList();<a name="line.310"></a>
+<FONT color="green">311</FONT>        final List&lt;String&gt; storageUuids = b.getStorageUuidsList();<a name="line.311"></a>
+<FONT color="green">312</FONT>        return new BlockWithLocations(convert(b.getBlock()),<a name="line.312"></a>
+<FONT color="green">313</FONT>            datanodeUuids.toArray(new String[datanodeUuids.size()]),<a name="line.313"></a>
+<FONT color="green">314</FONT>            storageUuids.toArray(new String[storageUuids.size()]));<a name="line.314"></a>
+<FONT color="green">315</FONT>      }<a name="line.315"></a>
+<FONT color="green">316</FONT>    <a name="line.316"></a>
+<FONT color="green">317</FONT>      public static BlocksWithLocationsProto convert(BlocksWithLocations blks) {<a name="line.317"></a>
+<FONT color="green">318</FONT>        BlocksWithLocationsProto.Builder builder = BlocksWithLocationsProto<a name="line.318"></a>
+<FONT color="green">319</FONT>            .newBuilder();<a name="line.319"></a>
+<FONT color="green">320</FONT>        for (BlockWithLocations b : blks.getBlocks()) {<a name="line.320"></a>
+<FONT color="green">321</FONT>          builder.addBlocks(convert(b));<a name="line.321"></a>
+<FONT color="green">322</FONT>        }<a name="line.322"></a>
+<FONT color="green">323</FONT>        return builder.build();<a name="line.323"></a>
+<FONT color="green">324</FONT>      }<a name="line.324"></a>
+<FONT color="green">325</FONT>    <a name="line.325"></a>
+<FONT color="green">326</FONT>      public static BlocksWithLocations convert(BlocksWithLocationsProto blocks) {<a name="line.326"></a>
+<FONT color="green">327</FONT>        List&lt;BlockWithLocationsProto&gt; b = blocks.getBlocksList();<a name="line.327"></a>
+<FONT color="green">328</FONT>        BlockWithLocations[] ret = new BlockWithLocations[b.size()];<a name="line.328"></a>
+<FONT color="green">329</FONT>        int i = 0;<a name="line.329"></a>
+<FONT color="green">330</FONT>        for (BlockWithLocationsProto entry : b) {<a name="line.330"></a>
+<FONT color="green">331</FONT>          ret[i++] = convert(entry);<a name="line.331"></a>
+<FONT color="green">332</FONT>        }<a name="line.332"></a>
+<FONT color="green">333</FONT>        return new BlocksWithLocations(ret);<a name="line.333"></a>
+<FONT color="green">334</FONT>      }<a name="line.334"></a>
+<FONT color="green">335</FONT>    <a name="line.335"></a>
+<FONT color="green">336</FONT>      public static BlockKeyProto convert(BlockKey key) {<a name="line.336"></a>
+<FONT color="green">337</FONT>        byte[] encodedKey = key.getEncodedKey();<a name="line.337"></a>
+<FONT color="green">338</FONT>        ByteString keyBytes = ByteString.copyFrom(encodedKey == null ? <a name="line.338"></a>
+<FONT color="green">339</FONT>            DFSUtil.EMPTY_BYTES : encodedKey);<a name="line.339"></a>
+<FONT color="green">340</FONT>        return BlockKeyProto.newBuilder().setKeyId(key.getKeyId())<a name="line.340"></a>
+<FONT color="green">341</FONT>            .setKeyBytes(keyBytes).setExpiryDate(key.getExpiryDate()).build();<a name="line.341"></a>
+<FONT color="green">342</FONT>      }<a name="line.342"></a>
+<FONT color="green">343</FONT>    <a name="line.343"></a>
+<FONT color="green">344</FONT>      public static BlockKey convert(BlockKeyProto k) {<a name="line.344"></a>
+<FONT color="green">345</FONT>        return new BlockKey(k.getKeyId(), k.getExpiryDate(), k.getKeyBytes()<a name="line.345"></a>
+<FONT color="green">346</FONT>            .toByteArray());<a name="line.346"></a>
+<FONT color="green">347</FONT>      }<a name="line.347"></a>
+<FONT color="green">348</FONT>    <a name="line.348"></a>
+<FONT color="green">349</FONT>      public static ExportedBlockKeysProto convert(ExportedBlockKeys keys) {<a name="line.349"></a>
+<FONT color="green">350</FONT>        ExportedBlockKeysProto.Builder builder = ExportedBlockKeysProto<a name="line.350"></a>
+<FONT color="green">351</FONT>            .newBuilder();<a name="line.351"></a>
+<FONT color="green">352</FONT>        builder.setIsBlockTokenEnabled(keys.isBlockTokenEnabled())<a name="line.352"></a>
+<FONT color="green">353</FONT>            .setKeyUpdateInterval(keys.getKeyUpdateInterval())<a name="line.353"></a>
+<FONT color="green">354</FONT>            .setTokenLifeTime(keys.getTokenLifetime())<a name="line.354"></a>
+<FONT color="green">355</FONT>            .setCurrentKey(convert(keys.getCurrentKey()));<a name="line.355"></a>
+<FONT color="green">356</FONT>        for (BlockKey k : keys.getAllKeys()) {<a name="line.356"></a>
+<FONT color="green">357</FONT>          builder.addAllKeys(convert(k));<a name="line.357"></a>
+<FONT color="green">358</FONT>        }<a name="line.358"></a>
+<FONT color="green">359</FONT>        return builder.build();<a name="line.359"></a>
+<FONT color="green">360</FONT>      }<a name="line.360"></a>
+<FONT color="green">361</FONT>    <a name="line.361"></a>
+<FONT color="green">362</FONT>      public static ExportedBlockKeys convert(ExportedBlockKeysProto keys) {<a name="line.362"></a>
+<FONT color="green">363</FONT>        return new ExportedBlockKeys(keys.getIsBlockTokenEnabled(),<a name="line.363"></a>
+<FONT color="green">364</FONT>            keys.getKeyUpdateInterval(), keys.getTokenLifeTime(),<a name="line.364"></a>
+<FONT color="green">365</FONT>            convert(keys.getCurrentKey()), convertBlockKeys(keys.getAllKeysList()));<a name="line.365"></a>
+<FONT color="green">366</FONT>      }<a name="line.366"></a>
+<FONT color="green">367</FONT>    <a name="line.367"></a>
+<FONT color="green">368</FONT>      public static CheckpointSignatureProto convert(CheckpointSignature s) {<a name="line.368"></a>
+<FONT color="green">369</FONT>        return CheckpointSignatureProto.newBuilder()<a name="line.369"></a>
+<FONT color="green">370</FONT>            .setBlockPoolId(s.getBlockpoolID())<a name="line.370"></a>
+<FONT color="green">371</FONT>            .setCurSegmentTxId(s.getCurSegmentTxId())<a name="line.371"></a>
+<FONT color="green">372</FONT>            .setMostRecentCheckpointTxId(s.getMostRecentCheckpointTxId())<a name="line.372"></a>
+<FONT color="green">373</FONT>            .setStorageInfo(PBHelper.convert((StorageInfo) s)).build();<a name="line.373"></a>
+<FONT color="green">374</FONT>      }<a name="line.374"></a>
+<FONT color="green">375</FONT>    <a name="line.375"></a>
+<FONT color="green">376</FONT>      public static CheckpointSignature convert(CheckpointSignatureProto s) {<a name="line.376"></a>
+<FONT color="green">377</FONT>        return new CheckpointSignature(PBHelper.convert(s.getStorageInfo()),<a name="line.377"></a>
+<FONT color="green">378</FONT>            s.getBlockPoolId(), s.getMostRecentCheckpointTxId(),<a name="line.378"></a>
+<FONT color="green">379</FONT>            s.getCurSegmentTxId());<a name="line.379"></a>
+<FONT color="green">380</FONT>      }<a name="line.380"></a>
+<FONT color="green">381</FONT>    <a name="line.381"></a>
+<FONT color="green">382</FONT>      public static RemoteEditLogProto convert(RemoteEditLog log) {<a name="line.382"></a>
+<FONT color="green">383</FONT>        return RemoteEditLogProto.newBuilder()<a name="line.383"></a>
+<FONT color="green">384</FONT>            .setStartTxId(log.getStartTxId())<a name="line.384"></a>
+<FONT color="green">385</FONT>            .setEndTxId(log.getEndTxId())<a name="line.385"></a>
+<FONT color="green">386</FONT>            .setIsInProgress(log.isInProgress()).build();<a name="line.386"></a>
+<FONT color="green">387</FONT>      }<a name="line.387"></a>
+<FONT color="green">388</FONT>    <a name="line.388"></a>
+<FONT color="green">389</FONT>      public static RemoteEditLog convert(RemoteEditLogProto l) {<a name="line.389"></a>
+<FONT color="green">390</FONT>        return new RemoteEditLog(l.getStartTxId(), l.getEndTxId(),<a name="line.390"></a>
+<FONT color="green">391</FONT>            l.getIsInProgress());<a name="line.391"></a>
+<FONT color="green">392</FONT>      }<a name="line.392"></a>
+<FONT color="green">393</FONT>    <a name="line.393"></a>
+<FONT color="green">394</FONT>      public static RemoteEditLogManifestProto convert(<a name="line.394"></a>
+<FONT color="green">395</FONT>          RemoteEditLogManifest manifest) {<a name="line.395"></a>
+<FONT color="green">396</FONT>        RemoteEditLogManifestProto.Builder builder = RemoteEditLogManifestProto<a name="line.396"></a>
+<FONT color="green">397</FONT>            .newBuilder();<a name="line.397"></a>
+<FONT color="green">398</FONT>        for (RemoteEditLog log : manifest.getLogs()) {<a name="line.398"></a>
+<FONT color="green">399</FONT>          builder.addLogs(convert(log));<a name="line.399"></a>
+<FONT color="green">400</FONT>        }<a name="line.400"></a>
+<FONT color="green">401</FONT>        return builder.build();<a name="line.401"></a>
+<FONT color="green">402</FONT>      }<a name="line.402"></a>
+<FONT color="green">403</FONT>    <a name="line.403"></a>
+<FONT color="green">404</FONT>      public static RemoteEditLogManifest convert(<a name="line.404"></a>
+<FONT color="green">405</FONT>          RemoteEditLogManifestProto manifest) {<a name="line.405"></a>
+<FONT color="green">406</FONT>        List&lt;RemoteEditLog&gt; logs = new ArrayList&lt;RemoteEditLog&gt;(manifest<a name="line.406"></a>
+<FONT color="green">407</FONT>            .getLogsList().size());<a name="line.407"></a>
+<FONT color="green">408</FONT>        for (RemoteEditLogProto l : manifest.getLogsList()) {<a name="line.408"></a>
+<FONT color="green">409</FONT>          logs.add(convert(l));<a name="line.409"></a>
+<FONT color="green">410</FONT>        }<a name="line.410"></a>
+<FONT color="green">411</FONT>        return new RemoteEditLogManifest(logs);<a name="line.411"></a>
+<FONT color="green">412</FONT>      }<a name="line.412"></a>
+<FONT color="green">413</FONT>    <a name="line.413"></a>
+<FONT color="green">414</FONT>      public static CheckpointCommandProto convert(CheckpointCommand cmd) {<a name="line.414"></a>
+<FONT color="green">415</FONT>        return CheckpointCommandProto.newBuilder()<a name="line.415"></a>
+<FONT color="green">416</FONT>            .setSignature(convert(cmd.getSignature()))<a name="line.416"></a>
+<FONT color="green">417</FONT>            .setNeedToReturnImage(cmd.needToReturnImage()).build();<a name="line.417"></a>
+<FONT color="green">418</FONT>      }<a name="line.418"></a>
+<FONT color="green">419</FONT>    <a name="line.419"></a>
+<FONT color="green">420</FONT>      public static NamenodeCommandProto convert(NamenodeCommand cmd) {<a name="line.420"></a>
+<FONT color="green">421</FONT>        if (cmd instanceof CheckpointCommand) {<a name="line.421"></a>
+<FONT color="green">422</FONT>          return NamenodeCommandProto.newBuilder().setAction(cmd.getAction())<a name="line.422"></a>
+<FONT color="green">423</FONT>              .setType(NamenodeCommandProto.Type.CheckPointCommand)<a name="line.423"></a>
+<FONT color="green">424</FONT>              .setCheckpointCmd(convert((CheckpointCommand) cmd)).build();<a name="line.424"></a>
+<FONT color="green">425</FONT>        }<a name="line.425"></a>
+<FONT color="green">426</FONT>        return NamenodeCommandProto.newBuilder()<a name="line.426"></a>
+<FONT color="green">427</FONT>            .setType(NamenodeCommandProto.Type.NamenodeCommand)<a name="line.427"></a>
+<FONT color="green">428</FONT>            .setAction(cmd.getAction()).build();<a name="line.428"></a>
+<FONT color="green">429</FONT>      }<a name="line.429"></a>
+<FONT color="green">430</FONT>    <a name="line.430"></a>
+<FONT color="green">431</FONT>      public static BlockKey[] convertBlockKeys(List&lt;BlockKeyProto&gt; list) {<a name="line.431"></a>
+<FONT color="green">432</FONT>        BlockKey[] ret = new BlockKey[list.size()];<a name="line.432"></a>
+<FONT color="green">433</FONT>        int i = 0;<a name="line.433"></a>
+<FONT color="green">434</FONT>        for (BlockKeyProto k : list) {<a name="line.434"></a>
+<FONT color="green">435</FONT>          ret[i++] = convert(k);<a name="line.435"></a>
+<FONT color="green">436</FONT>        }<a name="line.436"></a>
+<FONT color="green">437</FONT>        return ret;<a name="line.437"></a>
+<FONT color="green">438</FONT>      }<a name="line.438"></a>
+<FONT color="green">439</FONT>    <a name="line.439"></a>
+<FONT color="green">440</FONT>      public static NamespaceInfo convert(NamespaceInfoProto info) {<a name="line.440"></a>
+<FONT color="green">441</FONT>        StorageInfoProto storage = info.getStorageInfo();<a name="line.441"></a>
+<FONT color="green">442</FONT>        return new NamespaceInfo(storage.getNamespceID(), storage.getClusterID(),<a name="line.442"></a>
+<FONT color="green">443</FONT>            info.getBlockPoolID(), storage.getCTime(), info.getBuildVersion(),<a name="line.443"></a>
+<FONT color="green">444</FONT>            info.getSoftwareVersion());<a name="line.444"></a>
+<FONT color="green">445</FONT>      }<a name="line.445"></a>
+<FONT color="green">446</FONT>    <a name="line.446"></a>
+<FONT color="green">447</FONT>      public static NamenodeCommand convert(NamenodeCommandProto cmd) {<a name="line.447"></a>
+<FONT color="green">448</FONT>        if (cmd == null) return null;<a name="line.448"></a>
+<FONT color="green">449</FONT>        switch (cmd.getType()) {<a name="line.449"></a>
+<FONT color="green">450</FONT>        case CheckPointCommand:<a name="line.450"></a>
+<FONT color="green">451</FONT>          CheckpointCommandProto chkPt = cmd.getCheckpointCmd();<a name="line.451"></a>
+<FONT color="green">452</FONT>          return new CheckpointCommand(PBHelper.convert(chkPt.getSignature()),<a name="line.452"></a>
+<FONT color="green">453</FONT>              chkPt.getNeedToReturnImage());<a name="line.453"></a>
+<FONT color="green">454</FONT>        default:<a name="line.454"></a>
+<FONT color="green">455</FONT>          return new NamenodeCommand(cmd.getAction());<a name="line.455"></a>
+<FONT color="green">456</FONT>        }<a name="line.456"></a>
+<FONT color="green">457</FONT>      }<a name="line.457"></a>
+<FONT color="green">458</FONT>      <a name="line.458"></a>
+<FONT color="green">459</FONT>      public static ExtendedBlock convert(ExtendedBlockProto eb) {<a name="line.459"></a>
+<FONT color="green">460</FONT>        if (eb == null) return null;<a name="line.460"></a>
+<FONT color="green">461</FONT>        return new ExtendedBlock( eb.getPoolId(),  eb.getBlockId(),   eb.getNumBytes(),<a name="line.461"></a>
+<FONT color="green">462</FONT>           eb.getGenerationStamp());<a name="line.462"></a>
+<FONT color="green">463</FONT>      }<a name="line.463"></a>
+<FONT color="green">464</FONT>      <a name="line.464"></a>
+<FONT color="green">465</FONT>      public static ExtendedBlockProto convert(final ExtendedBlock b) {<a name="line.465"></a>
+<FONT color="green">466</FONT>        if (b == null) return null;<a name="line.466"></a>
+<FONT color="green">467</FONT>       return ExtendedBlockProto.newBuilder().<a name="line.467"></a>
+<FONT color="green">468</FONT>          setPoolId(b.getBlockPoolId()).<a name="line.468"></a>
+<FONT color="green">469</FONT>          setBlockId(b.getBlockId()).<a name="line.469"></a>
+<FONT color="green">470</FONT>          setNumBytes(b.getNumBytes()).<a name="line.470"></a>
+<FONT color="green">471</FONT>          setGenerationStamp(b.getGenerationStamp()).<a name="line.471"></a>
+<FONT color="green">472</FONT>          build();<a name="line.472"></a>
+<FONT color="green">473</FONT>      }<a name="line.473"></a>
+<FONT color="green">474</FONT>      <a name="line.474"></a>
+<FONT color="green">475</FONT>      public static RecoveringBlockProto convert(RecoveringBlock b) {<a name="line.475"></a>
+<FONT color="green">476</FONT>        if (b == null) {<a name="line.476"></a>
+<FONT color="green">477</FONT>          return null;<a name="line.477"></a>
+<FONT color="green">478</FONT>        }<a name="line.478"></a>
+<FONT color="green">479</FONT>        LocatedBlockProto lb = PBHelper.convert((LocatedBlock)b);<a name="line.479"></a>
+<FONT color="green">480</FONT>        return RecoveringBlockProto.newBuilder().setBlock(lb)<a name="line.480"></a>
+<FONT color="green">481</FONT>            .setNewGenStamp(b.getNewGenerationStamp()).build();<a name="line.481"></a>
+<FONT color="green">482</FONT>      }<a name="line.482"></a>
+<FONT color="green">483</FONT>    <a name="line.483"></a>
+<FONT color="green">484</FONT>      public static RecoveringBlock convert(RecoveringBlockProto b) {<a name="line.484"></a>
+<FONT color="green">485</FONT>        ExtendedBlock block = convert(b.getBlock().getB());<a name="line.485"></a>
+<FONT color="green">486</FONT>        DatanodeInfo[] locs = convert(b.getBlock().getLocsList());<a name="line.486"></a>
+<FONT color="green">487</FONT>        return new RecoveringBlock(block, locs, b.getNewGenStamp());<a name="line.487"></a>
+<FONT color="green">488</FONT>      }<a name="line.488"></a>
+<FONT color="green">489</FONT>      <a name="line.489"></a>
+<FONT color="green">490</FONT>      public static DatanodeInfoProto.AdminState convert(<a name="line.490"></a>
+<FONT color="green">491</FONT>          final DatanodeInfo.AdminStates inAs) {<a name="line.491"></a>
+<FONT color="green">492</FONT>        switch (inAs) {<a name="line.492"></a>
+<FONT color="green">493</FONT>        case NORMAL: return  DatanodeInfoProto.AdminState.NORMAL;<a name="line.493"></a>
+<FONT color="green">494</FONT>        case DECOMMISSION_INPROGRESS: <a name="line.494"></a>
+<FONT color="green">495</FONT>            return DatanodeInfoProto.AdminState.DECOMMISSION_INPROGRESS;<a name="line.495"></a>
+<FONT color="green">496</FONT>        case DECOMMISSIONED: return DatanodeInfoProto.AdminState.DECOMMISSIONED;<a name="line.496"></a>
+<FONT color="green">497</FONT>        default: return DatanodeInfoProto.AdminState.NORMAL;<a name="line.497"></a>
+<FONT color="green">498</FONT>        }<a name="line.498"></a>
+<FONT color="green">499</FONT>      }<a name="line.499"></a>
+<FONT color="green">500</FONT>      <a name="line.500"></a>
+<FONT color="green">501</FONT>      static public DatanodeInfo convert(DatanodeInfoProto di) {<a name="line.501"></a>
+<FONT color="green">502</FONT>        if (di == null) return null;<a name="line.502"></a>
+<FONT color="green">503</FONT>        return new DatanodeInfo(<a name="line.503"></a>
+<FONT color="green">504</FONT>            PBHelper.convert(di.getId()),<a name="line.504"></a>
+<FONT color="green">505</FONT>            di.hasLocation() ? di.getLocation() : null , <a name="line.505"></a>
+<FONT color="green">506</FONT>            di.getCapacity(),  di.getDfsUsed(),  di.getRemaining(),<a name="line.506"></a>
+<FONT color="green">507</FONT>            di.getBlockPoolUsed(), di.getCacheCapacity(), di.getCacheUsed(),<a name="line.507"></a>
+<FONT color="green">508</FONT>            di.getLastUpdate(), di.getXceiverCount(),<a name="line.508"></a>
+<FONT color="green">509</FONT>            PBHelper.convert(di.getAdminState())); <a name="line.509"></a>
+<FONT color="green">510</FONT>      }<a name="line.510"></a>
+<FONT color="green">511</FONT>      <a name="line.511"></a>
+<FONT color="green">512</FONT>      static public DatanodeInfoProto convertDatanodeInfo(DatanodeInfo di) {<a name="line.512"></a>
+<FONT color="green">513</FONT>        if (di == null) return null;<a name="line.513"></a>
+<FONT color="green">514</FONT>        return convert(di);<a name="line.514"></a>
+<FONT color="green">515</FONT>      }<a name="line.515"></a>
+<FONT color="green">516</FONT>      <a name="line.516"></a>
+<FONT color="green">517</FONT>      <a name="line.517"></a>
+<FONT color="green">518</FONT>      static public DatanodeInfo[] convert(DatanodeInfoProto di[]) {<a name="line.518"></a>
+<FONT color="green">519</FONT>        if (di == null) return null;<a name="line.519"></a>
+<FONT color="green">520</FONT>        DatanodeInfo[] result = new DatanodeInfo[di.length];<a name="line.520"></a>
+<FONT color="green">521</FONT>        for (int i = 0; i &lt; di.length; i++) {<a name="line.521"></a>
+<FONT color="green">522</FONT>          result[i] = convert(di[i]);<a name="line.522"></a>
+<FONT color="green">523</FONT>        }    <a name="line.523"></a>
+<FONT color="green">524</FONT>        return result;<a name="line.524"></a>
+<FONT color="green">525</FONT>      }<a name="line.525"></a>
+<FONT color="green">526</FONT>    <a name="line.526"></a>
+<FONT color="green">527</FONT>      public static List&lt;? extends HdfsProtos.DatanodeInfoProto&gt; convert(<a name="line.527"></a>
+<FONT color="green">528</FONT>          DatanodeInfo[] dnInfos) {<a name="line.528"></a>
+<FONT color="green">529</FONT>        return convert(dnInfos, 0);<a name="line.529"></a>
+<FONT color="green">530</FONT>      }<a name="line.530"></a>
+<FONT color="green">531</FONT>      <a name="line.531"></a>
+<FONT color="green">532</FONT>      /**<a name="line.532"></a>
+<FONT color="green">533</FONT>       * Copy from {@code dnInfos} to a target of list of same size starting at<a name="line.533"></a>
+<FONT color="green">534</FONT>       * {@code startIdx}.<a name="line.534"></a>
+<FONT color="green">535</FONT>       */<a name="line.535"></a>
+<FONT color="green">536</FONT>      public static List&lt;? extends HdfsProtos.DatanodeInfoProto&gt; convert(<a name="line.536"></a>
+<FONT color="green">537</FONT>          DatanodeInfo[] dnInfos, int startIdx) {<a name="line.537"></a>
+<FONT color="green">538</FONT>        if (dnInfos == null)<a name="line.538"></a>
+<FONT color="green">539</FONT>          return null;<a name="line.539"></a>
+<FONT color="green">540</FONT>        ArrayList&lt;HdfsProtos.DatanodeInfoProto&gt; protos = Lists<a name="line.540"></a>
+<FONT color="green">541</FONT>            .newArrayListWithCapacity(dnInfos.length);<a name="line.541"></a>
+<FONT color="green">542</FONT>        for (int i = startIdx; i &lt; dnInfos.length; i++) {<a name="line.542"></a>
+<FONT color="green">543</FONT>          protos.add(convert(dnInfos[i]));<a name="line.543"></a>
+<FONT color="green">544</FONT>        }<a name="line.544"></a>
+<FONT color="green">545</FONT>        return protos;<a name="line.545"></a>
+<FONT color="green">546</FONT>      }<a name="line.546"></a>
+<FONT color="green">547</FONT>    <a name="line.547"></a>
+<FONT color="green">548</FONT>      public static DatanodeInfo[] convert(List&lt;DatanodeInfoProto&gt; list) {<a name="line.548"></a>
+<FONT color="green">549</FONT>        DatanodeInfo[] info = new DatanodeInfo[list.size()];<a name="line.549"></a>
+<FONT color="green">550</FONT>        for (int i = 0; i &lt; info.length; i++) {<a name="line.550"></a>
+<FONT color="green">551</FONT>          info[i] = convert(list.get(i));<a name="line.551"></a>
+<FONT color="green">552</FONT>        }<a name="line.552"></a>
+<FONT color="green">553</FONT>        return info;<a name="line.553"></a>
+<FONT color="green">554</FONT>      }<a name="line.554"></a>
+<FONT color="green">555</FONT>      <a name="line.555"></a>
+<FONT color="green">556</FONT>      public static DatanodeInfoProto convert(DatanodeInfo info) {<a name="line.556"></a>
+<FONT color="green">557</FONT>        DatanodeInfoProto.Builder builder = DatanodeInfoProto.newBuilder();<a name="line.557"></a>
+<FONT color="green">558</FONT>        if (info.getNetworkLocation() != null) {<a name="line.558"></a>
+<FONT color="green">559</FONT>          builder.setLocation(info.getNetworkLocation());<a name="line.559"></a>
+<FONT color="green">560</FONT>        }<a name="line.560"></a>
+<FONT color="green">561</FONT>        builder<a name="line.561"></a>
+<FONT color="green">562</FONT>            .setId(PBHelper.convert((DatanodeID)info))<a name="line.562"></a>
+<FONT color="green">563</FONT>            .setCapacity(info.getCapacity())<a name="line.563"></a>
+<FONT color="green">564</FONT>            .setDfsUsed(info.getDfsUsed())<a name="line.564"></a>
+<FONT color="green">565</FONT>            .setRemaining(info.getRemaining())<a name="line.565"></a>
+<FONT color="green">566</FONT>            .setBlockPoolUsed(info.getBlockPoolUsed())<a name="line.566"></a>
+<FONT color="green">567</FONT>            .setCacheCapacity(info.getCacheCapacity())<a name="line.567"></a>
+<FONT color="green">568</FONT>            .setCacheUsed(info.getCacheUsed())<a name="line.568"></a>
+<FONT color="green">569</FONT>            .setLastUpdate(info.getLastUpdate())<a name="line.569"></a>
+<FONT color="green">570</FONT>            .setXceiverCount(info.getXceiverCount())<a name="line.570"></a>
+<FONT color="green">571</FONT>            .setAdminState(PBHelper.convert(info.getAdminState()))<a name="line.571"></a>
+<FONT color="green">572</FONT>            .build();<a name="line.572"></a>
+<FONT color="green">573</FONT>        return builder.build();<a name="line.573"></a>
+<FONT color="green">574</FONT>      }<a name="line.574"></a>
+<FONT color="green">575</FONT>    <a name="line.575"></a>
+<FONT color="green">576</FONT>      public static AdminStates convert(AdminState adminState) {<a name="line.576"></a>
+<FONT color="green">577</FONT>        switch(adminState) {<a name="line.577"></a>
+<FONT color="green">578</FONT>        case DECOMMISSION_INPROGRESS:<a name="line.578"></a>
+<FONT color="green">579</FONT>          return AdminStates.DECOMMISSION_INPROGRESS;<a name="line.579"></a>
+<FONT color="green">580</FONT>        case DECOMMISSIONED:<a name="line.580"></a>
+<FONT color="green">581</FONT>          return AdminStates.DECOMMISSIONED;<a name="line.581"></a>
+<FONT color="green">582</FONT>        case NORMAL:<a name="line.582"></a>
+<FONT color="green">583</FONT>        default:<a name="line.583"></a>
+<FONT color="green">584</FONT>          return AdminStates.NORMAL;<a name="line.584"></a>
+<FONT color="green">585</FONT>        }<a name="line.585"></a>
+<FONT color="green">586</FONT>      }<a name="line.586"></a>
+<FONT color="green">587</FONT>      <a name="line.587"></a>
+<FONT color="green">588</FONT>      public static LocatedBlockProto convert(LocatedBlock b) {<a name="line.588"></a>
+<FONT color="green">589</FONT>        if (b == null) return null;<a name="line.589"></a>
+<FONT color="green">590</FONT>        Builder builder = LocatedBlockProto.newBuilder();<a name="line.590"></a>
+<FONT color="green">591</FONT>        DatanodeInfo[] locs = b.getLocations();<a name="line.591"></a>
+<FONT color="green">592</FONT>        List&lt;DatanodeInfo&gt; cachedLocs =<a name="line.592"></a>
+<FONT color="green">593</FONT>            Lists.newLinkedList(Arrays.asList(b.getCachedLocations()));<a name="line.593"></a>
+<FONT color="green">594</FONT>        for (int i = 0; i &lt; locs.length; i++) {<a name="line.594"></a>
+<FONT color="green">595</FONT>          DatanodeInfo loc = locs[i];<a name="line.595"></a>
+<FONT color="green">596</FONT>          builder.addLocs(i, PBHelper.convert(loc));<a name="line.596"></a>
+<FONT color="green">597</FONT>          boolean locIsCached = cachedLocs.contains(loc);<a name="line.597"></a>
+<FONT color="green">598</FONT>          builder.addIsCached(locIsCached);<a name="line.598"></a>
+<FONT color="green">599</FONT>          if (locIsCached) {<a name="line.599"></a>
+<FONT color="green">600</FONT>            cachedLocs.remove(loc);<a name="line.600"></a>
+<FONT color="green">601</FONT>          }<a name="line.601"></a>
+<FONT color="green">602</FONT>        }<a name="line.602"></a>
+<FONT color="green">603</FONT>        Preconditions.checkArgument(cachedLocs.size() == 0,<a name="line.603"></a>
+<FONT color="green">604</FONT>            "Found additional cached replica locations that are not in the set of"<a name="line.604"></a>
+<FONT color="green">605</FONT>            + " storage-backed locations!");<a name="line.605"></a>
+<FONT color="green">606</FONT>    <a name="line.606"></a>
+<FONT color="green">607</FONT>        StorageType[] storageTypes = b.getStorageTypes();<a name="line.607"></a>
+<FONT color="green">608</FONT>        if (storageTypes != null) {<a name="line.608"></a>
+<FONT color="green">609</FONT>          for (int i = 0; i &lt; storageTypes.length; ++i) {<a name="line.609"></a>
+<FONT color="green">610</FONT>            builder.addStorageTypes(PBHelper.convertStorageType(storageTypes[i]));<a name="line.610"></a>
+<FONT color="green">611</FONT>          }<a name="line.611"></a>
+<FONT color="green">612</FONT>        }<a name="line.612"></a>
+<FONT color="green">613</FONT>        final String[] storageIDs = b.getStorageIDs();<a name="line.613"></a>
+<FONT color="green">614</FONT>        if (storageIDs != null) {<a name="line.614"></a>
+<FONT color="green">615</FONT>          builder.addAllStorageIDs(Arrays.asList(storageIDs));<a name="line.615"></a>
+<FONT color="green">616</FONT>        }<a name="line.616"></a>
+<FONT color="green">617</FONT>    <a name="line.617"></a>
+<FONT color="green">618</FONT>        return builder.setB(PBHelper.convert(b.getBlock()))<a name="line.618"></a>
+<FONT color="green">619</FONT>            .setBlockToken(PBHelper.convert(b.getBlockToken()))<a name="line.619"></a>
+<FONT color="green">620</FONT>            .setCorrupt(b.isCorrupt()).setOffset(b.getStartOffset()).build();<a name="line.620"></a>
+<FONT color="green">621</FONT>      }<a name="line.621"></a>
+<FONT color="green">622</FONT>      <a name="line.622"></a>
+<FONT color="green">623</FONT>      public static LocatedBlock convert(LocatedBlockProto proto) {<a name="line.623"></a>
+<FONT color="green">624</FONT>        if (proto == null) return null;<a name="line.624"></a>
+<FONT color="green">625</FONT>        List&lt;DatanodeInfoProto&gt; locs = proto.getLocsList();<a name="line.625"></a>
+<FONT color="green">626</FONT>        DatanodeInfo[] targets = new DatanodeInfo[locs.size()];<a name="line.626"></a>
+<FONT color="green">627</FONT>        for (int i = 0; i &lt; locs.size(); i++) {<a name="line.627"></a>
+<FONT color="green">628</FONT>          targets[i] = PBHelper.convert(locs.get(i));<a name="line.628"></a>
+<FONT color="green">629</FONT>        }<a name="line.629"></a>
+<FONT color="green">630</FONT>    <a name="line.630"></a>
+<FONT color="green">631</FONT>        final int storageTypesCount = proto.getStorageTypesCount();<a name="line.631"></a>
+<FONT color="green">632</FONT>        final StorageType[] storageTypes;<a name="line.632"></a>
+<FONT color="green">633</FONT>        if (storageTypesCount == 0) {<a name="line.633"></a>
+<FONT color="green">634</FONT>          storageTypes = null;<a name="line.634"></a>
+<FONT color="green">635</FONT>        } else {<a name="line.635"></a>
+<FONT color="green">636</FONT>          Preconditions.checkState(storageTypesCount == locs.size());<a name="line.636"></a>
+<FONT color="green">637</FONT>          storageTypes = convertStorageTypeProtos(proto.getStorageTypesList());<a name="line.637"></a>
+<FONT color="green">638</FONT>        }<a name="line.638"></a>
+<FONT color="green">639</FONT>    <a name="line.639"></a>
+<FONT color="green">640</FONT>        final int storageIDsCount = proto.getStorageIDsCount();<a name="line.640"></a>
+<FONT color="green">641</FONT>        final String[] storageIDs;<a name="line.641"></a>
+<FONT color="green">642</FONT>        if (storageIDsCount == 0) {<a name="line.642"></a>
+<FONT color="green">643</FONT>          storageIDs = null;<a name="line.643"></a>
+<FONT color="green">644</FONT>        } else {<a name="line.644"></a>
+<FONT color="green">645</FONT>          Preconditions.checkState(storageIDsCount == locs.size());<a name="line.645"></a>
+<FONT color="green">646</FONT>          storageIDs = proto.getStorageIDsList().toArray(new String[storageIDsCount]);<a name="line.646"></a>
+<FONT color="green">647</FONT>        }<a name="line.647"></a>
+<FONT color="green">648</FONT>    <a name="line.648"></a>
+<FONT color="green">649</FONT>        // Set values from the isCached list, re-using references from loc<a name="line.649"></a>
+<FONT color="green">650</FONT>        List&lt;DatanodeInfo&gt; cachedLocs = new ArrayList&lt;DatanodeInfo&gt;(locs.size());<a name="line.650"></a>
+<FONT color="green">651</FONT>        List&lt;Boolean&gt; isCachedList = proto.getIsCachedList();<a name="line.651"></a>
+<FONT color="green">652</FONT>        for (int i=0; i&lt;isCachedList.size(); i++) {<a name="line.652"></a>
+<FONT color="green">653</FONT>          if (isCachedList.get(i)) {<a name="line.653"></a>
+<FONT color="green">654</FONT>            cachedLocs.add(targets[i]);<a name="line.654"></a>
+<FONT color="green">655</FONT>          }<a name="line.655"></a>
+<FONT color="green">656</FONT>        }<a name="line.656"></a>
+<FONT color="green">657</FONT>    <a name="line.657"></a>
+<FONT color="green">658</FONT>        LocatedBlock lb = new LocatedBlock(PBHelper.convert(proto.getB()), targets,<a name="line.658"></a>
+<FONT color="green">659</FONT>            storageIDs, storageTypes, proto.getOffset(), proto.getCorrupt(),<a name="line.659"></a>
+<FONT color="green">660</FONT>            cachedLocs.toArray(new DatanodeInfo[0]));<a name="line.660"></a>
+<FONT color="green">661</FONT>        lb.setBlockToken(PBHelper.convert(proto.getBlockToken()));<a name="line.661"></a>
+<FONT color="green">662</FONT>    <a name="line.662"></a>
+<FONT color="green">663</FONT>        return lb;<a name="line.663"></a>
+<FONT color="green">664</FONT>      }<a name="line.664"></a>
+<FONT color="green">665</FONT>    <a name="line.665"></a>
+<FONT color="green">666</FONT>      public static TokenProto convert(Token&lt;?&gt; tok) {<a name="line.666"></a>
+<FONT color="green">667</FONT>        return TokenProto.newBuilder().<a name="line.667"></a>
+<FONT color="green">668</FONT>                  setIdentifier(ByteString.copyFrom(tok.getIdentifier())).<a name="line.668"></a>
+<FONT color="green">669</FONT>                  setPassword(ByteString.copyFrom(tok.getPassword())).<a name="line.669"></a>
+<FONT color="green">670</FONT>                  setKind(tok.getKind().toString()).<a name="line.670"></a>
+<FONT color="green">671</FONT>                  setService(tok.getService().toString()).build(); <a name="line.671"></a>
+<FONT color="green">672</FONT>      }<a name="line.672"></a>
+<FONT color="green">673</FONT>      <a name="line.673"></a>
+<FONT color="green">674</FONT>      public static Token&lt;BlockTokenIdentifier&gt; convert(<a name="line.674"></a>
+<FONT color="green">675</FONT>          TokenProto blockToken) {<a name="line.675"></a>
+<FONT color="green">676</FONT>        return new Token&lt;BlockTokenIdentifier&gt;(blockToken.getIdentifier()<a name="line.676"></a>
+<FONT color="green">677</FONT>            .toByteArray(), blockToken.getPassword().toByteArray(), new Text(<a name="line.677"></a>
+<FONT color="green">678</FONT>            blockToken.getKind()), new Text(blockToken.getService()));<a name="line.678"></a>
+<FONT color="green">679</FONT>      }<a name="line.679"></a>
+<FONT color="green">680</FONT>    <a name="line.680"></a>
+<FONT color="green">681</FONT>      <a name="line.681"></a>
+<FONT color="green">682</FONT>      public static Token&lt;DelegationTokenIdentifier&gt; convertDelegationToken(<a name="line.682"></a>
+<FONT color="green">683</FONT>          TokenProto blockToken) {<a name="line.683"></a>
+<FONT color="green">684</FONT>        return new Token&lt;DelegationTokenIdentifier&gt;(blockToken.getIdentifier()<a name="line.684"></a>
+<FONT color="green">685</FONT>            .toByteArray(), blockToken.getPassword().toByteArray(), new Text(<a name="line.685"></a>
+<FONT color="green">686</FONT>            blockToken.getKind()), new Text(blockToken.getService()));<a name="line.686"></a>
+<FONT color="green">687</FONT>      }<a name="line.687"></a>
+<FONT color="green">688</FONT>    <a name="line.688"></a>
+<FONT color="green">689</FONT>      public static ReplicaState convert(ReplicaStateProto state) {<a name="line.689"></a>
+<FONT color="green">690</FONT>        switch (state) {<a name="line.690"></a>
+<FONT color="green">691</FONT>        case RBW:<a name="line.691"></a>
+<FONT color="green">692</FONT>          return ReplicaState.RBW;<a name="line.692"></a>
+<FONT color="green">693</FONT>        case RUR:<a name="line.693"></a>
+<FONT color="green">694</FONT>          return ReplicaState.RUR;<a name="line.694"></a>
+<FONT color="green">695</FONT>        case RWR:<a name="line.695"></a>
+<FONT color="green">696</FONT>          return ReplicaState.RWR;<a name="line.696"></a>
+<FONT color="green">697</FONT>        case TEMPORARY:<a name="line.697"></a>
+<FONT color="green">698</FONT>          return ReplicaState.TEMPORARY;<a name="line.698"></a>
+<FONT color="green">699</FONT>        case FINALIZED:<a name="line.699"></a>
+<FONT color="green">700</FONT>        default:<a name="line.700"></a>
+<FONT color="green">701</FONT>          return ReplicaState.FINALIZED;<a name="line.701"></a>
+<FONT color="green">702</FONT>        }<a name="line.702"></a>
+<FONT color="green">703</FONT>      }<a name="line.703"></a>
+<FONT color="green">704</FONT>    <a name="line.704"></a>
+<FONT color="green">705</FONT>      public static ReplicaStateProto convert(ReplicaState state) {<a name="line.705"></a>
+<FONT color="green">706</FONT>        switch (state) {<a name="line.706"></a>
+<FONT color="green">707</FONT>        case RBW:<a name="line.707"></a>
+<FONT color="green">708</FONT>          return ReplicaStateProto.RBW;<a name="line.708"></a>
+<FONT color="green">709</FONT>        case RUR:<a name="line.709"></a>
+<FONT color="green">710</FONT>          return ReplicaStateProto.RUR;<a name="line.710"></a>
+<FONT color="green">711</FONT>        case RWR:<a name="line.711"></a>
+<FONT color="green">712</FONT>          return ReplicaStateProto.RWR;<a name="line.712"></a>
+<FONT color="green">713</FONT>        case TEMPORARY:<a name="line.713"></a>
+<FONT color="green">714</FONT>          return ReplicaStateProto.TEMPORARY;<a name="line.714"></a>
+<FONT color="green">715</FONT>        case FINALIZED:<a name="line.715"></a>
+<FONT color="green">716</FONT>        default:<a name="line.716"></a>
+<FONT color="green">717</FONT>          return ReplicaStateProto.FINALIZED;<a name="line.717"></a>
+<FONT color="green">718</FONT>        }<a name="line.718"></a>
+<FONT color="green">719</FONT>      }<a name="line.719"></a>
+<FONT color="green">720</FONT>      <a name="line.720"></a>
+<FONT color="green">721</FONT>      public static DatanodeRegistrationProto convert(<a name="line.721"></a>
+<FONT color="green">722</FONT>          DatanodeRegistration registration) {<a name="line.722"></a>
+<FONT color="green">723</FONT>        DatanodeRegistrationProto.Builder builder = DatanodeRegistrationProto<a name="line.723"></a>
+<FONT color="green">724</FONT>            .newBuilder();<a name="line.724"></a>
+<FONT color="green">725</FONT>        return builder.setDatanodeID(PBHelper.convert((DatanodeID) registration))<a name="line.725"></a>
+<FONT color="green">726</FONT>            .setStorageInfo(PBHelper.convert(registration.getStorageInfo()))<a name="line.726"></a>
+<FONT color="green">727</FONT>            .setKeys(PBHelper.convert(registration.getExportedKeys()))<a name="line.727"></a>
+<FONT color="green">728</FONT>            .setSoftwareVersion(registration.getSoftwareVersion()).build();<a name="line.728"></a>
+<FONT color="green">729</FONT>      }<a name="line.729"></a>
+<FONT color="green">730</FONT>    <a name="line.730"></a>
+<FONT color="green">731</FONT>      public static DatanodeRegistration convert(DatanodeRegistrationProto proto) {<a name="line.731"></a>
+<FONT color="green">732</FONT>        return new DatanodeRegistration(PBHelper.convert(proto.getDatanodeID()),<a name="line.732"></a>
+<FONT color="green">733</FONT>            PBHelper.convert(proto.getStorageInfo()), PBHelper.convert(proto<a name="line.733"></a>
+<FONT color="green">734</FONT>                .getKeys()), proto.getSoftwareVersion());<a name="line.734"></a>
+<FONT color="green">735</FONT>      }<a name="line.735"></a>
+<FONT color="green">736</FONT>    <a name="line.736"></a>
+<FONT color="green">737</FONT>      public static DatanodeCommand convert(DatanodeCommandProto proto) {<a name="line.737"></a>
+<FONT color="green">738</FONT>        switch (proto.getCmdType()) {<a name="line.738"></a>
+<FONT color="green">739</FONT>        case BalancerBandwidthCommand:<a name="line.739"></a>
+<FONT color="green">740</FONT>          return PBHelper.convert(proto.getBalancerCmd());<a name="line.740"></a>
+<FONT color="green">741</FONT>        case BlockCommand:<a name="line.741"></a>
+<FONT color="green">742</FONT>          return PBHelper.convert(proto.getBlkCmd());<a name="line.742"></a>
+<FONT color="green">743</FONT>        case BlockRecoveryCommand:<a name="line.743"></a>
+<FONT color="green">744</FONT>          return PBHelper.convert(proto.getRecoveryCmd());<a name="line.744"></a>
+<FONT color="green">745</FONT>        case FinalizeCommand:<a name="line.745"></a>
+<FONT color="green">746</FONT>          return PBHelper.convert(proto.getFinalizeCmd());<a name="line.746"></a>
+<FONT color="green">747</FONT>        case KeyUpdateCommand:<a name="line.747"></a>
+<FONT color="green">748</FONT>          return PBHelper.convert(proto.getKeyUpdateCmd());<a name="line.748"></a>
+<FONT color="green">749</FONT>        case RegisterCommand:<a name="line.749"></a>
+<FONT color="green">750</FONT>          return REG_CMD;<a name="line.750"></a>
+<FONT color="green">751</FONT>        case BlockIdCommand:<a name="line.751"></a>
+<FONT color="green">752</FONT>          return PBHelper.convert(proto.getBlkIdCmd());<a name="line.752"></a>
+<FONT color="green">753</FONT>        }<a name="line.753"></a>
+<FONT color="green">754</FONT>        return null;<a name="line.754"></a>
+<FONT color="green">755</FONT>      }<a name="line.755"></a>
+<FONT color="green">756</FONT>      <a name="line.756"></a>
+<FONT color="green">757</FONT>      public static BalancerBandwidthCommandProto convert(<a name="line.757"></a>
+<FONT color="green">758</FONT>          BalancerBandwidthCommand bbCmd) {<a name="line.758"></a>
+<FONT color="green">759</FONT>        return BalancerBandwidthCommandProto.newBuilder()<a name="line.759"></a>
+<FONT color="green">760</FONT>            .setBandwidth(bbCmd.getBalancerBandwidthValue()).build();<a name="line.760"></a>
+<FONT color="green">761</FONT>      }<a name="line.761"></a>
+<FONT color="green">762</FONT>    <a name="line.762"></a>
+<FONT color="green">763</FONT>      public static KeyUpdateCommandProto convert(KeyUpdateCommand cmd) {<a name="line.763"></a>
+<FONT color="green">764</FONT>        return KeyUpdateCommandProto.newBuilder()<a name="line.764"></a>
+<FONT color="green">765</FONT>            .setKeys(PBHelper.convert(cmd.getExportedKeys())).build();<a name="line.765"></a>
+<FONT color="green">766</FONT>      }<a name="line.766"></a>
+<FONT color="green">767</FONT>    <a name="line.767"></a>
+<FONT color="green">768</FONT>      public static BlockRecoveryCommandProto convert(BlockRecoveryCommand cmd) {<a name="line.768"></a>
+<FONT color="green">769</FONT>        BlockRecoveryCommandProto.Builder builder = BlockRecoveryCommandProto<a name="line.769"></a>
+<FONT color="green">770</FONT>            .newBuilder();<a name="line.770"></a>
+<FONT color="green">771</FONT>        for (RecoveringBlock b : cmd.getRecoveringBlocks()) {<a name="line.771"></a>
+<FONT color="green">772</FONT>          builder.addBlocks(PBHelper.convert(b));<a name="line.772"></a>
+<FONT color="green">773</FONT>        }<a name="line.773"></a>
+<FONT color="green">774</FONT>        return builder.build();<a name="line.774"></a>
+<FONT color="green">775</FONT>      }<a name="line.775"></a>
+<FONT color="green">776</FONT>    <a name="line.776"></a>
+<FONT color="green">777</FONT>      public static FinalizeCommandProto convert(FinalizeCommand cmd) {<a name="line.777"></a>
+<FONT color="green">778</FONT>        return FinalizeCommandProto.newBuilder()<a name="line.778"></a>
+<FONT color="green">779</FONT>            .setBlockPoolId(cmd.getBlockPoolId()).build();<a name="line.779"></a>
+<FONT color="green">780</FONT>      }<a name="line.780"></a>
+<FONT color="green">781</FONT>    <a name="line.781"></a>
+<FONT color="green">782</FONT>      public static BlockCommandProto convert(BlockCommand cmd) {<a name="line.782"></a>
+<FONT color="green">783</FONT>        BlockCommandProto.Builder builder = BlockCommandProto.newBuilder()<a name="line.783"></a>
+<FONT color="green">784</FONT>            .setBlockPoolId(cmd.getBlockPoolId());<a name="line.784"></a>
+<FONT color="green">785</FONT>        switch (cmd.getAction()) {<a name="line.785"></a>
+<FONT color="green">786</FONT>        case DatanodeProtocol.DNA_TRANSFER:<a name="line.786"></a>
+<FONT color="green">787</FONT>          builder.setAction(BlockCommandProto.Action.TRANSFER);<a name="line.787"></a>
+<FONT color="green">788</FONT>          break;<a name="line.788"></a>
+<FONT color="green">789</FONT>        case DatanodeProtocol.DNA_INVALIDATE:<a name="line.789"></a>
+<FONT color="green">790</FONT>          builder.setAction(BlockCommandProto.Action.INVALIDATE);<a name="line.790"></a>
+<FONT color="green">791</FONT>          break;<a name="line.791"></a>
+<FONT color="green">792</FONT>        case DatanodeProtocol.DNA_SHUTDOWN:<a name="line.792"></a>
+<FONT color="green">793</FONT>          builder.setAction(BlockCommandProto.Action.SHUTDOWN);<a name="line.793"></a>
+<FONT color="green">794</FONT>          break;<a name="line.794"></a>
+<FONT color="green">795</FONT>        default:<a name="line.795"></a>
+<FONT color="green">796</FONT>          throw new AssertionError("Invalid action");<a name="line.796"></a>
+<FONT color="green">797</FONT>        }<a name="line.797"></a>
+<FONT color="green">798</FONT>        Block[] blocks = cmd.getBlocks();<a name="line.798"></a>
+<FONT color="green">799</FONT>        for (int i = 0; i &lt; blocks.length; i++) {<a name="line.799"></a>
+<FONT color="green">800</FONT>          builder.addBlocks(PBHelper.convert(blocks[i]));<a name="line.800"></a>
+<FONT color="green">801</FONT>        }<a name="line.801"></a>
+<FONT color="green">802</FONT>        builder.addAllTargets(convert(cmd.getTargets()))<a name="line.802"></a>
+<FONT color="green">803</FONT>               .addAllTargetStorageUuids(convert(cmd.getTargetStorageIDs()));<a name="line.803"></a>
+<FONT color="green">804</FONT>        return builder.build();<a name="line.804"></a>
+<FONT color="green">805</FONT>      }<a name="line.805"></a>
+<FONT color="green">806</FONT>      <a name="line.806"></a>
+<FONT color="green">807</FONT>      public static BlockIdCommandProto convert(BlockIdCommand cmd) {<a name="line.807"></a>
+<FONT color="green">808</FONT>        BlockIdCommandProto.Builder builder = BlockIdCommandProto.newBuilder()<a name="line.808"></a>
+<FONT color="green">809</FONT>            .setBlockPoolId(cmd.getBlockPoolId());<a name="line.809"></a>
+<FONT color="green">810</FONT>        switch (cmd.getAction()) {<a name="line.810"></a>
+<FONT color="green">811</FONT>        case DatanodeProtocol.DNA_CACHE:<a name="line.811"></a>
+<FONT color="green">812</FONT>          builder.setAction(BlockIdCommandProto.Action.CACHE);<a name="line.812"></a>
+<FONT color="green">813</FONT>          break;<a name="line.813"></a>
+<FONT color="green">814</FONT>        case DatanodeProtocol.DNA_UNCACHE:<a name="line.814"></a>
+<FONT color="green">815</FONT>          builder.setAction(BlockIdCommandProto.Action.UNCACHE);<a name="line.815"></a>
+<FONT color="green">816</FONT>          break;<a name="line.816"></a>
+<FONT color="green">817</FONT>        default:<a name="line.817"></a>
+<FONT color="green">818</FONT>          throw new AssertionError("Invalid action");<a name="line.818"></a>
+<FONT color="green">819</FONT>        }<a name="line.819"></a>
+<FONT color="green">820</FONT>        long[] blockIds = cmd.getBlockIds();<a name="line.820"></a>
+<FONT color="green">821</FONT>        for (int i = 0; i &lt; blockIds.length; i++) {<a name="line.821"></a>
+<FONT color="green">822</FONT>          builder.addBlockIds(blockIds[i]);<a name="line.822"></a>
+<FONT color="green">823</FONT>        }<a name="line.823"></a>
+<FONT color="green">824</FONT>        return builder.build();<a name="line.824"></a>
+<FONT color="green">825</FONT>      }<a name="line.825"></a>
+<FONT color="green">826</FONT>    <a name="line.826"></a>
+<FONT color="green">827</FONT>      private static List&lt;DatanodeInfosProto&gt; convert(DatanodeInfo[][] targets) {<a name="line.827"></a>
+<FONT color="green">828</FONT>        DatanodeInfosProto[] ret = new DatanodeInfosProto[targets.length];<a name="line.828"></a>
+<FONT color="green">829</FONT>        for (int i = 0; i &lt; targets.length; i++) {<a name="line.829"></a>
+<FONT color="green">830</FONT>          ret[i] = DatanodeInfosProto.newBuilder()<a name="line.830"></a>
+<FONT color="green">831</FONT>              .addAllDatanodes(PBHelper.convert(targets[i])).build();<a name="line.831"></a>
+<FONT color="green">832</FONT>        }<a name="line.832"></a>
+<FONT color="green">833</FONT>        return Arrays.asList(ret);<a name="line.833"></a>
+<FONT color="green">834</FONT>      }<a name="line.834"></a>
+<FONT color="green">835</FONT>    <a name="line.835"></a>
+<FONT color="green">836</FONT>      private static List&lt;StorageUuidsProto&gt; convert(String[][] targetStorageUuids) {<a name="line.836"></a>
+<FONT color="green">837</FONT>        StorageUuidsProto[] ret = new StorageUuidsProto[targetStorageUuids.length];<a name="line.837"></a>
+<FONT color="green">838</FONT>        for (int i = 0; i &lt; targetStorageUuids.length; i++) {<a name="line.838"></a>
+<FONT color="green">839</FONT>          ret[i] = StorageUuidsProto.newBuilder()<a name="line.839"></a>
+<FONT color="green">840</FONT>              .addAllStorageUuids(Arrays.asList(targetStorageUuids[i])).build();<a name="line.840"></a>
+<FONT color="green">841</FONT>        }<a name="line.841"></a>
+<FONT color="green">842</FONT>        return Arrays.asList(ret);<a name="line.842"></a>
+<FONT color="green">843</FONT>      }<a name="line.843"></a>
+<FONT color="green">844</FONT>    <a name="line.844"></a>
+<FONT color="green">845</FONT>      public static DatanodeCommandProto convert(DatanodeCommand datanodeCommand) {<a name="line.845"></a>
+<FONT color="green">846</FONT>        DatanodeCommandProto.Builder builder = DatanodeCommandProto.newBuilder();<a name="line.846"></a>
+<FONT color="green">847</FONT>        if (datanodeCommand == null) {<a name="line.847"></a>
+<FONT color="green">848</FONT>          return builder.setCmdType(DatanodeCommandProto.Type.NullDatanodeCommand)<a name="line.848"></a>
+<FONT color="green">849</FONT>              .build();<a name="line.849"></a>
+<FONT color="green">850</FONT>        }<a name="line.850"></a>
+<FONT color="green">851</FONT>        switch (datanodeCommand.getAction()) {<a name="line.851"></a>
+<FONT color="green">852</FONT>        case DatanodeProtocol.DNA_BALANCERBANDWIDTHUPDATE:<a name="line.852"></a>
+<FONT color="green">853</FONT>          builder.setCmdType(DatanodeCommandProto.Type.BalancerBandwidthCommand)<a name="line.853"></a>
+<FONT color="green">854</FONT>              .setBalancerCmd(<a name="line.854"></a>
+<FONT color="green">855</FONT>                  PBHelper.convert((BalancerBandwidthCommand) datanodeCommand));<a name="line.855"></a>
+<FONT color="green">856</FONT>          break;<a name="line.856"></a>
+<FONT color="green">857</FONT>        case DatanodeProtocol.DNA_ACCESSKEYUPDATE:<a name="line.857"></a>
+<FONT color="green">858</FONT>          builder<a name="line.858"></a>
+<FONT color="green">859</FONT>              .setCmdType(DatanodeCommandProto.Type.KeyUpdateCommand)<a name="line.859"></a>
+<FONT color="green">860</FONT>              .setKeyUpdateCmd(PBHelper.convert((KeyUpdateCommand) datanodeCommand));<a name="line.860"></a>
+<FONT color="green">861</FONT>          break;<a name="line.861"></a>
+<FONT color="green">862</FONT>        case DatanodeProtocol.DNA_RECOVERBLOCK:<a name="line.862"></a>
+<FONT color="green">863</FONT>          builder.setCmdType(DatanodeCommandProto.Type.BlockRecoveryCommand)<a name="line.863"></a>
+<FONT color="green">864</FONT>              .setRecoveryCmd(<a name="line.864"></a>
+<FONT color="green">865</FONT>                  PBHelper.convert((BlockRecoveryCommand) datanodeCommand));<a name="line.865"></a>
+<FONT color="green">866</FONT>          break;<a name="line.866"></a>
+<FONT color="green">867</FONT>        case DatanodeProtocol.DNA_FINALIZE:<a name="line.867"></a>
+<FONT color="green">868</FONT>          builder.setCmdType(DatanodeCommandProto.Type.FinalizeCommand)<a name="line.868"></a>
+<FONT color="green">869</FONT>              .setFinalizeCmd(PBHelper.convert((FinalizeCommand) datanodeCommand));<a name="line.869"></a>
+<FONT color="green">870</FONT>          break;<a name="line.870"></a>
+<FONT color="green">871</FONT>        case DatanodeProtocol.DNA_REGISTER:<a name="line.871"></a>
+<FONT color="green">872</FONT>          builder.setCmdType(DatanodeCommandProto.Type.RegisterCommand)<a name="line.872"></a>
+<FONT color="green">873</FONT>              .setRegisterCmd(REG_CMD_PROTO);<a name="line.873"></a>
+<FONT color="green">874</FONT>          break;<a name="line.874"></a>
+<FONT color="green">875</FONT>        case DatanodeProtocol.DNA_TRANSFER:<a name="line.875"></a>
+<FONT color="green">876</FONT>        case DatanodeProtocol.DNA_INVALIDATE:<a name="line.876"></a>
+<FONT color="green">877</FONT>        case DatanodeProtocol.DNA_SHUTDOWN:<a name="line.877"></a>
+<FONT color="green">878</FONT>          builder.setCmdType(DatanodeCommandProto.Type.BlockCommand).<a name="line.878"></a>
+<FONT color="green">879</FONT>            setBlkCmd(PBHelper.convert((BlockCommand) datanodeCommand));<a name="line.879"></a>
+<FONT color="green">880</FONT>          break;<a name="line.880"></a>
+<FONT color="green">881</FONT>        case DatanodeProtocol.DNA_CACHE:<a name="line.881"></a>
+<FONT color="green">882</FONT>        case DatanodeProtocol.DNA_UNCACHE:<a name="line.882"></a>
+<FONT color="green">883</FONT>          builder.setCmdType(DatanodeCommandProto.Type.BlockIdCommand).<a name="line.883"></a>
+<FONT color="green">884</FONT>            setBlkIdCmd(PBHelper.convert((BlockIdCommand) datanodeCommand));<a name="line.884"></a>
+<FONT color="green">885</FONT>          break;<a name="line.885"></a>
+<FONT color="green">886</FONT>        case DatanodeProtocol.DNA_UNKNOWN: //Not expected<a name="line.886"></a>
+<FONT color="green">887</FONT>        default:<a name="line.887"></a>
+<FONT color="green">888</FONT>          builder.setCmdType(DatanodeCommandProto.Type.NullDatanodeCommand);<a name="line.888"></a>
+<FONT color="green">889</FONT>        }<a name="line.889"></a>
+<FONT color="green">890</FONT>        return builder.build();<a name="line.890"></a>
+<FONT color="green">891</FONT>      }<a name="line.891"></a>
+<FONT color="green">892</FONT>    <a name="line.892"></a>
+<FONT color="green">893</FONT>      public static KeyUpdateCommand convert(KeyUpdateCommandProto keyUpdateCmd) {<a name="line.893"></a>
+<FONT color="green">894</FONT>        return new KeyUpdateCommand(PBHelper.convert(keyUpdateCmd.getKeys()));<a name="line.894"></a>
+<FONT color="green">895</FONT>      }<a name="line.895"></a>
+<FONT color="green">896</FONT>    <a name="line.896"></a>
+<FONT color="green">897</FONT>      public static FinalizeCommand convert(FinalizeCommandProto finalizeCmd) {<a name="line.897"></a>
+<FONT color="green">898</FONT>        return new FinalizeCommand(finalizeCmd.getBlockPoolId());<a name="line.898"></a>
+<FONT color="green">899</FONT>      }<a name="line.899"></a>
+<FONT color="green">900</FONT>    <a name="line.900"></a>
+<FONT color="green">901</FONT>      public static BlockRecoveryCommand convert(<a name="line.901"></a>
+<FONT color="green">902</FONT>          BlockRecoveryCommandProto recoveryCmd) {<a name="line.902"></a>
+<FONT color="green">903</FONT>        List&lt;RecoveringBlockProto&gt; list = recoveryCmd.getBlocksList();<a name="line.903"></a>
+<FONT color="green">904</FONT>        List&lt;RecoveringBlock&gt; recoveringBlocks = new ArrayList&lt;RecoveringBlock&gt;(<a name="line.904"></a>
+<FONT color="green">905</FONT>            list.size());<a name="line.905"></a>
+<FONT color="green">906</FONT>        <a name="line.906"></a>
+<FONT color="green">907</FONT>        for (RecoveringBlockProto rbp : list) {<a name="line.907"></a>
+<FONT color="green">908</FONT>          recoveringBlocks.add(PBHelper.convert(rbp));<a name="line.908"></a>
+<FONT color="green">909</FONT>        }<a name="line.909"></a>
+<FONT color="green">910</FONT>        return new BlockRecoveryCommand(recoveringBlocks);<a name="line.910"></a>
+<FONT color="green">911</FONT>      }<a name="line.911"></a>
+<FONT color="green">912</FONT>    <a name="line.912"></a>
+<FONT color="green">913</FONT>      public static BlockCommand convert(BlockCommandProto blkCmd) {<a name="line.913"></a>
+<FONT color="green">914</FONT>        List&lt;BlockProto&gt; blockProtoList = blkCmd.getBlocksList();<a name="line.914"></a>
+<FONT color="green">915</FONT>        Block[] blocks = new Block[blockProtoList.size()];<a name="line.915"></a>
+<FONT color="green">916</FONT>        for (int i = 0; i &lt; blockProtoList.size(); i++) {<a name="line.916"></a>
+<FONT color="green">917</FONT>          blocks[i] = PBHelper.convert(blockProtoList.get(i));<a name="line.917"></a>
+<FONT color="green">918</FONT>        }<a name="line.918"></a>
+<FONT color="green">919</FONT>        List&lt;DatanodeInfosProto&gt; targetList = blkCmd.getTargetsList();<a name="line.919"></a>
+<FONT color="green">920</FONT>        DatanodeInfo[][] targets = new DatanodeInfo[targetList.size()][];<a name="line.920"></a>
+<FONT color="green">921</FONT>        for (int i = 0; i &lt; targetList.size(); i++) {<a name="line.921"></a>
+<FONT color="green">922</FONT>          targets[i] = PBHelper.convert(targetList.get(i));<a name="line.922"></a>
+<FONT color="green">923</FONT>        }<a name="line.923"></a>
+<FONT color="green">924</FONT>    <a name="line.924"></a>
+<FONT color="green">925</FONT>        List&lt;StorageUuidsProto&gt; targetStorageUuidsList = blkCmd.getTargetStorageUuidsList();<a name="line.925"></a>
+<FONT color="green">926</FONT>        String[][] targetStorageIDs = new String[targetStorageUuidsList.size()][];<a name="line.926"></a>
+<FONT color="green">927</FONT>        for(int i = 0; i &lt; targetStorageIDs.length; i++) {<a name="line.927"></a>
+<FONT color="green">928</FONT>          List&lt;String&gt; storageIDs = targetStorageUuidsList.get(i).getStorageUuidsList();<a name="line.928"></a>
+<FONT color="green">929</FONT>          targetStorageIDs[i] = storageIDs.toArray(new String[storageIDs.size()]);<a name="line.929"></a>
+<FONT color="green">930</FONT>        }<a name="line.930"></a>
+<FONT color="green">931</FONT>    <a name="line.931"></a>
+<FONT color="green">932</FONT>        int action = DatanodeProtocol.DNA_UNKNOWN;<a name="line.932"></a>
+<FONT color="green">933</FONT>        switch (blkCmd.getAction()) {<a name="line.933"></a>
+<FONT color="green">934</FONT>        case TRANSFER:<a name="line.934"></a>
+<FONT color="green">935</FONT>          action = DatanodeProtocol.DNA_TRANSFER;<a name="line.935"></a>
+<FONT color="green">936</FONT>          break;<a name="line.936"></a>
+<FONT color="green">937</FONT>        case INVALIDATE:<a name="line.937"></a>
+<FONT color="green">938</FONT>          action = DatanodeProtocol.DNA_INVALIDATE;<a name="line.938"></a>
+<FONT color="green">939</FONT>          break;<a name="line.939"></a>
+<FONT color="green">940</FONT>        case SHUTDOWN:<a name="line.940"></a>
+<FONT color="green">941</FONT>          action = DatanodeProtocol.DNA_SHUTDOWN;<a name="line.941"></a>
+<FONT color="green">942</FONT>          break;<a name="line.942"></a>
+<FONT color="green">943</FONT>        default:<a name="line.943"></a>
+<FONT color="green">944</FONT>          throw new AssertionError("Unknown action type: " + blkCmd.getAction());<a name="line.944"></a>
+<FONT color="green">945</FONT>        }<a name="line.945"></a>
+<FONT color="green">946</FONT>        return new BlockCommand(action, blkCmd.getBlockPoolId(), blocks, targets,<a name="line.946"></a>
+<FONT color="green">947</FONT>            targetStorageIDs);<a name="line.947"></a>
+<FONT color="green">948</FONT>      }<a name="line.948"></a>
+<FONT color="green">949</FONT>    <a name="line.949"></a>
+<FONT color="green">950</FONT>      public static BlockIdCommand convert(BlockIdCommandProto blkIdCmd) {<a name="line.950"></a>
+<FONT color="green">951</FONT>        int numBlockIds = blkIdCmd.getBlockIdsCount();<a name="line.951"></a>
+<FONT color="green">952</FONT>        long blockIds[] = new long[numBlockIds];<a name="line.952"></a>
+<FONT color="green">953</FONT>        for (int i = 0; i &lt; numBlockIds; i++) {<a name="line.953"></a>
+<FONT color="green">954</FONT>          blockIds[i] = blkIdCmd.getBlockIds(i);<a name="line.954"></a>
+<FONT color="green">955</FONT>        }<a name="line.955"></a>
+<FONT color="green">956</FONT>        int action = DatanodeProtocol.DNA_UNKNOWN;<a name="line.956"></a>
+<FONT color="green">957</FONT>        switch (blkIdCmd.getAction()) {<a name="line.957"></a>
+<FONT color="green">958</FONT>        case CACHE:<a name="line.958"></a>
+<FONT color="green">959</FONT>          action = DatanodeProtocol.DNA_CACHE;<a name="line.959"></a>
+<FONT color="green">960</FONT>          break;<a name="line.960"></a>
+<FONT color="green">961</FONT>        case UNCACHE:<a name="line.961"></a>
+<FONT color="green">962</FONT>          action = DatanodeProtocol.DNA_UNCACHE;<a name="line.962"></a>
+<FONT color="green">963</FONT>          break;<a name="line.963"></a>
+<FONT color="green">964</FONT>        default:<a name="line.964"></a>
+<FONT color="green">965</FONT>          throw new AssertionError("Unknown action type: " + blkIdCmd.getAction());<a name="line.965"></a>
+<FONT color="green">966</FONT>        }<a name="line.966"></a>
+<FONT color="green">967</FONT>        return new BlockIdCommand(action, blkIdCmd.getBlockPoolId(), blockIds);<a name="line.967"></a>
+<FONT color="green">968</FONT>      }<a name="line.968"></a>
+<FONT color="green">969</FONT>    <a name="line.969"></a>
+<FONT color="green">970</FONT>      public static DatanodeInfo[] convert(DatanodeInfosProto datanodeInfosProto) {<a name="line.970"></a>
+<FONT color="green">971</FONT>        List&lt;DatanodeInfoProto&gt; proto = datanodeInfosProto.getDatanodesList();<a name="line.971"></a>
+<FONT color="green">972</FONT>        DatanodeInfo[] infos = new DatanodeInfo[proto.size()];<a name="line.972"></a>
+<FONT color="green">973</FONT>        for (int i = 0; i &lt; infos.length; i++) {<a name="line.973"></a>
+<FONT color="green">974</FONT>          infos[i] = PBHelper.convert(proto.get(i));<a name="line.974"></a>
+<FONT color="green">975</FONT>        }<a name="line.975"></a>
+<FONT color="green">976</FONT>        return infos;<a name="line.976"></a>
+<FONT color="green">977</FONT>      }<a name="line.977"></a>
+<FONT color="green">978</FONT>    <a name="line.978"></a>
+<FONT color="green">979</FONT>      public static BalancerBandwidthCommand convert(<a name="line.979"></a>
+<FONT color="green">980</FONT>          BalancerBandwidthCommandProto balancerCmd) {<a name="line.980"></a>
+<FONT color="green">981</FONT>        return new BalancerBandwidthCommand(balancerCmd.getBandwidth());<a name="line.981"></a>
+<FONT color="green">982</FONT>      }<a name="line.982"></a>
+<FONT color="green">983</FONT>    <a name="line.983"></a>
+<FONT color="green">984</FONT>      public static ReceivedDeletedBlockInfoProto convert(<a name="line.984"></a>
+<FONT color="green">985</FONT>          ReceivedDeletedBlockInfo receivedDeletedBlockInfo) {<a name="line.985"></a>
+<FONT color="green">986</FONT>        ReceivedDeletedBlockInfoProto.Builder builder = <a name="line.986"></a>
+<FONT color="green">987</FONT>            ReceivedDeletedBlockInfoProto.newBuilder();<a name="line.987"></a>
+<FONT color="green">988</FONT>        <a name="line.988"></a>
+<FONT color="green">989</FONT>        ReceivedDeletedBlockInfoProto.BlockStatus status;<a name="line.989"></a>
+<FONT color="green">990</FONT>        switch (receivedDeletedBlockInfo.getStatus()) {<a name="line.990"></a>
+<FONT color="green">991</FONT>        case RECEIVING_BLOCK:<a name="line.991"></a>
+<FONT color="green">992</FONT>          status = ReceivedDeletedBlockInfoProto.BlockStatus.RECEIVING;<a name="line.992"></a>
+<FONT color="green">993</FONT>          break;<a name="line.993"></a>
+<FONT color="green">994</FONT>        case RECEIVED_BLOCK:<a name="line.994"></a>
+<FONT color="green">995</FONT>          status = ReceivedDeletedBlockInfoProto.BlockStatus.RECEIVED;<a name="line.995"></a>
+<FONT color="green">996</FONT>          break;<a name="line.996"></a>
+<FONT color="green">997</FONT>        case DELETED_BLOCK:<a name="line.997"></a>
+<FONT color="green">998</FONT>          status = ReceivedDeletedBlockInfoProto.BlockStatus.DELETED;<a name="line.998"></a>
+<FONT color="green">999</FONT>          break;<a name="line.999"></a>
+<FONT color="green">1000</FONT>        default:<a name="line.1000"></a>
+<FONT color="green">1001</FONT>          throw new IllegalArgumentException("Bad status: " +<a name="line.1001"></a>
+<FONT color="green">1002</FONT>              receivedDeletedBlockInfo.getStatus());<a name="line.1002"></a>
+<FONT color="green">1003</FONT>        }<a name="line.1003"></a>
+<FONT color="green">1004</FONT>        builder.setStatus(status);<a name="line.1004"></a>
+<FONT color="green">1005</FONT>        <a name="line.1005"></a>
+<FONT color="green">1006</FONT>        if (receivedDeletedBlockInfo.getDelHints() != null) {<a name="line.1006"></a>
+<FONT color="green">1007</FONT>          builder.setDeleteHint(receivedDeletedBlockInfo.getDelHints());<a name="line.1007"></a>
+<FONT color="green">1008</FONT>        }<a name="line.1008"></a>
+<FONT color="green">1009</FONT>        return builder.setBlock(PBHelper.convert(receivedDeletedBlockInfo.getBlock()))<a name="line.1009"></a>
+<FONT color="green">1010</FONT>            .build();<a name="line.1010"></a>
+<FONT color="green">1011</FONT>      }<a name="line.1011"></a>
+<FONT color="green">1012</FONT>    <a name="line.1012"></a>
+<FONT color="green">1013</FONT>      public static ReceivedDeletedBlockInfo convert(<a name="line.1013"></a>
+<FONT color="green">1014</FONT>          ReceivedDeletedBlockInfoProto proto) {<a name="line.1014"></a>
+<FONT color="green">1015</FONT>        ReceivedDeletedBlockInfo.BlockStatus status = null;<a name="line.1015"></a>
+<FONT color="green">1016</FONT>        switch (proto.getStatus()) {<a name="line.1016"></a>
+<FONT color="green">1017</FONT>        case RECEIVING:<a name="line.1017"></a>
+<FONT color="green">1018</FONT>          status = BlockStatus.RECEIVING_BLOCK;<a name="line.1018"></a>
+<FONT color="green">1019</FONT>          break;<a name="line.1019"></a>
+<FONT color="green">1020</FONT>        case RECEIVED:<a name="line.1020"></a>
+<FONT color="green">1021</FONT>          status = BlockStatus.RECEIVED_BLOCK;<a name="line.1021"></a>
+<FONT color="green">1022</FONT>          break;<a name="line.1022"></a>
+<FONT color="green">1023</FONT>        case DELETED:<a name="line.1023"></a>
+<FONT color="green">1024</FONT>          status = BlockStatus.DELETED_BLOCK;<a name="line.1024"></a>
+<FONT color="green">1025</FONT>          break;<a name="line.1025"></a>
+<FONT color="green">1026</FONT>        }<a name="line.1026"></a>
+<FONT color="green">1027</FONT>        return new ReceivedDeletedBlockInfo(<a name="line.1027"></a>
+<FONT color="green">1028</FONT>            PBHelper.convert(proto.getBlock()),<a name="line.1028"></a>
+<FONT color="green">1029</FONT>            status,<a name="line.1029"></a>
+<FONT color="green">1030</FONT>            proto.hasDeleteHint() ? proto.getDeleteHint() : null);<a name="line.1030"></a>
+<FONT color="green">1031</FONT>      }<a name="line.1031"></a>
+<FONT color="green">1032</FONT>      <a name="line.1032"></a>
+<FONT color="green">1033</FONT>      public static NamespaceInfoProto convert(NamespaceInfo info) {<a name="line.1033"></a>
+<FONT color="green">1034</FONT>        return NamespaceInfoProto.newBuilder()<a name="line.1034"></a>
+<FONT color="green">1035</FONT>            .setBlockPoolID(info.getBlockPoolID())<a name="line.1035"></a>
+<FONT color="green">1036</FONT>            .setBuildVersion(info.getBuildVersion())<a name="line.1036"></a>
+<FONT color="green">1037</FONT>            .setUnused(0)<a name="line.1037"></a>
+<FONT color="green">1038</FONT>            .setStorageInfo(PBHelper.convert((StorageInfo)info))<a name="line.1038"></a>
+<FONT color="green">1039</FONT>            .setSoftwareVersion(info.getSoftwareVersion()).build();<a name="line.1039"></a>
+<FONT color="green">1040</FONT>      }<a name="line.1040"></a>
+<FONT color="green">1041</FONT>      <a name="line.1041"></a>
+<FONT color="green">1042</FONT>      // Located Block Arrays and Lists<a name="line.1042"></a>
+<FONT color="green">1043</FONT>      public static LocatedBlockProto[] convertLocatedBlock(LocatedBlock[] lb) {<a name="line.1043"></a>
+<FONT color="green">1044</FONT>        if (lb == null) return null;<a name="line.1044"></a>
+<FONT color="green">1045</FONT>        return convertLocatedBlock2(Arrays.asList(lb)).toArray(<a name="line.1045"></a>
+<FONT color="green">1046</FONT>            new LocatedBlockProto[lb.length]);<a name="line.1046"></a>
+<FONT color="green">1047</FONT>      }<a name="line.1047"></a>
+<FONT color="green">1048</FONT>      <a name="line.1048"></a>
+<FONT color="green">1049</FONT>      public static LocatedBlock[] convertLocatedBlock(LocatedBlockProto[] lb) {<a name="line.1049"></a>
+<FONT color="green">1050</FONT>        if (lb == null) return null;<a name="line.1050"></a>
+<FONT color="green">1051</FONT>        return convertLocatedBlock(Arrays.asList(lb)).toArray(<a name="line.1051"></a>
+<FONT color="green">1052</FONT>            new LocatedBlock[lb.length]);<a name="line.1052"></a>
+<FONT color="green">1053</FONT>      }<a name="line.1053"></a>
+<FONT color="green">1054</FONT>      <a name="line.1054"></a>
+<FONT color="green">1055</FONT>      public static List&lt;LocatedBlock&gt; convertLocatedBlock(<a name="line.1055"></a>
+<FONT color="green">1056</FONT>          List&lt;LocatedBlockProto&gt; lb) {<a name="line.1056"></a>
+<FONT color="green">1057</FONT>        if (lb == null) return null;<a name="line.1057"></a>
+<FONT color="green">1058</FONT>        final int len = lb.size();<a name="line.1058"></a>
+<FONT color="green">1059</FONT>        List&lt;LocatedBlock&gt; result = <a name="line.1059"></a>
+<FONT color="green">1060</FONT>            new ArrayList&lt;LocatedBlock&gt;(len);<a name="line.1060"></a>
+<FONT color="green">1061</FONT>        for (int i = 0; i &lt; len; ++i) {<a name="line.1061"></a>
+<FONT color="green">1062</FONT>          result.add(PBHelper.convert(lb.get(i)));<a name="line.1062"></a>
+<FONT color="green">1063</FONT>        }<a name="line.1063"></a>
+<FONT color="green">1064</FONT>        return result;<a name="line.1064"></a>
+<FONT color="green">1065</FONT>      }<a name="line.1065"></a>
+<FONT color="green">1066</FONT>      <a name="line.1066"></a>
+<FONT color="green">1067</FONT>      public static List&lt;LocatedBlockProto&gt; convertLocatedBlock2(List&lt;LocatedBlock&gt; lb) {<a name="line.1067"></a>
+<FONT color="green">1068</FONT>        if (lb == null) return null;<a name="line.1068"></a>
+<FONT color="green">1069</FONT>        final int len = lb.size();<a name="line.1069"></a>
+<FONT color="green">1070</FONT>        List&lt;LocatedBlockProto&gt; result = new ArrayList&lt;LocatedBlockProto&gt;(len);<a name="line.1070"></a>
+<FONT color="green">1071</FONT>        for (int i = 0; i &lt; len; ++i) {<a name="line.1071"></a>
+<FONT color="green">1072</FONT>          result.add(PBHelper.convert(lb.get(i)));<a name="line.1072"></a>
+<FONT color="green">1073</FONT>        }<a name="line.1073"></a>
+<FONT color="green">1074</FONT>        return result;<a name="line.1074"></a>
+<FONT color="green">1075</FONT>      }<a name="line.1075"></a>
+<FONT color="green">1076</FONT>      <a name="line.1076"></a>
+<FONT color="green">1077</FONT>      <a name="line.1077"></a>
+<FONT color="green">1078</FONT>      // LocatedBlocks<a name="line.1078"></a>
+<FONT color="green">1079</FONT>      public static LocatedBlocks convert(LocatedBlocksProto lb) {<a name="line.1079"></a>
+<FONT color="green">1080</FONT>        return new LocatedBlocks(<a name="line.1080"></a>
+<FONT color="green">1081</FONT>            lb.getFileLength(), lb.getUnderConstruction(),<a name="line.1081"></a>
+<FONT color="green">1082</FONT>            PBHelper.convertLocatedBlock(lb.getBlocksList()),<a name="line.1082"></a>
+<FONT color="green">1083</FONT>            lb.hasLastBlock() ? PBHelper.convert(lb.getLastBlock()) : null,<a name="line.1083"></a>
+<FONT color="green">1084</FONT>            lb.getIsLastBlockComplete());<a name="line.1084"></a>
+<FONT color="green">1085</FONT>      }<a name="line.1085"></a>
+<FONT color="green">1086</FONT>      <a name="line.1086"></a>
+<FONT color="green">1087</FONT>      public static LocatedBlocksProto convert(LocatedBlocks lb) {<a name="line.1087"></a>
+<FONT color="green">1088</FONT>        if (lb == null) {<a name="line.1088"></a>
+<FONT color="green">1089</FONT>          return null;<a name="line.1089"></a>
+<FONT color="green">1090</FONT>        }<a name="line.1090"></a>
+<FONT color="green">1091</FONT>        LocatedBlocksProto.Builder builder = <a name="line.1091"></a>
+<FONT color="green">1092</FONT>            LocatedBlocksProto.newBuilder();<a name="line.1092"></a>
+<FONT color="green">1093</FONT>        if (lb.getLastLocatedBlock() != null) {<a name="line.1093"></a>
+<FONT color="green">1094</FONT>          builder.setLastBlock(PBHelper.convert(lb.getLastLocatedBlock()));<a name="line.1094"></a>
+<FONT color="green">1095</FONT>        }<a name="line.1095"></a>
+<FONT color="green">1096</FONT>        return builder.setFileLength(lb.getFileLength())<a name="line.1096"></a>
+<FONT color="green">1097</FONT>            .setUnderConstruction(lb.isUnderConstruction())<a name="line.1097"></a>
+<FONT color="green">1098</FONT>            .addAllBlocks(PBHelper.convertLocatedBlock2(lb.getLocatedBlocks()))<a name="line.1098"></a>
+<FONT color="green">1099</FONT>            .setIsLastBlockComplete(lb.isLastBlockComplete()).build();<a name="line.1099"></a>
+<FONT color="green">1100</FONT>      }<a name="line.1100"></a>
+<FONT color="green">1101</FONT>      <a name="line.1101"></a>
+<FONT color="green">1102</FONT>      // DataEncryptionKey<a name="line.1102"></a>
+<FONT color="green">1103</FONT>      public static DataEncryptionKey convert(DataEncryptionKeyProto bet) {<a name="line.1103"></a>
+<FONT color="green">1104</FONT>        String encryptionAlgorithm = bet.getEncryptionAlgorithm();<a name="line.1104"></a>
+<FONT color="green">1105</FONT>        return new DataEncryptionKey(bet.getKeyId(),<a name="line.1105"></a>
+<FONT color="green">1106</FONT>            bet.getBlockPoolId(),<a name="line.1106"></a>
+<FONT color="green">1107</FONT>            bet.getNonce().toByteArray(),<a name="line.1107"></a>
+<FONT color="green">1108</FONT>            bet.getEncryptionKey().toByteArray(),<a name="line.1108"></a>
+<FONT color="green">1109</FONT>            bet.getExpiryDate(),<a name="line.1109"></a>
+<FONT color="green">1110</FONT>            encryptionAlgorithm.isEmpty() ? null : encryptionAlgorithm);<a name="line.1110"></a>
+<FONT color="green">1111</FONT>      }<a name="line.1111"></a>
+<FONT color="green">1112</FONT>      <a name="line.1112"></a>
+<FONT color="green">1113</FONT>      public static DataEncryptionKeyProto convert(DataEncryptionKey bet) {<a name="line.1113"></a>
+<FONT color="green">1114</FONT>        DataEncryptionKeyProto.Builder b = DataEncryptionKeyProto.newBuilder()<a name="line.1114"></a>
+<FONT color="green">1115</FONT>            .setKeyId(bet.keyId)<a name="line.1115"></a>
+<FONT color="green">1116</FONT>            .setBlockPoolId(bet.blockPoolId)<a name="line.1116"></a>
+<FONT color="green">1117</FONT>            .setNonce(ByteString.copyFrom(bet.nonce))<a name="line.1117"></a>
+<FONT color="green">1118</FONT>            .setEncryptionKey(ByteString.copyFrom(bet.encryptionKey))<a name="line.1118"></a>
+<FONT color="green">1119</FONT>            .setExpiryDate(bet.expiryDate);<a name="line.1119"></a>
+<FONT color="green">1120</FONT>        if (bet.encryptionAlgorithm != null) {<a name="line.1120"></a>
+<FONT color="green">1121</FONT>          b.setEncryptionAlgorithm(bet.encryptionAlgorithm);<a name="line.1121"></a>
+<FONT color="green">1122</FONT>        }<a name="line.1122"></a>
+<FONT color="green">1123</FONT>        return b.build();<a name="line.1123"></a>
+<FONT color="green">1124</FONT>      }<a name="line.1124"></a>
+<FONT color="green">1125</FONT>      <a name="line.1125"></a>
+<FONT color="green">1126</FONT>      public static FsServerDefaults convert(FsServerDefaultsProto fs) {<a name="line.1126"></a>
+<FONT color="green">1127</FONT>        if (fs == null) return null;<a name="line.1127"></a>
+<FONT color="green">1128</FONT>        return new FsServerDefaults(<a name="line.1128"></a>
+<FONT color="green">1129</FONT>            fs.getBlockSize(), fs.getBytesPerChecksum(), <a name="line.1129"></a>
+<FONT color="green">1130</FONT>            fs.getWritePacketSize(), (short) fs.getReplication(),<a name="line.1130"></a>
+<FONT color="green">1131</FONT>            fs.getFileBufferSize(),<a name="line.1131"></a>
+<FONT color="green">1132</FONT>            fs.getEncryptDataTransfer(),<a name="line.1132"></a>
+<FONT color="green">1133</FONT>            fs.getTrashInterval(),<a name="line.1133"></a>
+<FONT color="green">1134</FONT>            PBHelper.convert(fs.getChecksumType()));<a name="line.1134"></a>
+<FONT color="green">1135</FONT>      }<a name="line.1135"></a>
+<FONT color="green">1136</FONT>      <a name="line.1136"></a>
+<FONT color="green">1137</FONT>      public static FsServerDefaultsProto convert(FsServerDefaults fs) {<a name="line.1137"></a>
+<FONT color="green">1138</FONT>        if (fs == null) return null;<a name="line.1138"></a>
+<FONT color="green">1139</FONT>        return FsServerDefaultsProto.newBuilder().<a name="line.1139"></a>
+<FONT color="green">1140</FONT>          setBlockSize(fs.getBlockSize()).<a name="line.1140"></a>
+<FONT color="green">1141</FONT>          setBytesPerChecksum(fs.getBytesPerChecksum()).<a name="line.1141"></a>
+<FONT color="green">1142</FONT>          setWritePacketSize(fs.getWritePacketSize())<a name="line.1142"></a>
+<FONT color="green">1143</FONT>          .setReplication(fs.getReplication())<a name="line.1143"></a>
+<FONT color="green">1144</FONT>          .setFileBufferSize(fs.getFileBufferSize())<a name="line.1144"></a>
+<FONT color="green">1145</FONT>          .setEncryptDataTransfer(fs.getEncryptDataTransfer())<a name="line.1145"></a>
+<FONT color="green">1146</FONT>          .setTrashInterval(fs.getTrashInterval())<a name="line.1146"></a>
+<FONT color="green">1147</FONT>          .setChecksumType(PBHelper.convert(fs.getChecksumType()))<a name="line.1147"></a>
+<FONT color="green">1148</FONT>          .build();<a name="line.1148"></a>
+<FONT color="green">1149</FONT>      }<a name="line.1149"></a>
+<FONT color="green">1150</FONT>      <a name="line.1150"></a>
+<FONT color="green">1151</FONT>      public static FsPermissionProto convert(FsPermission p) {<a name="line.1151"></a>
+<FONT color="green">1152</FONT>        if (p == null) return null;<a name="line.1152"></a>
+<FONT color="green">1153</FONT>        return FsPermissionProto.newBuilder().setPerm(p.toShort()).build();<a name="line.1153"></a>
+<FONT color="green">1154</FONT>      }<a name="line.1154"></a>
+<FONT color="green">1155</FONT>      <a name="line.1155"></a>
+<FONT color="green">1156</FONT>      public static FsPermission convert(FsPermissionProto p) {<a name="line.1156"></a>
+<FONT color="green">1157</FONT>        if (p == null) return null;<a name="line.1157"></a>
+<FONT color="green">1158</FONT>        return new FsPermission((short)p.getPerm());<a name="line.1158"></a>
+<FONT color="green">1159</FONT>      }<a name="line.1159"></a>
+<FONT color="green">1160</FONT>      <a name="line.1160"></a>
+<FONT color="green">1161</FONT>      <a name="line.1161"></a>
+<FONT color="green">1162</FONT>      // The creatFlag field in PB is a bitmask whose values are the same a the <a name="line.1162"></a>
+<FONT color="green">1163</FONT>      // emum values of CreateFlag<a name="line.1163"></a>
+<FONT color="green">1164</FONT>      public static int convertCreateFlag(EnumSetWritable&lt;CreateFlag&gt; flag) {<a name="line.1164"></a>
+<FONT color="green">1165</FONT>        int value = 0;<a name="line.1165"></a>
+<FONT color="green">1166</FONT>        if (flag.contains(CreateFlag.APPEND)) {<a name="line.1166"></a>
+<FONT color="green">1167</FONT>          value |= CreateFlagProto.APPEND.getNumber();<a name="line.1167"></a>
+<FONT color="green">1168</FONT>        }<a name="line.1168"></a>
+<FONT color="green">1169</FONT>        if (flag.contains(CreateFlag.CREATE)) {<a name="line.1169"></a>
+<FONT color="green">1170</FONT>          value |= CreateFlagProto.CREATE.getNumber();<a name="line.1170"></a>
+<FONT color="green">1171</FONT>        }<a name="line.1171"></a>
+<FONT color="green">1172</FONT>        if (flag.contains(CreateFlag.OVERWRITE)) {<a name="line.1172"></a>
+<FONT color="green">1173</FONT>          value |= CreateFlagProto.OVERWRITE.getNumber();<a name="line.1173"></a>
+<FONT color="green">1174</FONT>        }<a name="line.1174"></a>
+<FONT color="green">1175</FONT>        return value;<a name="line.1175"></a>
+<FONT color="green">1176</FONT>      }<a name="line.1176"></a>
+<FONT color="green">1177</FONT>      <a name="line.1177"></a>
+<FONT color="green">1178</FONT>      public static EnumSetWritable&lt;CreateFlag&gt; convertCreateFlag(int flag) {<a name="line.1178"></a>
+<FONT color="green">1179</FONT>        EnumSet&lt;CreateFlag&gt; result = <a name="line.1179"></a>
+<FONT color="green">1180</FONT>           EnumSet.noneOf(CreateFlag.class);   <a name="line.1180"></a>
+<FONT color="green">1181</FONT>        if ((flag &amp; CreateFlagProto.APPEND_VALUE) == CreateFlagProto.APPEND_VALUE) {<a name="line.1181"></a>
+<FONT color="green">1182</FONT>          result.add(CreateFlag.APPEND);<a name="line.1182"></a>
+<FONT color="green">1183</FONT>        }<a name="line.1183"></a>
+<FONT color="green">1184</FONT>        if ((flag &amp; CreateFlagProto.CREATE_VALUE) == CreateFlagProto.CREATE_VALUE) {<a name="line.1184"></a>
+<FONT color="green">1185</FONT>          result.add(CreateFlag.CREATE);<a name="line.1185"></a>
+<FONT color="green">1186</FONT>        }<a name="line.1186"></a>
+<FONT color="green">1187</FONT>        if ((flag &amp; CreateFlagProto.OVERWRITE_VALUE) <a name="line.1187"></a>
+<FONT color="green">1188</FONT>            == CreateFlagProto.OVERWRITE_VALUE) {<a name="line.1188"></a>
+<FONT color="green">1189</FONT>          result.add(CreateFlag.OVERWRITE);<a name="line.1189"></a>
+<FONT color="green">1190</FONT>        }<a name="line.1190"></a>
+<FONT color="green">1191</FONT>        return new EnumSetWritable&lt;CreateFlag&gt;(result);<a name="line.1191"></a>
+<FONT color="green">1192</FONT>      }<a name="line.1192"></a>
+<FONT color="green">1193</FONT>    <a name="line.1193"></a>
+<FONT color="green">1194</FONT>      public static int convertCacheFlags(EnumSet&lt;CacheFlag&gt; flags) {<a name="line.1194"></a>
+<FONT color="green">1195</FONT>        int value = 0;<a name="line.1195"></a>
+<FONT color="green">1196</FONT>        if (flags.contains(CacheFlag.FORCE)) {<a name="line.1196"></a>
+<FONT color="green">1197</FONT>          value |= CacheFlagProto.FORCE.getNumber();<a name="line.1197"></a>
+<FONT color="green">1198</FONT>        }<a name="line.1198"></a>
+<FONT color="green">1199</FONT>        return value;<a name="line.1199"></a>
+<FONT color="green">1200</FONT>      }<a name="line.1200"></a>
+<FONT color="green">1201</FONT>    <a name="line.1201"></a>
+<FONT color="green">1202</FONT>      public static EnumSet&lt;CacheFlag&gt; convertCacheFlags(int flags) {<a name="line.1202"></a>
+<FONT color="green">1203</FONT>        EnumSet&lt;CacheFlag&gt; result = EnumSet.noneOf(CacheFlag.class);<a name="line.1203"></a>
+<FONT color="green">1204</FONT>        if ((flags &amp; CacheFlagProto.FORCE_VALUE) == CacheFlagProto.FORCE_VALUE) {<a name="line.1204"></a>
+<FONT color="green">1205</FONT>          result.add(CacheFlag.FORCE);<a name="line.1205"></a>
+<FONT color="green">1206</FONT>        }<a name="line.1206"></a>
+<FONT color="green">1207</FONT>        return result;<a name="line.1207"></a>
+<FONT color="green">1208</FONT>      }<a name="line.1208"></a>
+<FONT color="green">1209</FONT>    <a name="line.1209"></a>
+<FONT color="green">1210</FONT>      public static HdfsFileStatus convert(HdfsFileStatusProto fs) {<a name="line.1210"></a>
+<FONT color="green">1211</FONT>        if (fs == null)<a name="line.1211"></a>
+<FONT color="green">1212</FONT>          return null;<a name="line.1212"></a>
+<FONT color="green">1213</FONT>        return new HdfsLocatedFileStatus(<a name="line.1213"></a>
+<FONT color="green">1214</FONT>            fs.getLength(), fs.getFileType().equals(FileType.IS_DIR), <a name="line.1214"></a>
+<FONT color="green">1215</FONT>            fs.getBlockReplication(), fs.getBlocksize(),<a name="line.1215"></a>
+<FONT color="green">1216</FONT>            fs.getModificationTime(), fs.getAccessTime(),<a name="line.1216"></a>
+<FONT color="green">1217</FONT>            PBHelper.convert(fs.getPermission()), fs.getOwner(), fs.getGroup(), <a name="line.1217"></a>
+<FONT color="green">1218</FONT>            fs.getFileType().equals(FileType.IS_SYMLINK) ? <a name="line.1218"></a>
+<FONT color="green">1219</FONT>                fs.getSymlink().toByteArray() : null,<a name="line.1219"></a>
+<FONT color="green">1220</FONT>            fs.getPath().toByteArray(),<a name="line.1220"></a>
+<FONT color="green">1221</FONT>            fs.hasFileId()? fs.getFileId(): INodeId.GRANDFATHER_INODE_ID,<a name="line.1221"></a>
+<FONT color="green">1222</FONT>            fs.hasLocations() ? PBHelper.convert(fs.getLocations()) : null,<a name="line.1222"></a>
+<FONT color="green">1223</FONT>            fs.hasChildrenNum() ? fs.getChildrenNum() : -1);<a name="line.1223"></a>
+<FONT color="green">1224</FONT>      }<a name="line.1224"></a>
+<FONT color="green">1225</FONT>    <a name="line.1225"></a>
+<FONT color="green">1226</FONT>      public static SnapshottableDirectoryStatus convert(<a name="line.1226"></a>
+<FONT color="green">1227</FONT>          SnapshottableDirectoryStatusProto sdirStatusProto) {<a name="line.1227"></a>
+<FONT color="green">1228</FONT>        if (sdirStatusProto == null) {<a name="line.1228"></a>
+<FONT color="green">1229</FONT>          return null;<a name="line.1229"></a>
+<FONT color="green">1230</FONT>        }<a name="line.1230"></a>
+<FONT color="green">1231</FONT>        final HdfsFileStatusProto status = sdirStatusProto.getDirStatus();<a name="line.1231"></a>
+<FONT color="green">1232</FONT>        return new SnapshottableDirectoryStatus(<a name="line.1232"></a>
+<FONT color="green">1233</FONT>            status.getModificationTime(),<a name="line.1233"></a>
+<FONT color="green">1234</FONT>            status.getAccessTime(),<a name="line.1234"></a>
+<FONT color="green">1235</FONT>            PBHelper.convert(status.getPermission()),<a name="line.1235"></a>
+<FONT color="green">1236</FONT>            status.getOwner(),<a name="line.1236"></a>
+<FONT color="green">1237</FONT>            status.getGroup(),<a name="line.1237"></a>
+<FONT color="green">1238</FONT>            status.getPath().toByteArray(),<a name="line.1238"></a>
+<FONT color="green">1239</FONT>            status.getFileId(),<a name="line.1239"></a>
+<FONT color="green">1240</FONT>            status.getChildrenNum(),<a name="line.1240"></a>
+<FONT color="green">1241</FONT>            sdirStatusProto.getSnapshotNumber(),<a name="line.1241"></a>
+<FONT color="green">1242</FONT>            sdirStatusProto.getSnapshotQuota(),<a name="line.1242"></a>
+<FONT color="green">1243</FONT>            sdirStatusProto.getParentFullpath().toByteArray());<a name="line.1243"></a>
+<FONT color="green">1244</FONT>      }<a name="line.1244"></a>
+<FONT color="green">1245</FONT>      <a name="line.1245"></a>
+<FONT color="green">1246</FONT>      public static HdfsFileStatusProto convert(HdfsFileStatus fs) {<a name="line.1246"></a>
+<FONT color="green">1247</FONT>        if (fs == null)<a name="line.1247"></a>
+<FONT color="green">1248</FONT>          return null;<a name="line.1248"></a>
+<FONT color="green">1249</FONT>        FileType fType = FileType.IS_FILE;<a name="line.1249"></a>
+<FONT color="green">1250</FONT>        if (fs.isDir()) {<a name="line.1250"></a>
+<FONT color="green">1251</FONT>          fType = FileType.IS_DIR;<a name="line.1251"></a>
+<FONT color="green">1252</FONT>        } else if (fs.isSymlink()) {<a name="line.1252"></a>
+<FONT color="green">1253</FONT>          fType = FileType.IS_SYMLINK;<a name="line.1253"></a>
+<FONT color="green">1254</FONT>        }<a name="line.1254"></a>
+<FONT color="green">1255</FONT>    <a name="line.1255"></a>
+<FONT color="green">1256</FONT>        HdfsFileStatusProto.Builder builder = <a name="line.1256"></a>
+<FONT color="green">1257</FONT>         HdfsFileStatusProto.newBuilder().<a name="line.1257"></a>
+<FONT color="green">1258</FONT>          setLength(fs.getLen()).<a name="line.1258"></a>
+<FONT color="green">1259</FONT>          setFileType(fType).<a name="line.1259"></a>
+<FONT color="green">1260</FONT>          setBlockReplication(fs.getReplication()).<a name="line.1260"></a>
+<FONT color="green">1261</FONT>          setBlocksize(fs.getBlockSize()).<a name="line.1261"></a>
+<FONT color="green">1262</FONT>          setModificationTime(fs.getModificationTime()).<a name="line.1262"></a>
+<FONT color="green">1263</FONT>          setAccessTime(fs.getAccessTime()).<a name="line.1263"></a>
+<FONT color="green">1264</FONT>          setPermission(PBHelper.convert(fs.getPermission())).<a name="line.1264"></a>
+<FONT color="green">1265</FONT>          setOwner(fs.getOwner()).<a name="line.1265"></a>
+<FONT color="green">1266</FONT>          setGroup(fs.getGroup()).<a name="line.1266"></a>
+<FONT color="green">1267</FONT>          setFileId(fs.getFileId()).<a name="line.1267"></a>
+<FONT color="green">1268</FONT>          setChildrenNum(fs.getChildrenNum()).<a name="line.1268"></a>
+<FONT color="green">1269</FONT>          setPath(ByteString.copyFrom(fs.getLocalNameInBytes()));<a name="line.1269"></a>
+<FONT color="green">1270</FONT>        if (fs.isSymlink())  {<a name="line.1270"></a>
+<FONT color="green">1271</FONT>          builder.setSymlink(ByteString.copyFrom(fs.getSymlinkInBytes()));<a name="line.1271"></a>
+<FONT color="green">1272</FONT>        }<a name="line.1272"></a>
+<FONT color="green">1273</FONT>        if (fs instanceof HdfsLocatedFileStatus) {<a name="line.1273"></a>
+<FONT color="green">1274</FONT>          LocatedBlocks locations = ((HdfsLocatedFileStatus)fs).getBlockLocations();<a name="line.1274"></a>
+<FONT color="green">1275</FONT>          if (locations != null) {<a name="line.1275"></a>
+<FONT color="green">1276</FONT>            builder.setLocations(PBHelper.convert(locations));<a name="line.1276"></a>
+<FONT color="green">1277</FONT>          }<a name="line.1277"></a>
+<FONT color="green">1278</FONT>        }<a name="line.1278"></a>
+<FONT color="green">1279</FONT>        return builder.build();<a name="line.1279"></a>
+<FONT color="green">1280</FONT>      }<a name="line.1280"></a>
+<FONT color="green">1281</FONT>      <a name="line.1281"></a>
+<FONT color="green">1282</FONT>      public static SnapshottableDirectoryStatusProto convert(<a name="line.1282"></a>
+<FONT color="green">1283</FONT>          SnapshottableDirectoryStatus status) {<a name="line.1283"></a>
+<FONT color="green">1284</FONT>        if (status == null) {<a name="line.1284"></a>
+<FONT color="green">1285</FONT>          return null;<a name="line.1285"></a>
+<FONT color="green">1286</FONT>        }<a name="line.1286"></a>
+<FONT color="green">1287</FONT>        int snapshotNumber = status.getSnapshotNumber();<a name="line.1287"></a>
+<FONT color="green">1288</FONT>        int snapshotQuota = status.getSnapshotQuota();<a name="line.1288"></a>
+<FONT color="green">1289</FONT>        byte[] parentFullPath = status.getParentFullPath();<a name="line.1289"></a>
+<FONT color="green">1290</FONT>        ByteString parentFullPathBytes = ByteString.copyFrom(<a name="line.1290"></a>
+<FONT color="green">1291</FONT>            parentFullPath == null ? DFSUtil.EMPTY_BYTES : parentFullPath);<a name="line.1291"></a>
+<FONT color="green">1292</FONT>        HdfsFileStatusProto fs = convert(status.getDirStatus());<a name="line.1292"></a>
+<FONT color="green">1293</FONT>        SnapshottableDirectoryStatusProto.Builder builder = <a name="line.1293"></a>
+<FONT color="green">1294</FONT>            SnapshottableDirectoryStatusProto<a name="line.1294"></a>
+<FONT color="green">1295</FONT>            .newBuilder().setSnapshotNumber(snapshotNumber)<a name="line.1295"></a>
+<FONT color="green">1296</FONT>            .setSnapshotQuota(snapshotQuota).setParentFullpath(parentFullPathBytes)<a name="line.1296"></a>
+<FONT color="green">1297</FONT>            .setDirStatus(fs);<a name="line.1297"></a>
+<FONT color="green">1298</FONT>        return builder.build();<a name="line.1298"></a>
+<FONT color="green">1299</FONT>      }<a name="line.1299"></a>
+<FONT color="green">1300</FONT>      <a name="line.1300"></a>
+<FONT color="green">1301</FONT>      public static HdfsFileStatusProto[] convert(HdfsFileStatus[] fs) {<a name="line.1301"></a>
+<FONT color="green">1302</FONT>        if (fs == null) return null;<a name="line.1302"></a>
+<FONT color="green">1303</FONT>        final int len = fs.length;<a name="line.1303"></a>
+<FONT color="green">1304</FONT>        HdfsFileStatusProto[] result = new HdfsFileStatusProto[len];<a name="line.1304"></a>
+<FONT color="green">1305</FONT>        for (int i = 0; i &lt; len; ++i) {<a name="line.1305"></a>
+<FONT color="green">1306</FONT>          result[i] = PBHelper.convert(fs[i]);<a name="line.1306"></a>
+<FONT color="green">1307</FONT>        }<a name="line.1307"></a>
+<FONT color="green">1308</FONT>        return result;<a name="line.1308"></a>
+<FONT color="green">1309</FONT>      }<a name="line.1309"></a>
+<FONT color="green">1310</FONT>      <a name="line.1310"></a>
+<FONT color="green">1311</FONT>      public static HdfsFileStatus[] convert(HdfsFileStatusProto[] fs) {<a name="line.1311"></a>
+<FONT color="green">1312</FONT>        if (fs == null) return null;<a name="line.1312"></a>
+<FONT color="green">1313</FONT>        final int len = fs.length;<a name="line.1313"></a>
+<FONT color="green">1314</FONT>        HdfsFileStatus[] result = new HdfsFileStatus[len];<a name="line.1314"></a>
+<FONT color="green">1315</FONT>        for (int i = 0; i &lt; len; ++i) {<a name="line.1315"></a>
+<FONT color="green">1316</FONT>          result[i] = PBHelper.convert(fs[i]);<a name="line.1316"></a>
+<FONT color="green">1317</FONT>        }<a name="line.1317"></a>
+<FONT color="green">1318</FONT>        return result;<a name="line.1318"></a>
+<FONT color="green">1319</FONT>      }<a name="line.1319"></a>
+<FONT color="green">1320</FONT>      <a name="line.1320"></a>
+<FONT color="green">1321</FONT>      public static DirectoryListing convert(DirectoryListingProto dl) {<a name="line.1321"></a>
+<FONT color="green">1322</FONT>        if (dl == null)<a name="line.1322"></a>
+<FONT color="green">1323</FONT>          return null;<a name="line.1323"></a>
+<FONT color="green">1324</FONT>        List&lt;HdfsFileStatusProto&gt; partList =  dl.getPartialListingList();<a name="line.1324"></a>
+<FONT color="green">1325</FONT>        return new DirectoryListing( <a name="line.1325"></a>
+<FONT color="green">1326</FONT>            partList.isEmpty() ? new HdfsLocatedFileStatus[0] <a name="line.1326"></a>
+<FONT color="green">1327</FONT>              : PBHelper.convert(<a name="line.1327"></a>
+<FONT color="green">1328</FONT>                  partList.toArray(new HdfsFileStatusProto[partList.size()])),<a name="line.1328"></a>
+<FONT color="green">1329</FONT>            dl.getRemainingEntries());<a name="line.1329"></a>
+<FONT color="green">1330</FONT>      }<a name="line.1330"></a>
+<FONT color="green">1331</FONT>    <a name="line.1331"></a>
+<FONT color="green">1332</FONT>      public static DirectoryListingProto convert(DirectoryListing d) {<a name="line.1332"></a>
+<FONT color="green">1333</FONT>        if (d == null)<a name="line.1333"></a>
+<FONT color="green">1334</FONT>          return null;<a name="line.1334"></a>
+<FONT color="green">1335</FONT>        return DirectoryListingProto.newBuilder().<a name="line.1335"></a>
+<FONT color="green">1336</FONT>            addAllPartialListing(Arrays.asList(<a name="line.1336"></a>
+<FONT color="green">1337</FONT>                PBHelper.convert(d.getPartialListing()))).<a name="line.1337"></a>
+<FONT color="green">1338</FONT>            setRemainingEntries(d.getRemainingEntries()).<a name="line.1338"></a>
+<FONT color="green">1339</FONT>            build();<a name="line.1339"></a>
+<FONT color="green">1340</FONT>      }<a name="line.1340"></a>
+<FONT color="green">1341</FONT>    <a name="line.1341"></a>
+<FONT color="green">1342</FONT>      public static long[] convert(GetFsStatsResponseProto res) {<a name="line.1342"></a>
+<FONT color="green">1343</FONT>        long[] result = new long[6];<a name="line.1343"></a>
+<FONT color="green">1344</FONT>        result[ClientProtocol.GET_STATS_CAPACITY_IDX] = res.getCapacity();<a name="line.1344"></a>
+<FONT color="green">1345</FONT>        result[ClientProtocol.GET_STATS_USED_IDX] = res.getUsed();<a name="line.1345"></a>
+<FONT color="green">1346</FONT>        result[ClientProtocol.GET_STATS_REMAINING_IDX] = res.getRemaining();<a name="line.1346"></a>
+<FONT color="green">1347</FONT>        result[ClientProtocol.GET_STATS_UNDER_REPLICATED_IDX] = res.getUnderReplicated();<a name="line.1347"></a>
+<FONT color="green">1348</FONT>        result[ClientProtocol.GET_STATS_CORRUPT_BLOCKS_IDX] = res.getCorruptBlocks();<a name="line.1348"></a>
+<FONT color="green">1349</FONT>        result[ClientProtocol.GET_STATS_MISSING_BLOCKS_IDX] = res.getMissingBlocks();<a name="line.1349"></a>
+<FONT color="green">1350</FONT>        return result;<a name="line.1350"></a>
+<FONT color="green">1351</FONT>      }<a name="line.1351"></a>
+<FONT color="green">1352</FONT>      <a name="line.1352"></a>
+<FONT color="green">1353</FONT>      public static GetFsStatsResponseProto convert(long[] fsStats) {<a name="line.1353"></a>
+<FONT color="green">1354</FONT>        GetFsStatsResponseProto.Builder result = GetFsStatsResponseProto<a name="line.1354"></a>
+<FONT color="green">1355</FONT>            .newBuilder();<a name="line.1355"></a>
+<FONT color="green">1356</FONT>        if (fsStats.length &gt;= ClientProtocol.GET_STATS_CAPACITY_IDX + 1)<a name="line.1356"></a>
+<FONT color="green">1357</FONT>          result.setCapacity(fsStats[ClientProtocol.GET_STATS_CAPACITY_IDX]);<a name="line.1357"></a>
+<FONT color="green">1358</FONT>        if (fsStats.length &gt;= ClientProtocol.GET_STATS_USED_IDX + 1)<a name="line.1358"></a>
+<FONT color="green">1359</FONT>          result.setUsed(fsStats[ClientProtocol.GET_STATS_USED_IDX]);<a name="line.1359"></a>
+<FONT color="green">1360</FONT>        if (fsStats.length &gt;= ClientProtocol.GET_STATS_REMAINING_IDX + 1)<a name="line.1360"></a>
+<FONT color="green">1361</FONT>          result.setRemaining(fsStats[ClientProtocol.GET_STATS_REMAINING_IDX]);<a name="line.1361"></a>
+<FONT color="green">1362</FONT>        if (fsStats.length &gt;= ClientProtocol.GET_STATS_UNDER_REPLICATED_IDX + 1)<a name="line.1362"></a>
+<FONT color="green">1363</FONT>          result.setUnderReplicated(<a name="line.1363"></a>
+<FONT color="green">1364</FONT>                  fsStats[ClientProtocol.GET_STATS_UNDER_REPLICATED_IDX]);<a name="line.1364"></a>
+<FONT color="green">1365</FONT>        if (fsStats.length &gt;= ClientProtocol.GET_STATS_CORRUPT_BLOCKS_IDX + 1)<a name="line.1365"></a>
+<FONT color="green">1366</FONT>          result.setCorruptBlocks(<a name="line.1366"></a>
+<FONT color="green">1367</FONT>              fsStats[ClientProtocol.GET_STATS_CORRUPT_BLOCKS_IDX]);<a name="line.1367"></a>
+<FONT color="green">1368</FONT>        if (fsStats.length &gt;= ClientProtocol.GET_STATS_MISSING_BLOCKS_IDX + 1)<a name="line.1368"></a>
+<FONT color="green">1369</FONT>          result.setMissingBlocks(<a name="line.1369"></a>
+<FONT color="green">1370</FONT>              fsStats[ClientProtocol.GET_STATS_MISSING_BLOCKS_IDX]);<a name="line.1370"></a>
+<FONT color="green">1371</FONT>        return result.build();<a name="line.1371"></a>
+<FONT color="green">1372</FONT>      }<a name="line.1372"></a>
+<FONT color="green">1373</FONT>      <a name="line.1373"></a>
+<FONT color="green">1374</FONT>      public static DatanodeReportTypeProto<a name="line.1374"></a>
+<FONT color="green">1375</FONT>        convert(DatanodeReportType t) {<a name="line.1375"></a>
+<FONT color="green">1376</FONT>        switch (t) {<a name="line.1376"></a>
+<FONT color="green">1377</FONT>        case ALL: return DatanodeReportTypeProto.ALL;<a name="line.1377"></a>
+<FONT color="green">1378</FONT>        case LIVE: return DatanodeReportTypeProto.LIVE;<a name="line.1378"></a>
+<FONT color="green">1379</FONT>        case DEAD: return DatanodeReportTypeProto.DEAD;<a name="line.1379"></a>
+<FONT color="green">1380</FONT>        default: <a name="line.1380"></a>
+<FONT color="green">1381</FONT>          throw new IllegalArgumentException("Unexpected data type report:" + t);<a name="line.1381"></a>
+<FONT color="green">1382</FONT>        }<a name="line.1382"></a>
+<FONT color="green">1383</FONT>      }<a name="line.1383"></a>
+<FONT color="green">1384</FONT>      <a name="line.1384"></a>
+<FONT color="green">1385</FONT>      public static DatanodeReportType <a name="line.1385"></a>
+<FONT color="green">1386</FONT>        convert(DatanodeReportTypeProto t) {<a name="line.1386"></a>
+<FONT color="green">1387</FONT>        switch (t) {<a name="line.1387"></a>
+<FONT color="green">1388</FONT>        case ALL: return DatanodeReportType.ALL;<a name="line.1388"></a>
+<FONT color="green">1389</FONT>        case LIVE: return DatanodeReportType.LIVE;<a name="line.1389"></a>
+<FONT color="green">1390</FONT>        case DEAD: return DatanodeReportType.DEAD;<a name="line.1390"></a>
+<FONT color="green">1391</FONT>        default: <a name="line.1391"></a>
+<FONT color="green">1392</FONT>          throw new IllegalArgumentException("Unexpected data type report:" + t);<a name="line.1392"></a>
+<FONT color="green">1393</FONT>        }<a name="line.1393"></a>
+<FONT color="green">1394</FONT>      }<a name="line.1394"></a>
+<FONT color="green">1395</FONT>    <a name="line.1395"></a>
+<FONT color="green">1396</FONT>      public static SafeModeActionProto convert(<a name="line.1396"></a>
+<FONT color="green">1397</FONT>          SafeModeAction a) {<a name="line.1397"></a>
+<FONT color="green">1398</FONT>        switch (a) {<a name="line.1398"></a>
+<FONT color="green">1399</FONT>        case SAFEMODE_LEAVE:<a name="line.1399"></a>
+<FONT color="green">1400</FONT>          return SafeModeActionProto.SAFEMODE_LEAVE;<a name="line.1400"></a>
+<FONT color="green">1401</FONT>        case SAFEMODE_ENTER:<a name="line.1401"></a>
+<FONT color="green">1402</FONT>          return SafeModeActionProto.SAFEMODE_ENTER;<a name="line.1402"></a>
+<FONT color="green">1403</FONT>        case SAFEMODE_GET:<a name="line.1403"></a>
+<FONT color="green">1404</FONT>          return SafeModeActionProto.SAFEMODE_GET;<a name="line.1404"></a>
+<FONT color="green">1405</FONT>        default:<a name="line.1405"></a>
+<FONT color="green">1406</FONT>          throw new IllegalArgumentException("Unexpected SafeModeAction :" + a);<a name="line.1406"></a>
+<FONT color="green">1407</FONT>        }<a name="line.1407"></a>
+<FONT color="green">1408</FONT>      }<a name="line.1408"></a>
+<FONT color="green">1409</FONT>      <a name="line.1409"></a>
+<FONT color="green">1410</FONT>      public static SafeModeAction convert(<a name="line.1410"></a>
+<FONT color="green">1411</FONT>          ClientNamenodeProtocolProtos.SafeModeActionProto a) {<a name="line.1411"></a>
+<FONT color="green">1412</FONT>        switch (a) {<a name="line.1412"></a>
+<FONT color="green">1413</FONT>        case SAFEMODE_LEAVE:<a name="line.1413"></a>
+<FONT color="green">1414</FONT>          return SafeModeAction.SAFEMODE_LEAVE;<a name="line.1414"></a>
+<FONT color="green">1415</FONT>        case SAFEMODE_ENTER:<a name="line.1415"></a>
+<FONT color="green">1416</FONT>          return SafeModeAction.SAFEMODE_ENTER;<a name="line.1416"></a>
+<FONT color="green">1417</FONT>        case SAFEMODE_GET:<a name="line.1417"></a>
+<FONT color="green">1418</FONT>          return SafeModeAction.SAFEMODE_GET;<a name="line.1418"></a>
+<FONT color="green">1419</FONT>        default:<a name="line.1419"></a>
+<FONT color="green">1420</FONT>          throw new IllegalArgumentException("Unexpected SafeModeAction :" + a);<a name="line.1420"></a>
+<FONT color="green">1421</FONT>        }<a name="line.1421"></a>
+<FONT color="green">1422</FONT>      }<a name="line.1422"></a>
+<FONT color="green">1423</FONT>      <a name="line.1423"></a>
+<FONT color="green">1424</FONT>      public static CorruptFileBlocks convert(CorruptFileBlocksProto c) {<a name="line.1424"></a>
+<FONT color="green">1425</FONT>        if (c == null)<a name="line.1425"></a>
+<FONT color="green">1426</FONT>          return null;<a name="line.1426"></a>
+<FONT color="green">1427</FONT>        List&lt;String&gt; fileList = c.getFilesList();<a name="line.1427"></a>
+<FONT color="green">1428</FONT>        return new CorruptFileBlocks(fileList.toArray(new String[fileList.size()]),<a name="line.1428"></a>
+<FONT color="green">1429</FONT>            c.getCookie());<a name="line.1429"></a>
+<FONT color="green">1430</FONT>      }<a name="line.1430"></a>
+<FONT color="green">1431</FONT>    <a name="line.1431"></a>
+<FONT color="green">1432</FONT>      public static CorruptFileBlocksProto convert(CorruptFileBlocks c) {<a name="line.1432"></a>
+<FONT color="green">1433</FONT>        if (c == null)<a name="line.1433"></a>
+<FONT color="green">1434</FONT>          return null;<a name="line.1434"></a>
+<FONT color="green">1435</FONT>        return CorruptFileBlocksProto.newBuilder().<a name="line.1435"></a>
+<FONT color="green">1436</FONT>            addAllFiles(Arrays.asList(c.getFiles())).<a name="line.1436"></a>
+<FONT color="green">1437</FONT>            setCookie(c.getCookie()).<a name="line.1437"></a>
+<FONT color="green">1438</FONT>            build();<a name="line.1438"></a>
+<FONT color="green">1439</FONT>      }<a name="line.1439"></a>
+<FONT color="green">1440</FONT>      <a name="line.1440"></a>
+<FONT color="green">1441</FONT>      public static ContentSummary convert(ContentSummaryProto cs) {<a name="line.1441"></a>
+<FONT color="green">1442</FONT>        if (cs == null) return null;<a name="line.1442"></a>
+<FONT color="green">1443</FONT>        return new ContentSummary(<a name="line.1443"></a>
+<FONT color="green">1444</FONT>          cs.getLength(), cs.getFileCount(), cs.getDirectoryCount(), cs.getQuota(),<a name="line.1444"></a>
+<FONT color="green">1445</FONT>          cs.getSpaceConsumed(), cs.getSpaceQuota());<a name="line.1445"></a>
+<FONT color="green">1446</FONT>      }<a name="line.1446"></a>
+<FONT color="green">1447</FONT>      <a name="line.1447"></a>
+<FONT color="green">1448</FONT>      public static ContentSummaryProto convert(ContentSummary cs) {<a name="line.1448"></a>
+<FONT color="green">1449</FONT>        if (cs == null) return null;<a name="line.1449"></a>
+<FONT color="green">1450</FONT>        return ContentSummaryProto.newBuilder().<a name="line.1450"></a>
+<FONT color="green">1451</FONT>            setLength(cs.getLength()).<a name="line.1451"></a>
+<FONT color="green">1452</FONT>            setFileCount(cs.getFileCount()).<a name="line.1452"></a>
+<FONT color="green">1453</FONT>            setDirectoryCount(cs.getDirectoryCount()).<a name="line.1453"></a>
+<FONT color="green">1454</FONT>            setQuota(cs.getQuota()).<a name="line.1454"></a>
+<FONT color="green">1455</FONT>            setSpaceConsumed(cs.getSpaceConsumed()).<a name="line.1455"></a>
+<FONT color="green">1456</FONT>            setSpaceQuota(cs.getSpaceQuota()).<a name="line.1456"></a>
+<FONT color="green">1457</FONT>            build();<a name="line.1457"></a>
+<FONT color="green">1458</FONT>      }<a name="line.1458"></a>
+<FONT color="green">1459</FONT>    <a name="line.1459"></a>
+<FONT color="green">1460</FONT>      public static NNHAStatusHeartbeat convert(NNHAStatusHeartbeatProto s) {<a name="line.1460"></a>
+<FONT color="green">1461</FONT>        if (s == null) return null;<a name="line.1461"></a>
+<FONT color="green">1462</FONT>        switch (s.getState()) {<a name="line.1462"></a>
+<FONT color="green">1463</FONT>        case ACTIVE:<a name="line.1463"></a>
+<FONT color="green">1464</FONT>          return new NNHAStatusHeartbeat(HAServiceState.ACTIVE, s.getTxid());<a name="line.1464"></a>
+<FONT color="green">1465</FONT>        case STANDBY:<a name="line.1465"></a>
+<FONT color="green">1466</FONT>          return new NNHAStatusHeartbeat(HAServiceState.STANDBY, s.getTxid());<a name="line.1466"></a>
+<FONT color="green">1467</FONT>        default:<a name="line.1467"></a>
+<FONT color="green">1468</FONT>          throw new IllegalArgumentException("Unexpected NNHAStatusHeartbeat.State:" + s.getState());<a name="line.1468"></a>
+<FONT color="green">1469</FONT>        }<a name="line.1469"></a>
+<FONT color="green">1470</FONT>      }<a name="line.1470"></a>
+<FONT color="green">1471</FONT>    <a name="line.1471"></a>
+<FONT color="green">1472</FONT>      public static NNHAStatusHeartbeatProto convert(NNHAStatusHeartbeat hb) {<a name="line.1472"></a>
+<FONT color="green">1473</FONT>        if (hb == null) return null;<a name="line.1473"></a>
+<FONT color="green">1474</FONT>        NNHAStatusHeartbeatProto.Builder builder =<a name="line.1474"></a>
+<FONT color="green">1475</FONT>          NNHAStatusHeartbeatProto.newBuilder();<a name="line.1475"></a>
+<FONT color="green">1476</FONT>        switch (hb.getState()) {<a name="line.1476"></a>
+<FONT color="green">1477</FONT>          case ACTIVE:<a name="line.1477"></a>
+<FONT color="green">1478</FONT>            builder.setState(NNHAStatusHeartbeatProto.State.ACTIVE);<a name="line.1478"></a>
+<FONT color="green">1479</FONT>            break;<a name="line.1479"></a>
+<FONT color="green">1480</FONT>          case STANDBY:<a name="line.1480"></a>
+<FONT color="green">1481</FONT>            builder.setState(NNHAStatusHeartbeatProto.State.STANDBY);<a name="line.1481"></a>
+<FONT color="green">1482</FONT>            break;<a name="line.1482"></a>
+<FONT color="green">1483</FONT>          default:<a name="line.1483"></a>
+<FONT color="green">1484</FONT>            throw new IllegalArgumentException("Unexpected NNHAStatusHeartbeat.State:" +<a name="line.1484"></a>
+<FONT color="green">1485</FONT>                hb.getState());<a name="line.1485"></a>
+<FONT color="green">1486</FONT>        }<a name="line.1486"></a>
+<FONT color="green">1487</FONT>        builder.setTxid(hb.getTxId());<a name="line.1487"></a>
+<FONT color="green">1488</FONT>        return builder.build();<a name="line.1488"></a>
+<FONT color="green">1489</FONT>      }<a name="line.1489"></a>
+<FONT color="green">1490</FONT>    <a name="line.1490"></a>
+<FONT color="green">1491</FONT>      public static DatanodeStorageProto convert(DatanodeStorage s) {<a name="line.1491"></a>
+<FONT color="green">1492</FONT>        return DatanodeStorageProto.newBuilder()<a name="line.1492"></a>
+<FONT color="green">1493</FONT>            .setState(PBHelper.convertState(s.getState()))<a name="line.1493"></a>
+<FONT color="green">1494</FONT>            .setStorageType(PBHelper.convertStorageType(s.getStorageType()))<a name="line.1494"></a>
+<FONT color="green">1495</FONT>            .setStorageUuid(s.getStorageID()).build();<a name="line.1495"></a>
+<FONT color="green">1496</FONT>      }<a name="line.1496"></a>
+<FONT color="green">1497</FONT>    <a name="line.1497"></a>
+<FONT color="green">1498</FONT>      private static StorageState convertState(State state) {<a name="line.1498"></a>
+<FONT color="green">1499</FONT>        switch(state) {<a name="line.1499"></a>
+<FONT color="green">1500</FONT>        case READ_ONLY:<a name="line.1500"></a>
+<FONT color="green">1501</FONT>          return StorageState.READ_ONLY;<a name="line.1501"></a>
+<FONT color="green">1502</FONT>        case NORMAL:<a name="line.1502"></a>
+<FONT color="green">1503</FONT>        default:<a name="line.1503"></a>
+<FONT color="green">1504</FONT>          return StorageState.NORMAL;<a name="line.1504"></a>
+<FONT color="green">1505</FONT>        }<a name="line.1505"></a>
+<FONT color="green">1506</FONT>      }<a name="line.1506"></a>
+<FONT color="green">1507</FONT>    <a name="line.1507"></a>
+<FONT color="green">1508</FONT>      private static StorageTypeProto convertStorageType(<a name="line.1508"></a>
+<FONT color="green">1509</FONT>          StorageType type) {<a name="line.1509"></a>
+<FONT color="green">1510</FONT>        switch(type) {<a name="line.1510"></a>
+<FONT color="green">1511</FONT>        case DISK:<a name="line.1511"></a>
+<FONT color="green">1512</FONT>          return StorageTypeProto.DISK;<a name="line.1512"></a>
+<FONT color="green">1513</FONT>        case SSD:<a name="line.1513"></a>
+<FONT color="green">1514</FONT>          return StorageTypeProto.SSD;<a name="line.1514"></a>
+<FONT color="green">1515</FONT>        default:<a name="line.1515"></a>
+<FONT color="green">1516</FONT>          throw new IllegalStateException(<a name="line.1516"></a>
+<FONT color="green">1517</FONT>              "BUG: StorageType not found, type=" + type);<a name="line.1517"></a>
+<FONT color="green">1518</FONT>        }<a name="line.1518"></a>
+<FONT color="green">1519</FONT>      }<a name="line.1519"></a>
+<FONT color="green">1520</FONT>    <a name="line.1520"></a>
+<FONT color="green">1521</FONT>      public static DatanodeStorage convert(DatanodeStorageProto s) {<a name="line.1521"></a>
+<FONT color="green">1522</FONT>        return new DatanodeStorage(s.getStorageUuid(),<a name="line.1522"></a>
+<FONT color="green">1523</FONT>                                   PBHelper.convertState(s.getState()),<a name="line.1523"></a>
+<FONT color="green">1524</FONT>                                   PBHelper.convertType(s.getStorageType()));<a name="line.1524"></a>
+<FONT color="green">1525</FONT>      }<a name="line.1525"></a>
+<FONT color="green">1526</FONT>    <a name="line.1526"></a>
+<FONT color="green">1527</FONT>      private static State convertState(StorageState state) {<a name="line.1527"></a>
+<FONT color="green">1528</FONT>        switch(state) {<a name="line.1528"></a>
+<FONT color="green">1529</FONT>        case READ_ONLY:<a name="line.1529"></a>
+<FONT color="green">1530</FONT>          return DatanodeStorage.State.READ_ONLY;<a name="line.1530"></a>
+<FONT color="green">1531</FONT>        case NORMAL:<a name="line.1531"></a>
+<FONT color="green">1532</FONT>        default:<a name="line.1532"></a>
+<FONT color="green">1533</FONT>          return DatanodeStorage.State.NORMAL;<a name="line.1533"></a>
+<FONT color="green">1534</FONT>        }<a name="line.1534"></a>
+<FONT color="green">1535</FONT>      }<a name="line.1535"></a>
+<FONT color="green">1536</FONT>    <a name="line.1536"></a>
+<FONT color="green">1537</FONT>      private static StorageType convertType(StorageTypeProto type) {<a name="line.1537"></a>
+<FONT color="green">1538</FONT>        switch(type) {<a name="line.1538"></a>
+<FONT color="green">1539</FONT>          case DISK:<a name="line.1539"></a>
+<FONT color="green">1540</FONT>            return StorageType.DISK;<a name="line.1540"></a>
+<FONT color="green">1541</FONT>          case SSD:<a name="line.1541"></a>
+<FONT color="green">1542</FONT>            return StorageType.SSD;<a name="line.1542"></a>
+<FONT color="green">1543</FONT>          default:<a name="line.1543"></a>
+<FONT color="green">1544</FONT>            throw new IllegalStateException(<a name="line.1544"></a>
+<FONT color="green">1545</FONT>                "BUG: StorageTypeProto not found, type=" + type);<a name="line.1545"></a>
+<FONT color="green">1546</FONT>        }<a name="line.1546"></a>
+<FONT color="green">1547</FONT>      }<a name="line.1547"></a>
+<FONT color="green">1548</FONT>    <a name="line.1548"></a>
+<FONT color="green">1549</FONT>      private static StorageType[] convertStorageTypeProtos(<a name="line.1549"></a>
+<FONT color="green">1550</FONT>          List&lt;StorageTypeProto&gt; storageTypesList) {<a name="line.1550"></a>
+<FONT color="green">1551</FONT>        final StorageType[] storageTypes = new StorageType[storageTypesList.size()];<a name="line.1551"></a>
+<FONT color="green">1552</FONT>        for (int i = 0; i &lt; storageTypes.length; ++i) {<a name="line.1552"></a>
+<FONT color="green">1553</FONT>          storageTypes[i] = PBHelper.convertType(storageTypesList.get(i));<a name="line.1553"></a>
+<FONT color="green">1554</FONT>        }<a name="line.1554"></a>
+<FONT color="green">1555</FONT>        return storageTypes;<a name="line.1555"></a>
+<FONT color="green">1556</FONT>      }<a name="line.1556"></a>
+<FONT color="green">1557</FONT>    <a name="line.1557"></a>
+<FONT color="green">1558</FONT>      public static StorageReportProto convert(StorageReport r) {<a name="line.1558"></a>
+<FONT color="green">1559</FONT>        StorageReportProto.Builder builder = StorageReportProto.newBuilder()<a name="line.1559"></a>
+<FONT color="green">1560</FONT>            .setBlockPoolUsed(r.getBlockPoolUsed()).setCapacity(r.getCapacity())<a name="line.1560"></a>
+<FONT color="green">1561</FONT>            .setDfsUsed(r.getDfsUsed()).setRemaining(r.getRemaining())<a name="line.1561"></a>
+<FONT color="green">1562</FONT>            .setStorageUuid(r.getStorage().getStorageID())<a name="line.1562"></a>
+<FONT color="green">1563</FONT>            .setStorage(convert(r.getStorage()));<a name="line.1563"></a>
+<FONT color="green">1564</FONT>        return builder.build();<a name="line.1564"></a>
+<FONT color="green">1565</FONT>      }<a name="line.1565"></a>
+<FONT color="green">1566</FONT>    <a name="line.1566"></a>
+<FONT color="green">1567</FONT>      public static StorageReport convert(StorageReportProto p) {<a name="line.1567"></a>
+<FONT color="green">1568</FONT>        return new StorageReport(<a name="line.1568"></a>
+<FONT color="green">1569</FONT>            p.hasStorage() ?<a name="line.1569"></a>
+<FONT color="green">1570</FONT>                convert(p.getStorage()) :<a name="line.1570"></a>
+<FONT color="green">1571</FONT>                new DatanodeStorage(p.getStorageUuid()),<a name="line.1571"></a>
+<FONT color="green">1572</FONT>            p.getFailed(), p.getCapacity(), p.getDfsUsed(), p.getRemaining(),<a name="line.1572"></a>
+<FONT color="green">1573</FONT>            p.getBlockPoolUsed());<a name="line.1573"></a>
+<FONT color="green">1574</FONT>      }<a name="line.1574"></a>
+<FONT color="green">1575</FONT>    <a name="line.1575"></a>
+<FONT color="green">1576</FONT>      public static StorageReport[] convertStorageReports(<a name="line.1576"></a>
+<FONT color="green">1577</FONT>          List&lt;StorageReportProto&gt; list) {<a name="line.1577"></a>
+<FONT color="green">1578</FONT>        final StorageReport[] report = new StorageReport[list.size()];<a name="line.1578"></a>
+<FONT color="green">1579</FONT>        for (int i = 0; i &lt; report.length; i++) {<a name="line.1579"></a>
+<FONT color="green">1580</FONT>          report[i] = convert(list.get(i));<a name="line.1580"></a>
+<FONT color="green">1581</FONT>        }<a name="line.1581"></a>
+<FONT color="green">1582</FONT>        return report;<a name="line.1582"></a>
+<FONT color="green">1583</FONT>      }<a name="line.1583"></a>
+<FONT color="green">1584</FONT>    <a name="line.1584"></a>
+<FONT color="green">1585</FONT>      public static JournalInfo convert(JournalInfoProto info) {<a name="line.1585"></a>
+<FONT color="green">1586</FONT>        int lv = info.hasLayoutVersion() ? info.getLayoutVersion() : 0;<a name="line.1586"></a>
+<FONT color="green">1587</FONT>        int nsID = info.hasNamespaceID() ? info.getNamespaceID() : 0;<a name="line.1587"></a>
+<FONT color="green">1588</FONT>        return new JournalInfo(lv, info.getClusterID(), nsID);<a name="line.1588"></a>
+<FONT color="green">1589</FONT>      }<a name="line.1589"></a>
+<FONT color="green">1590</FONT>    <a name="line.1590"></a>
+<FONT color="green">1591</FONT>      /**<a name="line.1591"></a>
+<FONT color="green">1592</FONT>       * Method used for converting {@link JournalInfoProto} sent from Namenode<a name="line.1592"></a>
+<FONT color="green">1593</FONT>       * to Journal receivers to {@link NamenodeRegistration}.<a name="line.1593"></a>
+<FONT color="green">1594</FONT>       */<a name="line.1594"></a>
+<FONT color="green">1595</FONT>      public static JournalInfoProto convert(JournalInfo j) {<a name="line.1595"></a>
+<FONT color="green">1596</FONT>        return JournalInfoProto.newBuilder().setClusterID(j.getClusterId())<a name="line.1596"></a>
+<FONT color="green">1597</FONT>            .setLayoutVersion(j.getLayoutVersion())<a name="line.1597"></a>
+<FONT color="green">1598</FONT>            .setNamespaceID(j.getNamespaceId()).build();<a name="line.1598"></a>
+<FONT color="green">1599</FONT>      } <a name="line.1599"></a>
+<FONT color="green">1600</FONT>      <a name="line.1600"></a>
+<FONT color="green">1601</FONT>      public static SnapshottableDirectoryStatus[] convert(<a name="line.1601"></a>
+<FONT color="green">1602</FONT>          SnapshottableDirectoryListingProto sdlp) {<a name="line.1602"></a>
+<FONT color="green">1603</FONT>        if (sdlp == null)<a name="line.1603"></a>
+<FONT color="green">1604</FONT>          return null;<a name="line.1604"></a>
+<FONT color="green">1605</FONT>        List&lt;SnapshottableDirectoryStatusProto&gt; list = sdlp<a name="line.1605"></a>
+<FONT color="green">1606</FONT>            .getSnapshottableDirListingList();<a name="line.1606"></a>
+<FONT color="green">1607</FONT>        if (list.isEmpty()) {<a name="line.1607"></a>
+<FONT color="green">1608</FONT>          return new SnapshottableDirectoryStatus[0];<a name="line.1608"></a>
+<FONT color="green">1609</FONT>        } else {<a name="line.1609"></a>
+<FONT color="green">1610</FONT>          SnapshottableDirectoryStatus[] result = <a name="line.1610"></a>
+<FONT color="green">1611</FONT>              new SnapshottableDirectoryStatus[list.size()];<a name="line.1611"></a>
+<FONT color="green">1612</FONT>          for (int i = 0; i &lt; list.size(); i++) {<a name="line.1612"></a>
+<FONT color="green">1613</FONT>            result[i] = PBHelper.convert(list.get(i));<a name="line.1613"></a>
+<FONT color="green">1614</FONT>          }<a name="line.1614"></a>
+<FONT color="green">1615</FONT>          return result;<a name="line.1615"></a>
+<FONT color="green">1616</FONT>        }<a name="line.1616"></a>
+<FONT color="green">1617</FONT>      }<a name="line.1617"></a>
+<FONT color="green">1618</FONT>      <a name="line.1618"></a>
+<FONT color="green">1619</FONT>      public static SnapshottableDirectoryListingProto convert(<a name="line.1619"></a>
+<FONT color="green">1620</FONT>          SnapshottableDirectoryStatus[] status) {<a name="line.1620"></a>
+<FONT color="green">1621</FONT>        if (status == null)<a name="line.1621"></a>
+<FONT color="green">1622</FONT>          return null;<a name="line.1622"></a>
+<FONT color="green">1623</FONT>        SnapshottableDirectoryStatusProto[] protos = <a name="line.1623"></a>
+<FONT color="green">1624</FONT>            new SnapshottableDirectoryStatusProto[status.length];<a name="line.1624"></a>
+<FONT color="green">1625</FONT>        for (int i = 0; i &lt; status.length; i++) {<a name="line.1625"></a>
+<FONT color="green">1626</FONT>          protos[i] = PBHelper.convert(status[i]);<a name="line.1626"></a>
+<FONT color="green">1627</FONT>        }<a name="line.1627"></a>
+<FONT color="green">1628</FONT>        List&lt;SnapshottableDirectoryStatusProto&gt; protoList = Arrays.asList(protos);<a name="line.1628"></a>
+<FONT color="green">1629</FONT>        return SnapshottableDirectoryListingProto.newBuilder()<a name="line.1629"></a>
+<FONT color="green">1630</FONT>            .addAllSnapshottableDirListing(protoList).build();<a name="line.1630"></a>
+<FONT color="green">1631</FONT>      }<a name="line.1631"></a>
+<FONT color="green">1632</FONT>      <a name="line.1632"></a>
+<FONT color="green">1633</FONT>      public static DiffReportEntry convert(SnapshotDiffReportEntryProto entry) {<a name="line.1633"></a>
+<FONT color="green">1634</FONT>        if (entry == null) {<a name="line.1634"></a>
+<FONT color="green">1635</FONT>          return null;<a name="line.1635"></a>
+<FONT color="green">1636</FONT>        }<a name="line.1636"></a>
+<FONT color="green">1637</FONT>        DiffType type = DiffType.getTypeFromLabel(entry<a name="line.1637"></a>
+<FONT color="green">1638</FONT>            .getModificationLabel());<a name="line.1638"></a>
+<FONT color="green">1639</FONT>        return type == null ? null : <a name="line.1639"></a>
+<FONT color="green">1640</FONT>          new DiffReportEntry(type, entry.getFullpath().toByteArray());<a name="line.1640"></a>
+<FONT color="green">1641</FONT>      }<a name="line.1641"></a>
+<FONT color="green">1642</FONT>      <a name="line.1642"></a>
+<FONT color="green">1643</FONT>      public static SnapshotDiffReportEntryProto convert(DiffReportEntry entry) {<a name="line.1643"></a>
+<FONT color="green">1644</FONT>        if (entry == null) {<a name="line.1644"></a>
+<FONT color="green">1645</FONT>          return null;<a name="line.1645"></a>
+<FONT color="green">1646</FONT>        }<a name="line.1646"></a>
+<FONT color="green">1647</FONT>        byte[] fullPath = entry.getRelativePath();<a name="line.1647"></a>
+<FONT color="green">1648</FONT>        ByteString fullPathString = ByteString<a name="line.1648"></a>
+<FONT color="green">1649</FONT>            .copyFrom(fullPath == null ? DFSUtil.EMPTY_BYTES : fullPath);<a name="line.1649"></a>
+<FONT color="green">1650</FONT>        <a name="line.1650"></a>
+<FONT color="green">1651</FONT>        String modification = entry.getType().getLabel();<a name="line.1651"></a>
+<FONT color="green">1652</FONT>        <a name="line.1652"></a>
+<FONT color="green">1653</FONT>        SnapshotDiffReportEntryProto entryProto = SnapshotDiffReportEntryProto<a name="line.1653"></a>
+<FONT color="green">1654</FONT>            .newBuilder().setFullpath(fullPathString)<a name="line.1654"></a>
+<FONT color="green">1655</FONT>            .setModificationLabel(modification).build();<a name="line.1655"></a>
+<FONT color="green">1656</FONT>        return entryProto;<a name="line.1656"></a>
+<FONT color="green">1657</FONT>      }<a name="line.1657"></a>
+<FONT color="green">1658</FONT>      <a name="line.1658"></a>
+<FONT color="green">1659</FONT>      public static SnapshotDiffReport convert(SnapshotDiffReportProto reportProto) {<a name="line.1659"></a>
+<FONT color="green">1660</FONT>        if (reportProto == null) {<a name="line.1660"></a>
+<FONT color="green">1661</FONT>          return null;<a name="line.1661"></a>
+<FONT color="green">1662</FONT>        }<a name="line.1662"></a>
+<FONT color="green">1663</FONT>        String snapshotDir = reportProto.getSnapshotRoot();<a name="line.1663"></a>
+<FONT color="green">1664</FONT>        String fromSnapshot = reportProto.getFromSnapshot();<a name="line.1664"></a>
+<FONT color="green">1665</FONT>        String toSnapshot = reportProto.getToSnapshot();<a name="line.1665"></a>
+<FONT color="green">1666</FONT>        List&lt;SnapshotDiffReportEntryProto&gt; list = reportProto<a name="line.1666"></a>
+<FONT color="green">1667</FONT>            .getDiffReportEntriesList();<a name="line.1667"></a>
+<FONT color="green">1668</FONT>        List&lt;DiffReportEntry&gt; entries = new ArrayList&lt;DiffReportEntry&gt;();<a name="line.1668"></a>
+<FONT color="green">1669</FONT>        for (SnapshotDiffReportEntryProto entryProto : list) {<a name="line.1669"></a>
+<FONT color="green">1670</FONT>          DiffReportEntry entry = convert(entryProto);<a name="line.1670"></a>
+<FONT color="green">1671</FONT>          if (entry != null)<a name="line.1671"></a>
+<FONT color="green">1672</FONT>            entries.add(entry);<a name="line.1672"></a>
+<FONT color="green">1673</FONT>        }<a name="line.1673"></a>
+<FONT color="green">1674</FONT>        return new SnapshotDiffReport(snapshotDir, fromSnapshot, toSnapshot,<a name="line.1674"></a>
+<FONT color="green">1675</FONT>            entries);<a name="line.1675"></a>
+<FONT color="green">1676</FONT>      }<a name="line.1676"></a>
+<FONT color="green">1677</FONT>      <a name="line.1677"></a>
+<FONT color="green">1678</FONT>      public static SnapshotDiffReportProto convert(SnapshotDiffReport report) {<a name="line.1678"></a>
+<FONT color="green">1679</FONT>        if (report == null) {<a name="line.1679"></a>
+<FONT color="green">1680</FONT>          return null;<a name="line.1680"></a>
+<FONT color="green">1681</FONT>        }<a name="line.1681"></a>
+<FONT color="green">1682</FONT>        List&lt;DiffReportEntry&gt; entries = report.getDiffList();<a name="line.1682"></a>
+<FONT color="green">1683</FONT>        List&lt;SnapshotDiffReportEntryProto&gt; entryProtos = <a name="line.1683"></a>
+<FONT color="green">1684</FONT>            new ArrayList&lt;SnapshotDiffReportEntryProto&gt;();<a name="line.1684"></a>
+<FONT color="green">1685</FONT>        for (DiffReportEntry entry : entries) {<a name="line.1685"></a>
+<FONT color="green">1686</FONT>          SnapshotDiffReportEntryProto entryProto = convert(entry);<a name="line.1686"></a>
+<FONT color="green">1687</FONT>          if (entryProto != null)<a name="line.1687"></a>
+<FONT color="green">1688</FONT>            entryProtos.add(entryProto);<a name="line.1688"></a>
+<FONT color="green">1689</FONT>        }<a name="line.1689"></a>
+<FONT color="green">1690</FONT>        <a name="line.1690"></a>
+<FONT color="green">1691</FONT>        SnapshotDiffReportProto reportProto = SnapshotDiffReportProto.newBuilder()<a name="line.1691"></a>
+<FONT color="green">1692</FONT>            .setSnapshotRoot(report.getSnapshotRoot())<a name="line.1692"></a>
+<FONT color="green">1693</FONT>            .setFromSnapshot(report.getFromSnapshot())<a name="line.1693"></a>
+<FONT color="green">1694</FONT>            .setToSnapshot(report.getLaterSnapshotName())<a name="line.1694"></a>
+<FONT color="green">1695</FONT>            .addAllDiffReportEntries(entryProtos).build();<a name="line.1695"></a>
+<FONT color="green">1696</FONT>        return reportProto;<a name="line.1696"></a>
+<FONT color="green">1697</FONT>      }<a name="line.1697"></a>
+<FONT color="green">1698</FONT>    <a name="line.1698"></a>
+<FONT color="green">1699</FONT>      public static DataChecksum.Type convert(HdfsProtos.ChecksumTypeProto type) {<a name="line.1699"></a>
+<FONT color="green">1700</FONT>        return DataChecksum.Type.valueOf(type.getNumber());<a name="line.1700"></a>
+<FONT color="green">1701</FONT>      }<a name="line.1701"></a>
+<FONT color="green">1702</FONT>    <a name="line.1702"></a>
+<FONT color="green">1703</FONT>      public static CacheDirectiveInfoProto convert<a name="line.1703"></a>
+<FONT color="green">1704</FONT>          (CacheDirectiveInfo info) {<a name="line.1704"></a>
+<FONT color="green">1705</FONT>        CacheDirectiveInfoProto.Builder builder = <a name="line.1705"></a>
+<FONT color="green">1706</FONT>            CacheDirectiveInfoProto.newBuilder();<a name="line.1706"></a>
+<FONT color="green">1707</FONT>        if (info.getId() != null) {<a name="line.1707"></a>
+<FONT color="green">1708</FONT>          builder.setId(info.getId());<a name="line.1708"></a>
+<FONT color="green">1709</FONT>        }<a name="line.1709"></a>
+<FONT color="green">1710</FONT>        if (info.getPath() != null) {<a name="line.1710"></a>
+<FONT color="green">1711</FONT>          builder.setPath(info.getPath().toUri().getPath());<a name="line.1711"></a>
+<FONT color="green">1712</FONT>        }<a name="line.1712"></a>
+<FONT color="green">1713</FONT>        if (info.getReplication() != null) {<a name="line.1713"></a>
+<FONT color="green">1714</FONT>          builder.setReplication(info.getReplication());<a name="line.1714"></a>
+<FONT color="green">1715</FONT>        }<a name="line.1715"></a>
+<FONT color="green">1716</FONT>        if (info.getPool() != null) {<a name="line.1716"></a>
+<FONT color="green">1717</FONT>          builder.setPool(info.getPool());<a name="line.1717"></a>
+<FONT color="green">1718</FONT>        }<a name="line.1718"></a>
+<FONT color="green">1719</FONT>        if (info.getExpiration() != null) {<a name="line.1719"></a>
+<FONT color="green">1720</FONT>          builder.setExpiration(convert(info.getExpiration()));<a name="line.1720"></a>
+<FONT color="green">1721</FONT>        }<a name="line.1721"></a>
+<FONT color="green">1722</FONT>        return builder.build();<a name="line.1722"></a>
+<FONT color="green">1723</FONT>      }<a name="line.1723"></a>
+<FONT color="green">1724</FONT>    <a name="line.1724"></a>
+<FONT color="green">1725</FONT>      public static CacheDirectiveInfo convert<a name="line.1725"></a>
+<FONT color="green">1726</FONT>          (CacheDirectiveInfoProto proto) {<a name="line.1726"></a>
+<FONT color="green">1727</FONT>        CacheDirectiveInfo.Builder builder =<a name="line.1727"></a>
+<FONT color="green">1728</FONT>            new CacheDirectiveInfo.Builder();<a name="line.1728"></a>
+<FONT color="green">1729</FONT>        if (proto.hasId()) {<a name="line.1729"></a>
+<FONT color="green">1730</FONT>          builder.setId(proto.getId());<a name="line.1730"></a>
+<FONT color="green">1731</FONT>        }<a name="line.1731"></a>
+<FONT color="green">1732</FONT>        if (proto.hasPath()) {<a name="line.1732"></a>
+<FONT color="green">1733</FONT>          builder.setPath(new Path(proto.getPath()));<a name="line.1733"></a>
+<FONT color="green">1734</FONT>        }<a name="line.1734"></a>
+<FONT color="green">1735</FONT>        if (proto.hasReplication()) {<a name="line.1735"></a>
+<FONT color="green">1736</FONT>          builder.setReplication(Shorts.checkedCast(<a name="line.1736"></a>
+<FONT color="green">1737</FONT>              proto.getReplication()));<a name="line.1737"></a>
+<FONT color="green">1738</FONT>        }<a name="line.1738"></a>
+<FONT color="green">1739</FONT>        if (proto.hasPool()) {<a name="line.1739"></a>
+<FONT color="green">1740</FONT>          builder.setPool(proto.getPool());<a name="line.1740"></a>
+<FONT color="green">1741</FONT>        }<a name="line.1741"></a>
+<FONT color="green">1742</FONT>        if (proto.hasExpiration()) {<a name="line.1742"></a>
+<FONT color="green">1743</FONT>          builder.setExpiration(convert(proto.getExpiration()));<a name="line.1743"></a>
+<FONT color="green">1744</FONT>        }<a name="line.1744"></a>
+<FONT color="green">1745</FONT>        return builder.build();<a name="line.1745"></a>
+<FONT color="green">1746</FONT>      }<a name="line.1746"></a>
+<FONT color="green">1747</FONT>    <a name="line.1747"></a>
+<FONT color="green">1748</FONT>      public static CacheDirectiveInfoExpirationProto convert(<a name="line.1748"></a>
+<FONT color="green">1749</FONT>          CacheDirectiveInfo.Expiration expiration) {<a name="line.1749"></a>
+<FONT color="green">1750</FONT>        return CacheDirectiveInfoExpirationProto.newBuilder()<a name="line.1750"></a>
+<FONT color="green">1751</FONT>            .setIsRelative(expiration.isRelative())<a name="line.1751"></a>
+<FONT color="green">1752</FONT>            .setMillis(expiration.getMillis())<a name="line.1752"></a>
+<FONT color="green">1753</FONT>            .build();<a name="line.1753"></a>
+<FONT color="green">1754</FONT>      }<a name="line.1754"></a>
+<FONT color="green">1755</FONT>    <a name="line.1755"></a>
+<FONT color="green">1756</FONT>      public static CacheDirectiveInfo.Expiration convert(<a name="line.1756"></a>
+<FONT color="green">1757</FONT>          CacheDirectiveInfoExpirationProto proto) {<a name="line.1757"></a>
+<FONT color="green">1758</FONT>        if (proto.getIsRelative()) {<a name="line.1758"></a>
+<FONT color="green">1759</FONT>          return CacheDirectiveInfo.Expiration.newRelative(proto.getMillis());<a name="line.1759"></a>
+<FONT color="green">1760</FONT>        }<a name="line.1760"></a>
+<FONT color="green">1761</FONT>        return CacheDirectiveInfo.Expiration.newAbsolute(proto.getMillis());<a name="line.1761"></a>
+<FONT color="green">1762</FONT>      }<a name="line.1762"></a>
+<FONT color="green">1763</FONT>    <a name="line.1763"></a>
+<FONT color="green">1764</FONT>      public static CacheDirectiveStatsProto convert(CacheDirectiveStats stats) {<a name="line.1764"></a>
+<FONT color="green">1765</FONT>        CacheDirectiveStatsProto.Builder builder = <a name="line.1765"></a>
+<FONT color="green">1766</FONT>            CacheDirectiveStatsProto.newBuilder();<a name="line.1766"></a>
+<FONT color="green">1767</FONT>        builder.setBytesNeeded(stats.getBytesNeeded());<a name="line.1767"></a>
+<FONT color="green">1768</FONT>        builder.setBytesCached(stats.getBytesCached());<a name="line.1768"></a>
+<FONT color="green">1769</FONT>        builder.setFilesNeeded(stats.getFilesNeeded());<a name="line.1769"></a>
+<FONT color="green">1770</FONT>        builder.setFilesCached(stats.getFilesCached());<a name="line.1770"></a>
+<FONT color="green">1771</FONT>        builder.setHasExpired(stats.hasExpired());<a name="line.1771"></a>
+<FONT color="green">1772</FONT>        return builder.build();<a name="line.1772"></a>
+<FONT color="green">1773</FONT>      }<a name="line.1773"></a>
+<FONT color="green">1774</FONT>      <a name="line.1774"></a>
+<FONT color="green">1775</FONT>      public static CacheDirectiveStats convert(CacheDirectiveStatsProto proto) {<a name="line.1775"></a>
+<FONT color="green">1776</FONT>        CacheDirectiveStats.Builder builder = new CacheDirectiveStats.Builder();<a name="line.1776"></a>
+<FONT color="green">1777</FONT>        builder.setBytesNeeded(proto.getBytesNeeded());<a name="line.1777"></a>
+<FONT color="green">1778</FONT>        builder.setBytesCached(proto.getBytesCached());<a name="line.1778"></a>
+<FONT color="green">1779</FONT>        builder.setFilesNeeded(proto.getFilesNeeded());<a name="line.1779"></a>
+<FONT color="green">1780</FONT>        builder.setFilesCached(proto.getFilesCached());<a name="line.1780"></a>
+<FONT color="green">1781</FONT>        builder.setHasExpired(proto.getHasExpired());<a name="line.1781"></a>
+<FONT color="green">1782</FONT>        return builder.build();<a name="line.1782"></a>
+<FONT color="green">1783</FONT>      }<a name="line.1783"></a>
+<FONT color="green">1784</FONT>    <a name="line.1784"></a>
+<FONT color="green">1785</FONT>      public static CacheDirectiveEntryProto convert(CacheDirectiveEntry entry) {<a name="line.1785"></a>
+<FONT color="green">1786</FONT>        CacheDirectiveEntryProto.Builder builder = <a name="line.1786"></a>
+<FONT color="green">1787</FONT>            CacheDirectiveEntryProto.newBuilder();<a name="line.1787"></a>
+<FONT color="green">1788</FONT>        builder.setInfo(PBHelper.convert(entry.getInfo()));<a name="line.1788"></a>
+<FONT color="green">1789</FONT>        builder.setStats(PBHelper.convert(entry.getStats()));<a name="line.1789"></a>
+<FONT color="green">1790</FONT>        return builder.build();<a name="line.1790"></a>
+<FONT color="green">1791</FONT>      }<a name="line.1791"></a>
+<FONT color="green">1792</FONT>      <a name="line.1792"></a>
+<FONT color="green">1793</FONT>      public static CacheDirectiveEntry convert(CacheDirectiveEntryProto proto) {<a name="line.1793"></a>
+<FONT color="green">1794</FONT>        CacheDirectiveInfo info = PBHelper.convert(proto.getInfo());<a name="line.1794"></a>
+<FONT color="green">1795</FONT>        CacheDirectiveStats stats = PBHelper.convert(proto.getStats());<a name="line.1795"></a>
+<FONT color="green">1796</FONT>        return new CacheDirectiveEntry(info, stats);<a name="line.1796"></a>
+<FONT color="green">1797</FONT>      }<a name="line.1797"></a>
+<FONT color="green">1798</FONT>    <a name="line.1798"></a>
+<FONT color="green">1799</FONT>      public static CachePoolInfoProto convert(CachePoolInfo info) {<a name="line.1799"></a>
+<FONT color="green">1800</FONT>        CachePoolInfoProto.Builder builder = CachePoolInfoProto.newBuilder();<a name="line.1800"></a>
+<FONT color="green">1801</FONT>        builder.setPoolName(info.getPoolName());<a name="line.1801"></a>
+<FONT color="green">1802</FONT>        if (info.getOwnerName() != null) {<a name="line.1802"></a>
+<FONT color="green">1803</FONT>          builder.setOwnerName(info.getOwnerName());<a name="line.1803"></a>
+<FONT color="green">1804</FONT>        }<a name="line.1804"></a>
+<FONT color="green">1805</FONT>        if (info.getGroupName() != null) {<a name="line.1805"></a>
+<FONT color="green">1806</FONT>          builder.setGroupName(info.getGroupName());<a name="line.1806"></a>
+<FONT color="green">1807</FONT>        }<a name="line.1807"></a>
+<FONT color="green">1808</FONT>        if (info.getMode() != null) {<a name="line.1808"></a>
+<FONT color="green">1809</FONT>          builder.setMode(info.getMode().toShort());<a name="line.1809"></a>
+<FONT color="green">1810</FONT>        }<a name="line.1810"></a>
+<FONT color="green">1811</FONT>        if (info.getLimit() != null) {<a name="line.1811"></a>
+<FONT color="green">1812</FONT>          builder.setLimit(info.getLimit());<a name="line.1812"></a>
+<FONT color="green">1813</FONT>        }<a name="line.1813"></a>
+<FONT color="green">1814</FONT>        if (info.getMaxRelativeExpiryMs() != null) {<a name="line.1814"></a>
+<FONT color="green">1815</FONT>          builder.setMaxRelativeExpiry(info.getMaxRelativeExpiryMs());<a name="line.1815"></a>
+<FONT color="green">1816</FONT>        }<a name="line.1816"></a>
+<FONT color="green">1817</FONT>        return builder.build();<a name="line.1817"></a>
+<FONT color="green">1818</FONT>      }<a name="line.1818"></a>
+<FONT color="green">1819</FONT>    <a name="line.1819"></a>
+<FONT color="green">1820</FONT>      public static CachePoolInfo convert (CachePoolInfoProto proto) {<a name="line.1820"></a>
+<FONT color="green">1821</FONT>        // Pool name is a required field, the rest are optional<a name="line.1821"></a>
+<FONT color="green">1822</FONT>        String poolName = checkNotNull(proto.getPoolName());<a name="line.1822"></a>
+<FONT color="green">1823</FONT>        CachePoolInfo info = new CachePoolInfo(poolName);<a name="line.1823"></a>
+<FONT color="green">1824</FONT>        if (proto.hasOwnerName()) {<a name="line.1824"></a>
+<FONT color="green">1825</FONT>            info.setOwnerName(proto.getOwnerName());<a name="line.1825"></a>
+<FONT color="green">1826</FONT>        }<a name="line.1826"></a>
+<FONT color="green">1827</FONT>        if (proto.hasGroupName()) {<a name="line.1827"></a>
+<FONT color="green">1828</FONT>          info.setGroupName(proto.getGroupName());<a name="line.1828"></a>
+<FONT color="green">1829</FONT>        }<a name="line.1829"></a>
+<FONT color="green">1830</FONT>        if (proto.hasMode()) {<a name="line.1830"></a>
+<FONT color="green">1831</FONT>          info.setMode(new FsPermission((short)proto.getMode()));<a name="line.1831"></a>
+<FONT color="green">1832</FONT>        }<a name="line.1832"></a>
+<FONT color="green">1833</FONT>        if (proto.hasLimit())  {<a name="line.1833"></a>
+<FONT color="green">1834</FONT>          info.setLimit(proto.getLimit());<a name="line.1834"></a>
+<FONT color="green">1835</FONT>        }<a name="line.1835"></a>
+<FONT color="green">1836</FONT>        if (proto.hasMaxRelativeExpiry()) {<a name="line.1836"></a>
+<FONT color="green">1837</FONT>          info.setMaxRelativeExpiryMs(proto.getMaxRelativeExpiry());<a name="line.1837"></a>
+<FONT color="green">1838</FONT>        }<a name="line.1838"></a>
+<FONT color="green">1839</FONT>        return info;<a name="line.1839"></a>
+<FONT color="green">1840</FONT>      }<a name="line.1840"></a>
+<FONT color="green">1841</FONT>    <a name="line.1841"></a>
+<FONT color="green">1842</FONT>      public static CachePoolStatsProto convert(CachePoolStats stats) {<a name="line.1842"></a>
+<FONT color="green">1843</FONT>        CachePoolStatsProto.Builder builder = CachePoolStatsProto.newBuilder();<a name="line.1843"></a>
+<FONT color="green">1844</FONT>        builder.setBytesNeeded(stats.getBytesNeeded());<a name="line.1844"></a>
+<FONT color="green">1845</FONT>        builder.setBytesCached(stats.getBytesCached());<a name="line.1845"></a>
+<FONT color="green">1846</FONT>        builder.setBytesOverlimit(stats.getBytesOverlimit());<a name="line.1846"></a>
+<FONT color="green">1847</FONT>        builder.setFilesNeeded(stats.getFilesNeeded());<a name="line.1847"></a>
+<FONT color="green">1848</FONT>        builder.setFilesCached(stats.getFilesCached());<a name="line.1848"></a>
+<FONT color="green">1849</FONT>        return builder.build();<a name="line.1849"></a>
+<FONT color="green">1850</FONT>      }<a name="line.1850"></a>
+<FONT color="green">1851</FONT>    <a name="line.1851"></a>
+<FONT color="green">1852</FONT>      public static CachePoolStats convert (CachePoolStatsProto proto) {<a name="line.1852"></a>
+<FONT color="green">1853</FONT>        CachePoolStats.Builder builder = new CachePoolStats.Builder();<a name="line.1853"></a>
+<FONT color="green">1854</FONT>        builder.setBytesNeeded(proto.getBytesNeeded());<a name="line.1854"></a>
+<FONT color="green">1855</FONT>        builder.setBytesCached(proto.getBytesCached());<a name="line.1855"></a>
+<FONT color="green">1856</FONT>        builder.setBytesOverlimit(proto.getBytesOverlimit());<a name="line.1856"></a>
+<FONT color="green">1857</FONT>        builder.setFilesNeeded(proto.getFilesNeeded());<a name="line.1857"></a>
+<FONT color="green">1858</FONT>        builder.setFilesCached(proto.getFilesCached());<a name="line.1858"></a>
+<FONT color="green">1859</FONT>        return builder.build();<a name="line.1859"></a>
+<FONT color="green">1860</FONT>      }<a name="line.1860"></a>
+<FONT color="green">1861</FONT>    <a name="line.1861"></a>
+<FONT color="green">1862</FONT>      public static CachePoolEntryProto convert(CachePoolEntry entry) {<a name="line.1862"></a>
+<FONT color="green">1863</FONT>        CachePoolEntryProto.Builder builder = CachePoolEntryProto.newBuilder();<a name="line.1863"></a>
+<FONT color="green">1864</FONT>        builder.setInfo(PBHelper.convert(entry.getInfo()));<a name="line.1864"></a>
+<FONT color="green">1865</FONT>        builder.setStats(PBHelper.convert(entry.getStats()));<a name="line.1865"></a>
+<FONT color="green">1866</FONT>        return builder.build();<a name="line.1866"></a>
+<FONT color="green">1867</FONT>      }<a name="line.1867"></a>
+<FONT color="green">1868</FONT>    <a name="line.1868"></a>
+<FONT color="green">1869</FONT>      public static CachePoolEntry convert (CachePoolEntryProto proto) {<a name="line.1869"></a>
+<FONT color="green">1870</FONT>        CachePoolInfo info = PBHelper.convert(proto.getInfo());<a name="line.1870"></a>
+<FONT color="green">1871</FONT>        CachePoolStats stats = PBHelper.convert(proto.getStats());<a name="line.1871"></a>
+<FONT color="green">1872</FONT>        return new CachePoolEntry(info, stats);<a name="line.1872"></a>
+<FONT color="green">1873</FONT>      }<a name="line.1873"></a>
+<FONT color="green">1874</FONT>      <a name="line.1874"></a>
+<FONT color="green">1875</FONT>      public static HdfsProtos.ChecksumTypeProto convert(DataChecksum.Type type) {<a name="line.1875"></a>
+<FONT color="green">1876</FONT>        return HdfsProtos.ChecksumTypeProto.valueOf(type.id);<a name="line.1876"></a>
+<FONT color="green">1877</FONT>      }<a name="line.1877"></a>
+<FONT color="green">1878</FONT>    <a name="line.1878"></a>
+<FONT color="green">1879</FONT>      public static InputStream vintPrefixed(final InputStream input)<a name="line.1879"></a>
+<FONT color="green">1880</FONT>          throws IOException {<a name="line.1880"></a>
+<FONT color="green">1881</FONT>        final int firstByte = input.read();<a name="line.1881"></a>
+<FONT color="green">1882</FONT>        if (firstByte == -1) {<a name="line.1882"></a>
+<FONT color="green">1883</FONT>          throw new EOFException("Premature EOF: no length prefix available");<a name="line.1883"></a>
+<FONT color="green">1884</FONT>        }<a name="line.1884"></a>
+<FONT color="green">1885</FONT>    <a name="line.1885"></a>
+<FONT color="green">1886</FONT>        int size = CodedInputStream.readRawVarint32(firstByte, input);<a name="line.1886"></a>
+<FONT color="green">1887</FONT>        assert size &gt;= 0;<a name="line.1887"></a>
+<FONT color="green">1888</FONT>        return new ExactSizeInputStream(input, size);<a name="line.1888"></a>
+<FONT color="green">1889</FONT>      }<a name="line.1889"></a>
+<FONT color="green">1890</FONT>    }<a name="line.1890"></a>
+<FONT color="green">1891</FONT>    <a name="line.1891"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>
