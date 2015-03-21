@@ -1,0 +1,241 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    /**<a name="line.1"></a>
+<FONT color="green">002</FONT>     * Licensed to the Apache Software Foundation (ASF) under one<a name="line.2"></a>
+<FONT color="green">003</FONT>     * or more contributor license agreements.  See the NOTICE file<a name="line.3"></a>
+<FONT color="green">004</FONT>     * distributed with this work for additional information<a name="line.4"></a>
+<FONT color="green">005</FONT>     * regarding copyright ownership.  The ASF licenses this file<a name="line.5"></a>
+<FONT color="green">006</FONT>     * to you under the Apache License, Version 2.0 (the<a name="line.6"></a>
+<FONT color="green">007</FONT>     * "License"); you may not use this file except in compliance<a name="line.7"></a>
+<FONT color="green">008</FONT>     * with the License.  You may obtain a copy of the License at<a name="line.8"></a>
+<FONT color="green">009</FONT>     *<a name="line.9"></a>
+<FONT color="green">010</FONT>     *     http://www.apache.org/licenses/LICENSE-2.0<a name="line.10"></a>
+<FONT color="green">011</FONT>     *<a name="line.11"></a>
+<FONT color="green">012</FONT>     * Unless required by applicable law or agreed to in writing, software<a name="line.12"></a>
+<FONT color="green">013</FONT>     * distributed under the License is distributed on an "AS IS" BASIS,<a name="line.13"></a>
+<FONT color="green">014</FONT>     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.14"></a>
+<FONT color="green">015</FONT>     * See the License for the specific language governing permissions and<a name="line.15"></a>
+<FONT color="green">016</FONT>     * limitations under the License.<a name="line.16"></a>
+<FONT color="green">017</FONT>     */<a name="line.17"></a>
+<FONT color="green">018</FONT>    <a name="line.18"></a>
+<FONT color="green">019</FONT>    package org.apache.hadoop.metrics2.util;<a name="line.19"></a>
+<FONT color="green">020</FONT>    <a name="line.20"></a>
+<FONT color="green">021</FONT>    import org.apache.hadoop.classification.InterfaceAudience;<a name="line.21"></a>
+<FONT color="green">022</FONT>    <a name="line.22"></a>
+<FONT color="green">023</FONT>    /**<a name="line.23"></a>
+<FONT color="green">024</FONT>     * Helper to compute running sample stats<a name="line.24"></a>
+<FONT color="green">025</FONT>     */<a name="line.25"></a>
+<FONT color="green">026</FONT>    @InterfaceAudience.Private<a name="line.26"></a>
+<FONT color="green">027</FONT>    public class SampleStat {<a name="line.27"></a>
+<FONT color="green">028</FONT>      private final MinMax minmax = new MinMax();<a name="line.28"></a>
+<FONT color="green">029</FONT>      private long numSamples = 0;<a name="line.29"></a>
+<FONT color="green">030</FONT>      private double a0, a1, s0, s1;<a name="line.30"></a>
+<FONT color="green">031</FONT>    <a name="line.31"></a>
+<FONT color="green">032</FONT>      /**<a name="line.32"></a>
+<FONT color="green">033</FONT>       * Construct a new running sample stat<a name="line.33"></a>
+<FONT color="green">034</FONT>       */<a name="line.34"></a>
+<FONT color="green">035</FONT>      public SampleStat() {<a name="line.35"></a>
+<FONT color="green">036</FONT>        a0 = s0 = 0.0;<a name="line.36"></a>
+<FONT color="green">037</FONT>      }<a name="line.37"></a>
+<FONT color="green">038</FONT>    <a name="line.38"></a>
+<FONT color="green">039</FONT>      public void reset() {<a name="line.39"></a>
+<FONT color="green">040</FONT>        numSamples = 0;<a name="line.40"></a>
+<FONT color="green">041</FONT>        a0 = s0 = 0.0;<a name="line.41"></a>
+<FONT color="green">042</FONT>        minmax.reset();<a name="line.42"></a>
+<FONT color="green">043</FONT>      }<a name="line.43"></a>
+<FONT color="green">044</FONT>    <a name="line.44"></a>
+<FONT color="green">045</FONT>      // We want to reuse the object, sometimes.<a name="line.45"></a>
+<FONT color="green">046</FONT>      void reset(long numSamples, double a0, double a1, double s0, double s1,<a name="line.46"></a>
+<FONT color="green">047</FONT>                 MinMax minmax) {<a name="line.47"></a>
+<FONT color="green">048</FONT>        this.numSamples = numSamples;<a name="line.48"></a>
+<FONT color="green">049</FONT>        this.a0 = a0;<a name="line.49"></a>
+<FONT color="green">050</FONT>        this.a1 = a1;<a name="line.50"></a>
+<FONT color="green">051</FONT>        this.s0 = s0;<a name="line.51"></a>
+<FONT color="green">052</FONT>        this.s1 = s1;<a name="line.52"></a>
+<FONT color="green">053</FONT>        this.minmax.reset(minmax);<a name="line.53"></a>
+<FONT color="green">054</FONT>      }<a name="line.54"></a>
+<FONT color="green">055</FONT>    <a name="line.55"></a>
+<FONT color="green">056</FONT>      /**<a name="line.56"></a>
+<FONT color="green">057</FONT>       * Copy the values to other (saves object creation and gc.)<a name="line.57"></a>
+<FONT color="green">058</FONT>       * @param other the destination to hold our values<a name="line.58"></a>
+<FONT color="green">059</FONT>       */<a name="line.59"></a>
+<FONT color="green">060</FONT>      public void copyTo(SampleStat other) {<a name="line.60"></a>
+<FONT color="green">061</FONT>        other.reset(numSamples, a0, a1, s0, s1, minmax);<a name="line.61"></a>
+<FONT color="green">062</FONT>      }<a name="line.62"></a>
+<FONT color="green">063</FONT>    <a name="line.63"></a>
+<FONT color="green">064</FONT>      /**<a name="line.64"></a>
+<FONT color="green">065</FONT>       * Add a sample the running stat.<a name="line.65"></a>
+<FONT color="green">066</FONT>       * @param x the sample number<a name="line.66"></a>
+<FONT color="green">067</FONT>       * @return  self<a name="line.67"></a>
+<FONT color="green">068</FONT>       */<a name="line.68"></a>
+<FONT color="green">069</FONT>      public SampleStat add(double x) {<a name="line.69"></a>
+<FONT color="green">070</FONT>        minmax.add(x);<a name="line.70"></a>
+<FONT color="green">071</FONT>        return add(1, x);<a name="line.71"></a>
+<FONT color="green">072</FONT>      }<a name="line.72"></a>
+<FONT color="green">073</FONT>    <a name="line.73"></a>
+<FONT color="green">074</FONT>      /**<a name="line.74"></a>
+<FONT color="green">075</FONT>       * Add some sample and a partial sum to the running stat.<a name="line.75"></a>
+<FONT color="green">076</FONT>       * Note, min/max is not evaluated using this method.<a name="line.76"></a>
+<FONT color="green">077</FONT>       * @param nSamples  number of samples<a name="line.77"></a>
+<FONT color="green">078</FONT>       * @param x the partial sum<a name="line.78"></a>
+<FONT color="green">079</FONT>       * @return  self<a name="line.79"></a>
+<FONT color="green">080</FONT>       */<a name="line.80"></a>
+<FONT color="green">081</FONT>      public SampleStat add(long nSamples, double x) {<a name="line.81"></a>
+<FONT color="green">082</FONT>        numSamples += nSamples;<a name="line.82"></a>
+<FONT color="green">083</FONT>    <a name="line.83"></a>
+<FONT color="green">084</FONT>        if (numSamples == 1) {<a name="line.84"></a>
+<FONT color="green">085</FONT>          a0 = a1 = x;<a name="line.85"></a>
+<FONT color="green">086</FONT>          s0 = 0.0;<a name="line.86"></a>
+<FONT color="green">087</FONT>        }<a name="line.87"></a>
+<FONT color="green">088</FONT>        else {<a name="line.88"></a>
+<FONT color="green">089</FONT>          // The Welford method for numerical stability<a name="line.89"></a>
+<FONT color="green">090</FONT>          a1 = a0 + (x - a0) / numSamples;<a name="line.90"></a>
+<FONT color="green">091</FONT>          s1 = s0 + (x - a0) * (x - a1);<a name="line.91"></a>
+<FONT color="green">092</FONT>          a0 = a1;<a name="line.92"></a>
+<FONT color="green">093</FONT>          s0 = s1;<a name="line.93"></a>
+<FONT color="green">094</FONT>        }<a name="line.94"></a>
+<FONT color="green">095</FONT>        return this;<a name="line.95"></a>
+<FONT color="green">096</FONT>      }<a name="line.96"></a>
+<FONT color="green">097</FONT>    <a name="line.97"></a>
+<FONT color="green">098</FONT>      /**<a name="line.98"></a>
+<FONT color="green">099</FONT>       * @return  the total number of samples<a name="line.99"></a>
+<FONT color="green">100</FONT>       */<a name="line.100"></a>
+<FONT color="green">101</FONT>      public long numSamples() {<a name="line.101"></a>
+<FONT color="green">102</FONT>        return numSamples;<a name="line.102"></a>
+<FONT color="green">103</FONT>      }<a name="line.103"></a>
+<FONT color="green">104</FONT>    <a name="line.104"></a>
+<FONT color="green">105</FONT>      /**<a name="line.105"></a>
+<FONT color="green">106</FONT>       * @return  the arithmetic mean of the samples<a name="line.106"></a>
+<FONT color="green">107</FONT>       */<a name="line.107"></a>
+<FONT color="green">108</FONT>      public double mean() {<a name="line.108"></a>
+<FONT color="green">109</FONT>        return numSamples &gt; 0 ? a1 : 0.0;<a name="line.109"></a>
+<FONT color="green">110</FONT>      }<a name="line.110"></a>
+<FONT color="green">111</FONT>    <a name="line.111"></a>
+<FONT color="green">112</FONT>      /**<a name="line.112"></a>
+<FONT color="green">113</FONT>       * @return  the variance of the samples<a name="line.113"></a>
+<FONT color="green">114</FONT>       */<a name="line.114"></a>
+<FONT color="green">115</FONT>      public double variance() {<a name="line.115"></a>
+<FONT color="green">116</FONT>        return numSamples &gt; 1 ? s1 / (numSamples - 1) : 0.0;<a name="line.116"></a>
+<FONT color="green">117</FONT>      }<a name="line.117"></a>
+<FONT color="green">118</FONT>    <a name="line.118"></a>
+<FONT color="green">119</FONT>      /**<a name="line.119"></a>
+<FONT color="green">120</FONT>       * @return  the standard deviation of the samples<a name="line.120"></a>
+<FONT color="green">121</FONT>       */<a name="line.121"></a>
+<FONT color="green">122</FONT>      public double stddev() {<a name="line.122"></a>
+<FONT color="green">123</FONT>        return Math.sqrt(variance());<a name="line.123"></a>
+<FONT color="green">124</FONT>      }<a name="line.124"></a>
+<FONT color="green">125</FONT>    <a name="line.125"></a>
+<FONT color="green">126</FONT>      /**<a name="line.126"></a>
+<FONT color="green">127</FONT>       * @return  the minimum value of the samples<a name="line.127"></a>
+<FONT color="green">128</FONT>       */<a name="line.128"></a>
+<FONT color="green">129</FONT>      public double min() {<a name="line.129"></a>
+<FONT color="green">130</FONT>        return minmax.min();<a name="line.130"></a>
+<FONT color="green">131</FONT>      }<a name="line.131"></a>
+<FONT color="green">132</FONT>    <a name="line.132"></a>
+<FONT color="green">133</FONT>      /**<a name="line.133"></a>
+<FONT color="green">134</FONT>       * @return  the maximum value of the samples<a name="line.134"></a>
+<FONT color="green">135</FONT>       */<a name="line.135"></a>
+<FONT color="green">136</FONT>      public double max() {<a name="line.136"></a>
+<FONT color="green">137</FONT>        return minmax.max();<a name="line.137"></a>
+<FONT color="green">138</FONT>      }<a name="line.138"></a>
+<FONT color="green">139</FONT>    <a name="line.139"></a>
+<FONT color="green">140</FONT>      /**<a name="line.140"></a>
+<FONT color="green">141</FONT>       * Helper to keep running min/max<a name="line.141"></a>
+<FONT color="green">142</FONT>       */<a name="line.142"></a>
+<FONT color="green">143</FONT>      @SuppressWarnings("PublicInnerClass")<a name="line.143"></a>
+<FONT color="green">144</FONT>      public static class MinMax {<a name="line.144"></a>
+<FONT color="green">145</FONT>    <a name="line.145"></a>
+<FONT color="green">146</FONT>        // Float.MAX_VALUE is used rather than Double.MAX_VALUE, even though the<a name="line.146"></a>
+<FONT color="green">147</FONT>        // min and max variables are of type double.<a name="line.147"></a>
+<FONT color="green">148</FONT>        // Float.MAX_VALUE is big enough, and using Double.MAX_VALUE makes <a name="line.148"></a>
+<FONT color="green">149</FONT>        // Ganglia core due to buffer overflow.<a name="line.149"></a>
+<FONT color="green">150</FONT>        // The same reasoning applies to the MIN_VALUE counterparts.<a name="line.150"></a>
+<FONT color="green">151</FONT>        static final double DEFAULT_MIN_VALUE = Float.MAX_VALUE;<a name="line.151"></a>
+<FONT color="green">152</FONT>        static final double DEFAULT_MAX_VALUE = Float.MIN_VALUE;<a name="line.152"></a>
+<FONT color="green">153</FONT>    <a name="line.153"></a>
+<FONT color="green">154</FONT>        private double min = DEFAULT_MIN_VALUE;<a name="line.154"></a>
+<FONT color="green">155</FONT>        private double max = DEFAULT_MAX_VALUE;<a name="line.155"></a>
+<FONT color="green">156</FONT>    <a name="line.156"></a>
+<FONT color="green">157</FONT>        public void add(double value) {<a name="line.157"></a>
+<FONT color="green">158</FONT>          if (value &gt; max) max = value;<a name="line.158"></a>
+<FONT color="green">159</FONT>          if (value &lt; min) min = value;<a name="line.159"></a>
+<FONT color="green">160</FONT>        }<a name="line.160"></a>
+<FONT color="green">161</FONT>    <a name="line.161"></a>
+<FONT color="green">162</FONT>        public double min() { return min; }<a name="line.162"></a>
+<FONT color="green">163</FONT>        public double max() { return max; }<a name="line.163"></a>
+<FONT color="green">164</FONT>    <a name="line.164"></a>
+<FONT color="green">165</FONT>        public void reset() {<a name="line.165"></a>
+<FONT color="green">166</FONT>          min = DEFAULT_MIN_VALUE;<a name="line.166"></a>
+<FONT color="green">167</FONT>          max = DEFAULT_MAX_VALUE;<a name="line.167"></a>
+<FONT color="green">168</FONT>        }<a name="line.168"></a>
+<FONT color="green">169</FONT>    <a name="line.169"></a>
+<FONT color="green">170</FONT>        public void reset(MinMax other) {<a name="line.170"></a>
+<FONT color="green">171</FONT>          min = other.min();<a name="line.171"></a>
+<FONT color="green">172</FONT>          max = other.max();<a name="line.172"></a>
+<FONT color="green">173</FONT>        }<a name="line.173"></a>
+<FONT color="green">174</FONT>      }<a name="line.174"></a>
+<FONT color="green">175</FONT>    }<a name="line.175"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>

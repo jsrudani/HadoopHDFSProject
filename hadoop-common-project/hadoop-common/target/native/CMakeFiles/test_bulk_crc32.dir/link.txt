@@ -1,0 +1,1 @@
+/usr/bin/cc   -g -Wall -O2 -D_REENTRANT -D_GNU_SOURCE -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64    CMakeFiles/test_bulk_crc32.dir/main/native/src/org/apache/hadoop/util/bulk_crc32.c.o CMakeFiles/test_bulk_crc32.dir/main/native/src/test/org/apache/hadoop/util/test_bulk_crc32.c.o  -o test_bulk_crc32 -rdynamic 

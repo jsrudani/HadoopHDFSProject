@@ -1,0 +1,8 @@
+org.apache.hadoop.mount
+org.apache.hadoop.nfs
+org.apache.hadoop.nfs.nfs3
+org.apache.hadoop.nfs.nfs3.request
+org.apache.hadoop.nfs.nfs3.response
+org.apache.hadoop.oncrpc
+org.apache.hadoop.oncrpc.security
+org.apache.hadoop.portmap
