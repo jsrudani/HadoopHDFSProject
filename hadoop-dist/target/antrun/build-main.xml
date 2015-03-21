@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main" if="tar">
+  <echo file="/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-dist/target/dist-tar-stitching.sh">run() {
+                        echo &quot;\$ ${@}&quot;
+                        &quot;${@}&quot;
+                        res=$?
+                        if [ $res != 0 ]; then
+                          echo
+                          echo &quot;Failed!&quot;
+                          echo
+                          exit $res
+                        fi
+                      }
+
+                      run tar cf hadoop-2.3.0.tar hadoop-2.3.0
+                      run gzip -f hadoop-2.3.0.tar
+                      echo
+                      echo &quot;Hadoop dist tar available at: /home/jsrudani/hadoopcache/hadoopsrccode/hadoop-dist/target/hadoop-2.3.0.tar.gz&quot;
+                      echo</echo>
+  <exec dir="/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-dist/target" executable="sh" failonerror="true">
+    <arg line="./dist-tar-stitching.sh"/>
+  </exec>
+</target>
+</project>
