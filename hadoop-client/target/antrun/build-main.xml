@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main" if="tar">
+  <echo file="/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-client/target/dist-maketar.sh">cd &quot;/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-client/target&quot;
+                      tar cf - hadoop-client-2.3.0 | gzip &gt; hadoop-client-2.3.0.tar.gz</echo>
+  <exec dir="/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-client/target" executable="sh" failonerror="true">
+    <arg line="./dist-maketar.sh"/>
+  </exec>
+</target>
+</project>
