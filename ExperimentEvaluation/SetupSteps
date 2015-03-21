@@ -1,0 +1,121 @@
+1. # Files need to modified for Memory settings
+/etc/security/limits.conf
+
+*               hard     memlock         20480
+*               soft     memlock         20480
+
+2. sudo apt-get install openssh-server
+3. sudo apt-get install gcc/g++/maven/make/
+
+4. Setup Hadoop Environment Variables in bashrc
+export JAVA_HOME=/home/jsrudani/Softwares/java
+export HADOOP_HOME=/home/jsrudani/hadoopcache/hadoopInstalled/hadoop
+export PATH=$PATH:$HADOOP_HOME/bin
+export PATH=$PATH:$HADOOP_HOME/sbin
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_HDFS_HOME=$HADOOP_HOME
+export YARN_HOME=$HADOOP_HOME
+export HADOOP_COMMON_LIB_NATIVE_DIR=${HADOOP_HOME}/lib/native
+export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+
+
+5. Setup JAVA_HOME in hadoop.env.sh
+export JAVA_HOME=/home/jsrudani/Softwares/java
+export HADOOP_OPTS="$HADOOP_OPTS -Djava.library.path=/home/jsrudani/hadoopcache/hadoopInstalled/hadoop/lib/native/"
+export HADOOP_COMMON_LIB_NATIVE_DIR="/home/jsrudani/hadoopcache/hadoopInstalled/hadoop/lib/native/"
+
+6. Test whether Hadoop properly installed run below command
+jsrudani@Jigs:~/hadoopcache/hadoopInstalled/hadoop/etc/hadoop$ hadoop version
+Hadoop 2.3.0
+Subversion Unknown -r Unknown
+Compiled by jsrudani on 2015-01-29T15:11Z
+Compiled with protoc 2.5.0
+From source with checksum dfe46336fbc6a044bc124392ec06b85
+This command was run using /home/jsrudani/hadoopcache/hadoopInstalled/hadoop/share/hadoop/common/hadoop-common-2.3.0.jar
+
+7. Configure the Hadoop for HDFS/YARN/MAPREDUCE/CORE XML
+
+Core-Site.XML
+	<configuration>
+     		<property>
+         		<name>fs.defaultFS</name>
+         		<value>hdfs://localhost:9000</value>
+     		</property>
+	</configuration
+
+Yarn-site.xml
+	<configuration>
+		<property>
+    			<name>yarn.nodemanager.aux-services</name>
+    			<value>mapreduce_shuffle</value>
+		</property>
+		<property>
+			<name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+			<value>org.apache.hadoop.mapred.ShuffleHandler</value>
+		</property>
+	</configuration>
+
+MapReduce-site.xml
+
+mv $HADOOP_HOME/etc/hadoop/mapred-site.xml.template $HADOOP_HOME/etc/hadoop/mapred-site.xml 
+
+	<configuration>
+		<property>
+			<name>mapreduce.framework.name</name>
+			<value>yarn</value>
+		</property>	
+	</configuration>
+
+HDFS-site.xml
+	<configuration>
+		<property>
+			<name>dfs.replication</name>
+			<value>3</value>
+		</property>
+		<property>
+			<name>dfs.namenode.name.dir</name>
+			<value>file:/home/jsrudani/hadoopcache/hadoopInstalled/data/namenode</value>
+		</property>
+		<property>
+    			<name>dfs.datanode.data.dir</name>
+    			<value>file:/home/jsrudani/hadoopcache/hadoopInstalled/data/datanode</value>
+ 		</property>
+	</configuration>
+8. Change the logger level to DEBUG in /etc/hadoop/log4j.properties
+9. If Native Library is not loaded then there are two reasons
+	1. You are using default hadoop code base which was compiled in 32 bit. So you have to compile in your machine if not compatible.
+	   After compiling you have to copy all the library which are present in /hadoop/lib/native dir. from your compiled source location to 
+	   "${HADOOP_HOME}/lib/native"
+	2. If you have compiled and also copied to required destination then, may be you have forget to export the library path in hadoop-env.sh.
+	   Use below command in hadoop-env.sh,
+	   export HADOOP_OPTS="$HADOOP_OPTS -Djava.library.path=/home/jsrudani/hadoopcache/hadoopInstalled/hadoop/lib/native/"
+	   export HADOOP_COMMON_LIB_NATIVE_DIR="/home/jsrudani/hadoopcache/hadoopInstalled/hadoop/lib/native/"
+10. To verify run any command and you should not get WARN:Native Lib is not currently loaded.
+11. To get the config info, run
+	jsrudani@Jigs:~/hadoopcache/hadoopInstalled/hadoop$ hdfs getconf -namenode
+	hdfs getconf is utility for getting configuration information from the config file.
+
+	hadoop getconf 
+		[-namenodes]			gets list of namenodes in the cluster.
+		[-secondaryNameNodes]			gets list of secondary namenodes in the cluster.
+		[-backupNodes]			gets list of backup nodes in the cluster.
+		[-includeFile]			gets the include file path that defines the datanodes that can join the cluster.
+		[-excludeFile]			gets the exclude file path that defines the datanodes that need to decommissioned.
+		[-nnRpcAddresses]			gets the namenode rpc addresses
+		[-confKey [key]]			gets a specific key from the configuration
+
+	jsrudani@Jigs:~/hadoopcache/hadoopInstalled/hadoop$ hdfs getconf -namenodes
+	localhost
+	jsrudani@Jigs:~/hadoopcache/hadoopInstalled/hadoop$ hdfs getconf -secondaryNameNodes
+	0.0.0.0
+	jsrudani@Jigs:~/hadoopcache/hadoopInstalled/hadoop$ hdfs getconf -includeFile
+	Configuration dfs.hosts is missing.
+	jsrudani@Jigs:~/hadoopcache/hadoopInstalled/hadoop$ hdfs getconf -nnRpcAddresses
+	localhost:9000
+12. To contribute to Hadoop Src Code with Eclipse, Follow below steps
+	1. Configure M2 path
+		export M2_REPO=$HOME/.m2/repository
+	2. Build maven to get eclipse plugin
+		mvn eclipse:clean eclipse:eclipse
+

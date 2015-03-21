@@ -1,0 +1,10 @@
+DIAGNOSTIC ANALYSIS
+
+Hadoop Overview :- http://localhost:50070/dfshealth.html#tab-overview
+Data Node Home Page :- http://localhost:50075/dataNodeHome.jsp
+Set/Get Log Level :- http://localhost:50075/logLevel
+Track of Finished Jobs :- http://adminuser-virtualbox:8088/cluster/apps/FINISHED
+Scheduler Info :- http://adminuser-virtualbox:8088/cluster/scheduler?openQueues=default
+Applicaton/Job Info :- http://adminuser-virtualbox:8088/cluster/app/
+
+Input Dir MapReduce Job - mapreduce.input.fileinputformat.inputdir
