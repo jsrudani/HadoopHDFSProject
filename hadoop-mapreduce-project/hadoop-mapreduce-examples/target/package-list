@@ -1,0 +1,5 @@
+org.apache.hadoop.examples
+org.apache.hadoop.examples.dancing
+org.apache.hadoop.examples.pi
+org.apache.hadoop.examples.pi.math
+org.apache.hadoop.examples.terasort

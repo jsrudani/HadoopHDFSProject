@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main" if="tar">
+  <echo file="/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-mapreduce-project/target/dist-maketar.sh">cd &quot;/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-mapreduce-project/target&quot;
+                  tar cf - hadoop-mapreduce-2.3.0 | gzip &gt; hadoop-mapreduce-2.3.0.tar.gz</echo>
+  <exec dir="/home/jsrudani/hadoopcache/hadoopsrccode/hadoop-mapreduce-project/target" executable="sh" failonerror="true">
+    <arg line="./dist-maketar.sh"/>
+  </exec>
+</target>
+</project>
