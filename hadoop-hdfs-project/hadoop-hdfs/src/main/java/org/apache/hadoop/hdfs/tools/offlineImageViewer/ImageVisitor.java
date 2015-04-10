@@ -29,6 +29,7 @@ abstract class ImageVisitor {
    * Structural elements of an FSImage that may be encountered within the
    * file. ImageVisitors are able to handle processing any of these elements.
    */
+  // ADDED ACCESS COUNT AND IS CACHED VAR. IN IMAGE FORMAT IDECIDER - 04/08/2015 11:09PM
   public enum ImageElement {
     FS_IMAGE,
     IMAGE_VERSION,
@@ -86,6 +87,8 @@ abstract class ImageVisitor {
     TRANSACTION_ID,
     LAST_INODE_ID,
     INODE_ID,
+    ACCESS_COUNT,
+    IS_CACHED,
 
     SNAPSHOT_COUNTER,
     NUM_SNAPSHOTS_TOTAL,

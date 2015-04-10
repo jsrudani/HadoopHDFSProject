@@ -718,6 +718,10 @@ class ImageLoaderCurrent implements ImageLoader {
         }
       }
       processPermission(in, v);
+      // Accessing access count and is cached var. to display over FSImage format
+      // IDecider 04/08/2015 11:10 PM
+      v.visit(ImageElement.ACCESS_COUNT, in.readLong());
+      v.visit(ImageElement.IS_CACHED, in.readInt());
     } else if (numBlocks == -1) { // Directory
       if (supportSnapshot && supportInodeId) {
         dirNodeMap.put(inodeId, pathName);
@@ -759,8 +763,10 @@ class ImageLoaderCurrent implements ImageLoader {
       } else {
         v.visit(ImageElement.SNAPSHOT_REF_INODE_ID, in.readLong());
       }
+      // Added access count and is cached variable IDecider 04/08/2015 11:10 PM
+      v.visit(ImageElement.ACCESS_COUNT, in.readLong());
+      v.visit(ImageElement.IS_CACHED, in.readInt());
     }
-
     v.leaveEnclosingElement(); // INode
   }
 
@@ -776,6 +782,9 @@ class ImageLoaderCurrent implements ImageLoader {
 
     v.visit(ImageElement.REPLICATION, in.readShort());
     v.visit(ImageElement.BLOCK_SIZE, in.readLong());
+    // Added access count and is cached flag IDecider 04/08/2015 11:10 PM
+    v.visit(ImageElement.ACCESS_COUNT, in.readLong());
+    v.visit(ImageElement.IS_CACHED, in.readInt());
   }
   
   private void processFileDiffList(DataInputStream in, ImageVisitor v,
