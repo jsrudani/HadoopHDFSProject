@@ -611,8 +611,66 @@ public abstract class INode implements INodeAttributes, Diff.Element<byte[]> {
     nodeToUpdate.setAccessTime(accessTime);
     return nodeToUpdate;
   }
-
-
+  
+  // Added getAccessCount and getIsCached method IDecider - 03/29/2015 3:27AM
+  /**
+   * @param snapshot
+   *          if it is not null, get the result from the given snapshot;
+   *          otherwise, get the result from the current inode.
+   * @return access count
+   */
+  abstract long getAccessCount(Snapshot snapshot);
+  
+  /** The same as getAccessCount(null). */
+  @Override
+  public final long getAccessCount() {
+    return getAccessCount(null);
+  }
+  
+  /**
+   * Set last access count of inode.
+   */
+  public abstract void setAccessCount(long accessCount);
+  
+  /**
+   * Set last access count of inode.
+   */
+  public final INode setAccessCount(long accessCount, Snapshot latest,
+      INodeMap inodeMap) throws QuotaExceededException {
+    final INode nodeToUpdate = recordModification(latest, inodeMap);
+    nodeToUpdate.setAccessCount(accessCount);
+    return nodeToUpdate;
+  }
+  
+  /**
+   * @param snapshot
+   *          if it is not null, get the result from the given snapshot;
+   *          otherwise, get the result from the current inode.
+   * @return isCached flag
+   */
+  abstract int getIsCached(Snapshot snapshot);
+  
+  /** The same as getIsCached(null). */
+  @Override
+  public final int getIsCached() {
+    return getIsCached(null);
+  }
+  
+  /**
+   * Set isCached flag of inode.
+   */
+  public abstract void setIsCached(int isCachedFlag);
+  
+  /**
+   * Set last isCached flag of inode.
+   */
+  public final INode setIsCached(int isCachedFlag, Snapshot latest,
+      INodeMap inodeMap) throws QuotaExceededException {
+    final INode nodeToUpdate = recordModification(latest, inodeMap);
+    nodeToUpdate.setIsCached(isCachedFlag);
+    return nodeToUpdate;
+  }
+  
   /**
    * Breaks file path into components.
    * @param path

@@ -114,6 +114,16 @@ public class INodeFile extends INodeWithAdditionalFields
     this.blocks = blklist;
   }
   
+  // Overload the constructor with access count and isCached parameters IDecider - 03/29/2015 12:35PM
+  INodeFile(long id, byte[] name, PermissionStatus permissions, long mtime, long atime,
+	  BlockInfo[] blklist, short replication, long preferredBlockSize,
+	  long accessCount, int isCached) {
+	super(id, name, permissions, mtime, atime,accessCount,isCached);
+	header = HeaderFormat.combineReplication(header, replication);
+	header = HeaderFormat.combinePreferredBlockSize(header, preferredBlockSize);
+	this.blocks = blklist;
+  }
+  
   public INodeFile(INodeFile that) {
     super(that);
     this.header = that.header;

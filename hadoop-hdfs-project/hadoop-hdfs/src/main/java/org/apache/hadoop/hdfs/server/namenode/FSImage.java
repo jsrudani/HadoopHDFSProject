@@ -849,11 +849,14 @@ public class FSImage implements Closeable {
   void saveFSImage(SaveNamespaceContext context, StorageDirectory sd)
       throws IOException {
     long txid = context.getTxId();
+    // Debug purpose IDecider 04/08/2015 2:59PM
+    LOG.info("Inside saveFSImage FSImage.java");
     File newFile = NNStorage.getStorageFile(sd, NameNodeFile.IMAGE_NEW, txid);
     File dstFile = NNStorage.getStorageFile(sd, NameNodeFile.IMAGE, txid);
     
     FSImageFormat.Saver saver = new FSImageFormat.Saver(context);
     FSImageCompression compression = FSImageCompression.createCompression(conf);
+    LOG.info("====== Before saver.save =========" + newFile.getName());
     saver.save(newFile, compression);
     
     MD5FileUtils.saveMD5File(dstFile, saver.getSavedDigest());

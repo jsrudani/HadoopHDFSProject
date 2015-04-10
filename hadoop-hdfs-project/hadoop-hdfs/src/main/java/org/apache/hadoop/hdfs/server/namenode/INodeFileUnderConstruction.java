@@ -82,6 +82,26 @@ public class INodeFileUnderConstruction extends INodeFile implements MutableBloc
     this.clientNode = clientNode;
   }
   
+  // Overload INodeFileUnderConstruction with access count and cached flag IDecider - 03/29/2015 1:15PM
+  INodeFileUnderConstruction(long id,
+          					 byte[] name,
+          					 short blockReplication,
+          					 long modificationTime,
+          					 long preferredBlockSize,
+          					 BlockInfo[] blocks,
+          					 PermissionStatus perm,
+          					 String clientName,
+          					 String clientMachine,
+          					 DatanodeDescriptor clientNode,
+          					 long accessCount,
+          					 int isCached) {
+	  super(id, name, perm, modificationTime, modificationTime,
+			  blocks, blockReplication, preferredBlockSize,accessCount,isCached);
+	  this.clientName = clientName;
+	  this.clientMachine = clientMachine;
+	  this.clientNode = clientNode;
+  }
+  
   public INodeFileUnderConstruction(final INodeFile that,
       final String clientName,
       final String clientMachine,
@@ -121,10 +141,11 @@ public class INodeFileUnderConstruction extends INodeFile implements MutableBloc
    */
   protected INodeFile toINodeFile(long mtime) {
     assertAllBlocksComplete();
-
+    // Called overloaded constructor for access count and cached flag - IDecider - 03/29/2015 12:48PM
     final INodeFile f = new INodeFile(getId(), getLocalNameBytes(),
         getPermissionStatus(), mtime, getModificationTime(),
-        getBlocks(), getFileReplication(), getPreferredBlockSize());
+        getBlocks(), getFileReplication(), getPreferredBlockSize(),
+        getAccessCount(), getIsCached());
     f.setParent(getParent());
     return f;
   }

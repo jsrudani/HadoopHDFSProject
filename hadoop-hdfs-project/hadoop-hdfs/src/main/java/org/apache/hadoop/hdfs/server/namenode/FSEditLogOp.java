@@ -103,6 +103,7 @@ import org.apache.hadoop.ipc.ClientId;
 import org.apache.hadoop.ipc.RpcConstants;
 import org.apache.hadoop.security.token.delegation.DelegationKey;
 import org.apache.hadoop.util.PureJavaCrc32;
+import org.mortbay.log.Log;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
@@ -292,6 +293,9 @@ public abstract class FSEditLogOp {
     PermissionStatus permissions;
     String clientName;
     String clientMachine;
+    // To store access count and is cached flag IDecider - 03/29/2015 3:02 PM
+    long accesscount;
+    int iscached;
     
     private AddCloseOp(FSEditLogOpCodes opCode) {
       super(opCode);
@@ -361,7 +365,18 @@ public abstract class FSEditLogOp {
       this.clientMachine = clientMachine;
       return (T)this;
     }
+    
+    // Setter for access count and cached flag IDecider - 03/29/2015 3:05PM
+    <T extends AddCloseOp> T setAccessCount(long accesscount) {
+        this.accesscount = accesscount;
+        return (T)this;
+    }
 
+    <T extends AddCloseOp> T setIsCached(int iscached) {
+        this.iscached = iscached;
+        return (T)this;
+    }
+    
     @Override
     public void writeFields(DataOutputStream out) throws IOException {
       FSImageSerialization.writeLong(inodeId, out);
@@ -379,6 +394,13 @@ public abstract class FSEditLogOp {
         // write clientId and callId
         writeRpcIds(rpcClientId, rpcCallId, out);
       }
+      // Writing Access count and Cached flag into Edit Log IDecider - 03/29/2015 3:28 PM
+      Log.info("====== Inside Write Fields Access count and flag Edit Log =======");
+      Log.info("The count and cached flag of file " + path + "is: " 
+    		  + accesscount + "flag: " + iscached);
+      FSImageSerialization.writeLong(accesscount, out);
+      FSImageSerialization.writeInt(iscached, out);
+      Log.info("====== Inside Write Fields Access count and flag Edit Log =======");
     }
 
     @Override
@@ -440,6 +462,22 @@ public abstract class FSEditLogOp {
         this.clientName = "";
         this.clientMachine = "";
       }
+      
+      // Reading Access count and Cached flag into Edit Log IDecider - 03/29/2015 3:28 PM
+      Log.info("====== Inside Read Fields Access count and flag Edit Log =======");
+      if (LayoutVersion.supports(Feature.EDITLOG_OP_OPTIMIZATION, logVersion)) {
+          this.accesscount = FSImageSerialization.readLong(in);
+      } else {
+          this.accesscount = readLong(in);
+      }
+      if (LayoutVersion.supports(Feature.EDITLOG_OP_OPTIMIZATION, logVersion)) {
+          this.iscached = FSImageSerialization.readInt(in);
+      } else {
+          this.iscached = readShort(in);
+      }
+      Log.info("The count and cached flag of file " + this.path + "is: " 
+    		  + this.accesscount + "flag: " + this.iscached);
+      Log.info("====== Inside Read Fields Access count and flag Edit Log =======");
     }
 
     static final public int MAX_BLOCKS = 1024 * 1024 * 64;
@@ -490,11 +528,18 @@ public abstract class FSEditLogOp {
       if (this.opCode == OP_ADD) {
         appendRpcIdsToString(builder, rpcClientId, rpcCallId);
       }
+      builder.append(", accesscount=");
+      builder.append(accesscount);
+      builder.append(", iscached=");
+      builder.append(iscached);
       builder.append(", opCode=");
       builder.append(opCode);
       builder.append(", txid=");
       builder.append(txid);
       builder.append("]");
+      Log.info("====== Inside Stringify() =======");
+      Log.info("Value of stringify is: " + builder.toString());
+      Log.info("====== Inside Stringify() =======");
       return builder.toString();
     }
     
@@ -522,6 +567,13 @@ public abstract class FSEditLogOp {
       if (this.opCode == OP_ADD) {
         appendRpcIdsToXml(contentHandler, rpcClientId, rpcCallId);
       }
+      Log.info("====== Inside toXml() =======");
+      Log.info("The ACCESSCNT added to XML is " + Long.valueOf(accesscount).toString());
+      Log.info("The CACHED added to XML is " + Integer.valueOf(iscached).toString());
+      XMLUtils.addSaxString(contentHandler, "ACCESSCNT",
+              Long.valueOf(accesscount).toString());
+      XMLUtils.addSaxString(contentHandler, "CACHED",
+              Integer.valueOf(iscached).toString());
     }
 
     @Override 
@@ -546,6 +598,12 @@ public abstract class FSEditLogOp {
       }
       this.permissions = permissionStatusFromXml(st);
       readRpcIdsFromXml(st);
+      Log.info("====== Inside fromXml() =======");
+      this.accesscount = Long.valueOf(st.getValue("ACCESSCNT"));
+      this.iscached = Integer.valueOf(st.getValue("CACHED"));
+      Log.info("The ACCESSCNT read from XML is " + this.accesscount);
+      Log.info("The CACHED read from XML is " + this.iscached);
+      Log.info("====== Inside fromXml() =======");
     }
   }
 
@@ -1825,6 +1883,9 @@ public abstract class FSEditLogOp {
     String path;
     long mtime;
     long atime;
+    // Added access count and iscached IDecider - 03/30/2015 1:31AM
+    long accesscount;
+    int iscached;
 
     private TimesOp() {
       super(OP_TIMES);
@@ -1848,6 +1909,17 @@ public abstract class FSEditLogOp {
       this.atime = atime;
       return this;
     }
+    
+    // Setter for access count and iscached IDecider 03/30/2015 1:33AM
+    TimesOp setAccessCount(long accesscount) {
+        this.accesscount = accesscount;
+        return this;
+    }
+    
+    TimesOp setIsCached(int iscached) {
+        this.iscached = iscached;
+        return this;
+    }
 
     @Override
     public 
@@ -1855,6 +1927,8 @@ public abstract class FSEditLogOp {
       FSImageSerialization.writeString(path, out);
       FSImageSerialization.writeLong(mtime, out);
       FSImageSerialization.writeLong(atime, out);
+      FSImageSerialization.writeLong(accesscount, out);
+      FSImageSerialization.writeInt(iscached, out);
     }
 
     @Override
@@ -1871,9 +1945,13 @@ public abstract class FSEditLogOp {
       if (LayoutVersion.supports(Feature.EDITLOG_OP_OPTIMIZATION, logVersion)) {
         this.mtime = FSImageSerialization.readLong(in);
         this.atime = FSImageSerialization.readLong(in);
+        this.accesscount = FSImageSerialization.readLong(in);
+        this.iscached = FSImageSerialization.readInt(in);
       } else {
         this.mtime = readLong(in);
         this.atime = readLong(in);
+        this.accesscount = readLong(in);
+        this.iscached = readShort(in);
       }
     }
 
@@ -1888,6 +1966,10 @@ public abstract class FSEditLogOp {
       builder.append(mtime);
       builder.append(", atime=");
       builder.append(atime);
+      builder.append(", accesscount=");
+      builder.append(accesscount);
+      builder.append(", iscached=");
+      builder.append(iscached);
       builder.append(", opCode=");
       builder.append(opCode);
       builder.append(", txid=");
@@ -1905,6 +1987,10 @@ public abstract class FSEditLogOp {
           Long.valueOf(mtime).toString());
       XMLUtils.addSaxString(contentHandler, "ATIME",
           Long.valueOf(atime).toString());
+      XMLUtils.addSaxString(contentHandler, "ACCESSCNT",
+          Long.valueOf(accesscount).toString());
+      XMLUtils.addSaxString(contentHandler, "CACHED",
+          Long.valueOf(iscached).toString());
     }
     
     @Override void fromXml(Stanza st) throws InvalidXmlException {
@@ -1912,6 +1998,8 @@ public abstract class FSEditLogOp {
       this.path = st.getValue("PATH");
       this.mtime = Long.valueOf(st.getValue("MTIME"));
       this.atime = Long.valueOf(st.getValue("ATIME"));
+      this.accesscount = Long.valueOf(st.getValue("ACCESSCNT"));
+      this.iscached = Integer.valueOf(st.getValue("CACHED"));
     }
   }
 

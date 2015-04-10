@@ -211,6 +211,7 @@ import org.apache.hadoop.hdfs.server.namenode.startupprogress.Status;
 import org.apache.hadoop.hdfs.server.namenode.startupprogress.Step;
 import org.apache.hadoop.hdfs.server.namenode.startupprogress.StepType;
 import org.apache.hadoop.hdfs.server.namenode.web.resources.NamenodeWebHdfsMethods;
+import org.apache.hadoop.hdfs.server.namenode.IDecider;
 import org.apache.hadoop.hdfs.server.protocol.DatanodeCommand;
 import org.apache.hadoop.hdfs.server.protocol.DatanodeRegistration;
 import org.apache.hadoop.hdfs.server.protocol.HeartbeatResponse;
@@ -377,6 +378,10 @@ public class FSNamesystem implements Namesystem, FSClusterStats,
   private final SnapshotManager snapshotManager;
   private final CacheManager cacheManager;
   private final DatanodeStatistics datanodeStatistics;
+  /*
+   * Hold the IDecider Reference - IDecider 03/23/2015 11:17 AM
+   */
+  private final IDecider idecider;
 
   // Block pool ID used by this namenode
   private String blockPoolId;
@@ -743,6 +748,10 @@ public class FSNamesystem implements Namesystem, FSClusterStats,
       this.snapshotManager = new SnapshotManager(dir);
       this.cacheManager = new CacheManager(this, conf, blockManager);
       this.safeMode = new SafeModeInfo(conf);
+      /*
+       * Instantiating the IDecider reference - IDecider 03/23/2015 - 11:21 AM
+       */
+      this.idecider = new IDecider(this.dir);
       this.auditLoggers = initAuditLoggers(conf);
       this.isDefaultAuditLogger = auditLoggers.size() == 1 &&
         auditLoggers.get(0) instanceof DefaultAuditLogger;
@@ -1521,6 +1530,29 @@ public class FSNamesystem implements Namesystem, FSClusterStats,
   LocatedBlocks getBlockLocations(String clientMachine, String src,
       long offset, long length) throws AccessControlException,
       FileNotFoundException, UnresolvedLinkException, IOException {
+	// Added Logger statement - 03/22/2015 10:56 PM
+	LOG.info("================= Inside getBlockLocations =====================");
+	LOG.info("Value of clientMachine: " + clientMachine);
+	LOG.info("Value of src: " + src);
+	// Calling isStageFile() to check for stage file - 03/23/2015 11:24 AM
+	if (idecider.isStageFile(src)) {
+		LOG.info("It is Stage File. No need to perform IDecider approach");
+	} else {
+		LOG.info("It is Non-Stage File. Need to perform IDecider approach");
+		// Increment the access count for file
+		idecider.incrementAccessCount(src);
+		// Call checkFileEligiblityForCache - 03/23/2015 5:20 PM
+		if (idecider.checkFileEligiblityForCache(src)) {
+			LOG.info("Eligible for caching");
+			if (!idecider.isCached(src)) {
+				idecider.setIsCached(src, true);
+				LOG.info("Calling Cache API to cached the file");
+			} else
+				LOG.info("File is already cached");
+		} else {
+			LOG.info("Not Eligible for caching since access count is less than cache threshold");
+		}
+	}
     LocatedBlocks blocks = getBlockLocations(src, offset, length, true, true,
         true);
     if (blocks != null) {

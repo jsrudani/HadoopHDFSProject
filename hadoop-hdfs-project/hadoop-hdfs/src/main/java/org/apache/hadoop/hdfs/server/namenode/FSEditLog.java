@@ -693,6 +693,8 @@ public class FSEditLog implements LogsPurgeable {
       .setClientName(newNode.getClientName())
       .setClientMachine(newNode.getClientMachine());
     logRpcIds(op, toLogRpcIds);
+    op.setAccessCount(newNode.getAccessCount());
+    op.setIsCached(newNode.getIsCached());
     logEdit(op);
   }
 
@@ -707,7 +709,9 @@ public class FSEditLog implements LogsPurgeable {
       .setAccessTime(newNode.getAccessTime())
       .setBlockSize(newNode.getPreferredBlockSize())
       .setBlocks(newNode.getBlocks())
-      .setPermissionStatus(newNode.getPermissionStatus());
+      .setPermissionStatus(newNode.getPermissionStatus())
+      .setAccessCount(newNode.getAccessCount())
+      .setIsCached(newNode.getIsCached());
     
     logEdit(op);
   }
@@ -861,13 +865,17 @@ public class FSEditLog implements LogsPurgeable {
   }
 
   /** 
-   * Add access time record to edit log
+   * Add access time record to edit log. Added access count and iscached parameters.
+   * IDecider - 03/30/2015 3:13PM.
    */
-  void logTimes(String src, long mtime, long atime) {
+  void logTimes(String src, long mtime, long atime, long accesscount, int iscached) {
     TimesOp op = TimesOp.getInstance(cache.get())
       .setPath(src)
       .setModificationTime(mtime)
-      .setAccessTime(atime);
+      .setAccessTime(atime)
+      .setAccessCount(accesscount)
+      .setIsCached(iscached);  
+
     logEdit(op);
   }
 

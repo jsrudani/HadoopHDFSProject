@@ -92,31 +92,45 @@ public abstract class INodeWithAdditionalFields extends INode
   private long modificationTime = 0L;
   /** The last access time*/
   private long accessTime = 0L;
+  /** The access count IDecider - 03/23/2015 - 1:44 PM. */
+  private long accessCount = 0L;
+  /** The iscached indicates file is cached or not IDecider - 03/29/2015 - 2:15 AM. */
+  private int isCached = 0;
 
   /** For implementing {@link LinkedElement}. */
   private LinkedElement next = null;
 
   private INodeWithAdditionalFields(INode parent, long id, byte[] name,
-      long permission, long modificationTime, long accessTime) {
+      long permission, long modificationTime, long accessTime, long accessCount, int isCached) {
     super(parent);
     this.id = id;
     this.name = name;
     this.permission = permission;
     this.modificationTime = modificationTime;
     this.accessTime = accessTime;
+    this.accessCount = accessCount;
+    this.isCached = isCached;
   }
 
   INodeWithAdditionalFields(long id, byte[] name, PermissionStatus permissions,
       long modificationTime, long accessTime) {
     this(null, id, name, PermissionStatusFormat.toLong(permissions),
-        modificationTime, accessTime);
+        modificationTime, accessTime,0L,0);
+  }
+  
+  // Overload the constructor with access count and isCached parameters IDecider - 03/29/2015 12:35PM
+  INodeWithAdditionalFields(long id, byte[] name, PermissionStatus permissions,
+	  long modificationTime, long accessTime, long accessCount, int isCached) {
+	this(null, id, name, PermissionStatusFormat.toLong(permissions),
+	    modificationTime, accessTime,accessCount,isCached);
   }
   
   /** @param other Other node to be copied */
   INodeWithAdditionalFields(INodeWithAdditionalFields other) {
     this(other.getParentReference() != null ? other.getParentReference()
         : other.getParent(), other.getId(), other.getLocalNameBytes(),
-        other.permission, other.modificationTime, other.accessTime);
+        other.permission, other.modificationTime, other.accessTime,
+        other.accessCount, other.isCached);
   }
 
   @Override
@@ -262,4 +276,32 @@ public abstract class INodeWithAdditionalFields extends INode
   public final void setAccessTime(long accessTime) {
     this.accessTime = accessTime;
   }
+  
+  // Added Access Count variable Getter/Setter IDecider - 03/23/2015 - 4:25PM
+  public final long getAccessCount(Snapshot snapshot) {
+	  if (snapshot != null) {
+	      return getSnapshotINode(snapshot).getAccessCount();
+	  }
+	  return accessCount;
+  }  
+  /** Set access count of inode. */
+  public final void setAccessCount(long accessCount) {
+	  this.accessCount = accessCount;
+  }
+  
+  // Added Cached Flag Getter/Setter IDecider - 03/29/2015 - 2:15AM
+  /** Set cached flag to indicate whether File is cached or not. 
+   *  1 indicates File is cached
+   *  0 indicates File is not cached */
+  public final void setIsCached(int isCachedFlag) {
+	  this.isCached = isCachedFlag;
+  }  
+  /** Get cached flag of inode. */
+  public final int getIsCached(Snapshot snapshot) {
+	  if (snapshot != null) {
+	      return getSnapshotINode(snapshot).getIsCached();
+	  }
+	  return isCached;
+  }
+  
 }

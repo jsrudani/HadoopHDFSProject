@@ -29,6 +29,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.impl.Log4JLogger;
 import org.apache.hadoop.HadoopIllegalArgumentException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.ContentSummary;
@@ -87,6 +90,9 @@ import com.google.common.base.Preconditions;
  * 
  *************************************************/
 public class FSDirectory implements Closeable {
+  // Adding LOG. Need to remove IDecider - 03/30/2015 2:51PM
+  public static final Log LOG = LogFactory.getLog(FSDirectory.class);
+  
   private static INodeDirectoryWithQuota createRoot(FSNamesystem namesystem) {
     final INodeDirectoryWithQuota r = new INodeDirectoryWithQuota(
         INodeId.ROOT_INODE_ID,
@@ -300,11 +306,18 @@ public class FSDirectory implements Closeable {
     if (!mkdirs(parent.toString(), permissions, true, modTime)) {
       return null;
     }
-    INodeFileUnderConstruction newNode = new INodeFileUnderConstruction(
+    /*INodeFileUnderConstruction newNode = new INodeFileUnderConstruction(
                                  namesystem.allocateNewInodeId(),
                                  permissions,replication,
                                  preferredBlockSize, modTime, clientName, 
-                                 clientMachine, clientNode);
+                                 clientMachine, clientNode);*/
+    // Change the call to overloaded INodeFileUnderConstruction const. IDecider - 03/29/2015 1:29PM
+    INodeFileUnderConstruction newNode = new INodeFileUnderConstruction(
+            				   namesystem.allocateNewInodeId(),
+            				   null,replication,modTime,preferredBlockSize,
+            				   BlockInfo.EMPTY_ARRAY, permissions, clientName, 
+            				   clientMachine, clientNode,0,0);
+    
     boolean added = false;
     writeLock();
     try {
@@ -355,6 +368,43 @@ public class FSDirectory implements Closeable {
       }
     }
     return null;
+  }
+  
+  // Overload unprotectedAddFile method with access count and cached flag - IDecider - 03/29/2015 1:01PM
+  INodeFile unprotectedAddFile( long id,
+          						String path, 
+          						PermissionStatus permissions,
+          						short replication,
+          						long modificationTime,
+          						long atime,
+          						long preferredBlockSize,
+          						boolean underConstruction,
+          						String clientName,
+          						String clientMachine,
+          						long accessCount,
+          						int isCached) {
+	  final INodeFile newNode;
+	  assert hasWriteLock();
+	  if (underConstruction) {
+		  newNode = new INodeFileUnderConstruction(id, null, replication, modificationTime,
+				  preferredBlockSize, BlockInfo.EMPTY_ARRAY, permissions,
+				  clientName, clientMachine, null, accessCount, isCached);
+	  } else {
+		  newNode = new INodeFile(id, null, permissions, modificationTime, atime,
+				  BlockInfo.EMPTY_ARRAY, replication, preferredBlockSize,accessCount,isCached);
+	  }
+	  try {
+		  if (addINode(path, newNode)) {
+			  return newNode;
+		  }
+	  } catch (IOException e) {
+		  if(NameNode.stateChangeLog.isDebugEnabled()) {
+			  NameNode.stateChangeLog.debug(
+					  "DIR* FSDirectory.unprotectedAddFile: exception when add " + path
+					  + " to the file system", e);
+		  }
+	  }
+	  return null;
   }
 
   /**
@@ -2524,23 +2574,35 @@ public class FSDirectory implements Closeable {
   void setTimes(String src, INode inode, long mtime, long atime, boolean force,
       Snapshot latest) throws QuotaExceededException {
     boolean status = false;
+    long inodeAccessCount = inode.getAccessCount();
+    int inodeIsCached = inode.getIsCached();
     writeLock();
     try {
-      status = unprotectedSetTimes(inode, mtime, atime, force, latest);
+      //status = unprotectedSetTimes(inode, mtime, atime, force, latest);
+    	// Calling overloaded unprotectedSetTimes() method
+    	LOG.info(" == Calling Overload unprotectedSetTimes method ==");
+    	LOG.info("Parameters ");
+    	LOG.info("ACCESSCNT " + inodeAccessCount);
+    	LOG.info("CACHED " + inodeIsCached);
+    	status = unprotectedSetTimes(inode, mtime, atime, force, latest,
+    			inodeAccessCount,inodeIsCached);
     } finally {
       writeUnlock();
     }
     if (status) {
-      fsImage.getEditLog().logTimes(src, mtime, atime);
+      fsImage.getEditLog().logTimes(src, mtime, atime, inodeAccessCount, inodeIsCached);
     }
   }
 
-  boolean unprotectedSetTimes(String src, long mtime, long atime, boolean force) 
+  boolean unprotectedSetTimes(String src, long mtime, long atime, boolean force, long accesscount, int iscached) 
       throws UnresolvedLinkException, QuotaExceededException {
     assert hasWriteLock();
-    final INodesInPath i = getLastINodeInPath(src); 
+    final INodesInPath i = getLastINodeInPath(src);
+    LOG.info(" == Calling Overload unprotectedSetTimes method through Edit Log Loading ==");
+    LOG.info("ACCESSCNT " + accesscount);
+	LOG.info("CACHED " + iscached);
     return unprotectedSetTimes(i.getLastINode(), mtime, atime, force,
-        i.getLatestSnapshot());
+        i.getLatestSnapshot(),accesscount,iscached);
   }
 
   private boolean unprotectedSetTimes(INode inode, long mtime,
@@ -2564,6 +2626,50 @@ public class FSDirectory implements Closeable {
       }
     } 
     return status;
+  }
+  // Overload unprotectedSetTimes() with access count and iscached flag IDecider - 03/30/2015 2:02PM
+  private boolean unprotectedSetTimes(INode inode, long mtime,
+	  long atime, boolean force, Snapshot latest, long accesscount, int iscached) throws QuotaExceededException {
+	  assert hasWriteLock();
+	  boolean status = false;
+	  if (mtime != -1) {
+	    inode = inode.setModificationTime(mtime, latest, inodeMap);
+	    status = true;
+	  }
+	  if (atime != -1) {
+	    long inodeTime = inode.getAccessTime(null);
+
+	    // if the last access time update was within the last precision interval, then
+	    // no need to store access time
+	    if (atime <= inodeTime + getFSNamesystem().getAccessTimePrecision() && !force) {
+	      status =  false;
+	    } else {
+	      inode.setAccessTime(atime, latest, inodeMap);
+	      status = true;
+	    }
+	  }
+	  // Added check for access count and cached flag IDecider - 03/30/2015 2:45PM
+	  LOG.info(" == Inside overload unprotectedSetTimes ==");	  
+	  if (accesscount != 0) {
+		  long inodeAccesscount = inode.getAccessCount(null);
+		  LOG.info("INODE ACCESSCNT " + inodeAccesscount);
+		  // if inode access count is not same as passed parameter access count then update
+		  // inode access count else no need
+		  if (accesscount != inodeAccesscount) {
+			  inode.setAccessCount(accesscount, latest, inodeMap);
+			  status = true;
+		  }
+	  }
+	  int inodeIsCached = inode.getIsCached(null);
+	  LOG.info("INODE CACHED " + inodeIsCached);
+	  // if inode cached flag is not same as passed parameter is cached then update
+	  // inode is cached flag else no need
+	  if (iscached != inodeIsCached) {
+		  inode.setIsCached(iscached, latest, inodeMap);
+		  status = true;
+	  }
+	  
+	  return status;
   }
 
   /**

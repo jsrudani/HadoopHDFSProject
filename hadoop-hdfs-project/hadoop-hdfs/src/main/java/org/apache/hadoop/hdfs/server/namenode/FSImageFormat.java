@@ -657,6 +657,7 @@ public class FSImageFormat {
     if (LayoutVersion.supports(Feature.FILE_ACCESS_TIME, imgVersion)) {
       atime = in.readLong();
     }
+    
     final long blockSize = in.readLong();
     final int numBlocks = in.readInt();
 
@@ -697,13 +698,23 @@ public class FSImageFormat {
       }
 
       final PermissionStatus permissions = PermissionStatus.read(in);
-
+      
+      // Reading the ACCESSCNT and CACHED from FSIMAGE IDecider - 03/29/2015 5:35 PM
+      final long accesscount = in.readLong();
+      final int iscached = in.readInt();
+      
       // return
       if (counter != null) {
         counter.increment();
       }
+      // Calling Overloaded INodeFile()
+      /*final INodeFile file = new INodeFile(inodeId, localName, permissions,
+          modificationTime, atime, blocks, replication, blockSize); */
+      LOG.info("Calling overloaded INodeFile() to create file");
+      LOG.info("ACCESSCNT " + accesscount);
+      LOG.info("CACHED " + iscached);
       final INodeFile file = new INodeFile(inodeId, localName, permissions,
-          modificationTime, atime, blocks, replication, blockSize);
+              modificationTime, atime, blocks, replication, blockSize, accesscount, iscached);
       if (underConstruction) {
         INodeFileUnderConstruction fileUC = new INodeFileUnderConstruction(
             file, clientName, clientMachine, null);
@@ -798,13 +809,21 @@ public class FSImageFormat {
       final PermissionStatus permissions = PermissionStatus.read(in);
       final long modificationTime = in.readLong();
       final long accessTime = in.readLong();
+      // Reading the ACCESSCNT and CACHED from FSIMAGE IDecider - 03/29/2015 5:51 PM
+      final long accesscount = in.readLong();
+      final int iscached = in.readInt();
   
       final short replication = namesystem.getBlockManager().adjustReplication(
           in.readShort());
       final long preferredBlockSize = in.readLong();
       
+      /* return new INodeFileAttributes.SnapshotCopy(name, permissions, modificationTime,
+          accessTime, replication, preferredBlockSize); */
+      LOG.info("Calling overloaded INodeFileAttributes.SnapshotCopy() to create snapshot");
+      LOG.info("ACCESSCNT " + accesscount);
+      LOG.info("CACHED " + iscached);
       return new INodeFileAttributes.SnapshotCopy(name, permissions, modificationTime,
-          accessTime, replication, preferredBlockSize);
+              accessTime, replication, preferredBlockSize, accesscount, iscached);
     }
 
     public INodeDirectoryAttributes loadINodeDirectoryAttributes(DataInput in)
@@ -1040,8 +1059,11 @@ public class FSImageFormat {
                  " using " + compression);
 
         // save the root
+        // Debug IDecider 04/08/2015 3:02PM
+        LOG.info("==== Before calling saveINode2Image =====");
         saveINode2Image(fsDir.rootDir, out, false, referenceMap, counter);
         // save the rest of the nodes
+        LOG.info("==== Before calling saveImage =====");
         saveImage(fsDir.rootDir, out, true, false, counter);
         prog.endStep(Phase.SAVING_CHECKPOINT, step);
         // Now that the step is finished, set counter equal to total to adjust
@@ -1056,6 +1078,7 @@ public class FSImageFormat {
         // paths, so that when loading fsimage we do not put them into the lease
         // map. In the future, we can remove this hack when we can bump the 
         // layout version.
+        LOG.info("==== Before calling saveFilesUnderConstruction =====");
         sourceNamesystem.saveFilesUnderConstruction(out, snapshotUCMap);
         
         context.checkCancelled();
@@ -1134,6 +1157,9 @@ public class FSImageFormat {
         throws IOException {
       // write the inode id of the directory
       out.writeLong(current.getId());
+      // For Debugging about root.dir. IDecider - 04/07/2015 7:42PM
+  	  LOG.info("== Checking root reference inside saveImage ==");
+  	  LOG.info("node.id --> " + current.getId());
       
       if (!toSaveSubtree) {
         return;
@@ -1154,6 +1180,8 @@ public class FSImageFormat {
       if (current instanceof INodeDirectorySnapshottable) {
         INodeDirectorySnapshottable snapshottableNode = 
             (INodeDirectorySnapshottable) current;
+        // For Debugging about root.dir. IDecider - 04/07/2015 7:42PM
+        LOG.info("Before SnapshotFSImageFormat.saveSnapshots --> ");
         SnapshotFSImageFormat.saveSnapshots(snapshottableNode, out);
       } else {
         out.writeInt(-1); // # of snapshots
@@ -1168,6 +1196,8 @@ public class FSImageFormat {
       // Write sub-tree of sub-directories, including possible snapshots of 
       // deleted sub-directories
       out.writeInt(dirNum); // the number of sub-directories
+      // For Debugging about root.dir. IDecider - 04/07/2015 7:42PM
+      LOG.info("dirNum --> " + dirNum);
       for(INode child : children) {
         if(!child.isDirectory()) {
           continue;

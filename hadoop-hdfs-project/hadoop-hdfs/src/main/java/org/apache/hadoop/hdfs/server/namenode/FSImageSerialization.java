@@ -22,6 +22,7 @@ import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
 import org.apache.hadoop.fs.Path;
@@ -65,7 +66,8 @@ import com.google.common.base.Preconditions;
 @InterfaceAudience.Private
 @InterfaceStability.Evolving
 public class FSImageSerialization {
-
+	
+  private static final Log LOG = FSImage.LOG;
   // Static-only class
   private FSImageSerialization() {}
   
@@ -190,6 +192,10 @@ public class FSImageSerialization {
    */
   public static void writeINodeFile(INodeFile file, DataOutput out,
       boolean writeUnderConstruction) throws IOException {
+	LOG.info("== Inside writeINodeFile() ==");
+	LOG.info("Parameters count and cached logged into FSImage");
+	LOG.info("ACCESSCNT " + file.getAccessCount());
+	LOG.info("CACHED " + file.getIsCached());
     writeLocalName(file, out);
     out.writeLong(file.getId());
     out.writeShort(file.getFileReplication());
@@ -212,18 +218,27 @@ public class FSImageSerialization {
     }
 
     writePermissionStatus(file, out);
+    out.writeLong(file.getAccessCount());
+    out.writeInt(file.getIsCached());
   }
 
   /** Serialize an {@link INodeFileAttributes}. */
   public static void writeINodeFileAttributes(INodeFileAttributes file,
       DataOutput out) throws IOException {
-    writeLocalName(file, out);
+	LOG.info("== Inside writeINodeFileAttributes() ==");
+	LOG.info("Parameters count and cached");
+	LOG.info("ACCESSCNT " + file.getAccessCount());
+	LOG.info("CACHED " + file.getIsCached());
+    
+	writeLocalName(file, out);
     writePermissionStatus(file, out);
     out.writeLong(file.getModificationTime());
     out.writeLong(file.getAccessTime());
 
     out.writeShort(file.getFileReplication());
     out.writeLong(file.getPreferredBlockSize());
+    out.writeLong(file.getAccessCount());
+    out.writeInt(file.getIsCached());
   }
 
   /**
@@ -251,6 +266,8 @@ public class FSImageSerialization {
     }
     
     writePermissionStatus(node, out);
+    /*out.writeLong(0);	access count IDecider
+    out.writeInt(0);	is cached flag IDecider*/
   }
   
   /**
@@ -285,6 +302,8 @@ public class FSImageSerialization {
 
     Text.writeString(out, node.getSymlinkString());
     writePermissionStatus(node, out);
+    out.writeLong(0);	// access count IDecider
+    out.writeInt(0);	// is cached flag IDecider
   }
   
   /** Serialize a {@link INodeReference} node */
@@ -314,6 +333,8 @@ public class FSImageSerialization {
         = (INodeReference.WithCount)ref.getReferredINode();
     referenceMap.writeINodeReferenceWithCount(withCount, out,
         writeUnderConstruction);
+    out.writeLong(0);	// access count IDecider
+    out.writeInt(0);	// is cached flag IDecider
   }
 
   /**
@@ -322,6 +343,12 @@ public class FSImageSerialization {
   public static void saveINode2Image(INode node, DataOutput out,
       boolean writeUnderConstruction, ReferenceMap referenceMap)
       throws IOException {
+	// For Debugging about root.dir. IDecider - 04/07/2015 7:42PM
+	LOG.info("== Checking root reference inside saveINode2Image ==");
+	LOG.info("node.reference" + node.isReference());
+	LOG.info("node.isDirectory" + node.isDirectory());
+	LOG.info("node.isSymlink()" + node.isSymlink());
+	LOG.info("node.isFile()" + node.isFile());
     if (node.isReference()) {
       writeINodeReference(node.asReference(), out, writeUnderConstruction,
           referenceMap);

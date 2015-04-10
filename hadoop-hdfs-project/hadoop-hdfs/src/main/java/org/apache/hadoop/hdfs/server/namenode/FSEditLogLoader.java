@@ -321,10 +321,23 @@ public class FSEditLogLoader {
         // add to the file tree
         inodeId = getAndUpdateLastInodeId(addCloseOp.inodeId, logVersion,
             lastInodeId);
+        /* newFile = fsDir.unprotectedAddFile(inodeId,
+            addCloseOp.path, addCloseOp.permissions, replication,
+            addCloseOp.mtime, addCloseOp.atime, addCloseOp.blockSize, true,
+            addCloseOp.clientName, addCloseOp.clientMachine); */
+        // Calling Overloaded unprotectedAddFile() IDecider - 03/29/2015 4:13PM
+        LOG.info(" == Before calling overloaded unprotectedAddFile() == ");
+        LOG.info("Parameters ");
+        LOG.info("Path " + addCloseOp.path);
+        LOG.info("Access Count " + addCloseOp.accesscount);
+        LOG.info("Cached " + addCloseOp.iscached);
+        LOG.info(" == Before calling overloaded unprotectedAddFile() == ");
         newFile = fsDir.unprotectedAddFile(inodeId,
             addCloseOp.path, addCloseOp.permissions, replication,
             addCloseOp.mtime, addCloseOp.atime, addCloseOp.blockSize, true,
-            addCloseOp.clientName, addCloseOp.clientMachine);
+            addCloseOp.clientName, addCloseOp.clientMachine,
+            addCloseOp.accesscount, addCloseOp.iscached);
+        
         fsNamesys.leaseManager.addLease(addCloseOp.clientName, addCloseOp.path);
 
         // add the op into retry cache if necessary
@@ -359,8 +372,11 @@ public class FSEditLogLoader {
       // update the block list.
       
       // Update the salient file attributes.
+      LOG.info(" == Before Updating salient file attributes in OP_ADD == ");
       newFile.setAccessTime(addCloseOp.atime, null, fsDir.getINodeMap());
       newFile.setModificationTime(addCloseOp.mtime, null, fsDir.getINodeMap());
+      newFile.setAccessCount(addCloseOp.accesscount, null, fsDir.getINodeMap());
+      newFile.setIsCached(addCloseOp.iscached, null, fsDir.getINodeMap());
       updateBlocks(fsDir, addCloseOp, newFile);
       break;
     }
@@ -378,8 +394,11 @@ public class FSEditLogLoader {
       final INodeFile oldFile = INodeFile.valueOf(iip.getINode(0), addCloseOp.path);
 
       // Update the salient file attributes.
+      LOG.info(" == Before Updating salient file attributes in OP_CLOSE == ");
       oldFile.setAccessTime(addCloseOp.atime, null, fsDir.getINodeMap());
       oldFile.setModificationTime(addCloseOp.mtime, null, fsDir.getINodeMap());
+      oldFile.setAccessCount(addCloseOp.accesscount, null, fsDir.getINodeMap());
+      oldFile.setIsCached(addCloseOp.iscached, null, fsDir.getINodeMap());
       updateBlocks(fsDir, addCloseOp, oldFile);
 
       // Now close the file
@@ -519,7 +538,9 @@ public class FSEditLogLoader {
 
       fsDir.unprotectedSetTimes(timesOp.path,
                                 timesOp.mtime,
-                                timesOp.atime, true);
+                                timesOp.atime, true,
+                                timesOp.accesscount,
+                                timesOp.iscached);
       break;
     }
     case OP_SYMLINK: {

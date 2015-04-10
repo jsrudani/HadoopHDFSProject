@@ -48,6 +48,18 @@ public interface INodeFileAttributes extends INodeAttributes {
       final long h = HeaderFormat.combineReplication(0L, replication);
       header = HeaderFormat.combinePreferredBlockSize(h, preferredBlockSize);
     }
+    
+    /** Overloaded SnapshotCopy to include access count and is cached falg IDecider -
+     *  03/29/2015 - 12:23 PM
+     */
+    public SnapshotCopy(byte[] name, PermissionStatus permissions,
+        long modificationTime, long accessTime,
+        short replication, long preferredBlockSize, long accessCount, int isCached) {
+        super(name, permissions, modificationTime, accessTime,accessCount,isCached);
+
+        final long h = HeaderFormat.combineReplication(0L, replication);
+        header = HeaderFormat.combinePreferredBlockSize(h, preferredBlockSize);
+    }
 
     public SnapshotCopy(INodeFile file) {
       super(file);

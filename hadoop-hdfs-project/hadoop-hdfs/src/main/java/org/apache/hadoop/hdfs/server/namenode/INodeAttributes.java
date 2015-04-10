@@ -53,6 +53,13 @@ public interface INodeAttributes {
 
   /** @return the access time. */
   public long getAccessTime();
+  
+  //Added getAccessCount and getIsCached methods IDecider - 03/29/2015 - 2:15AM
+  /** @return the access count. */
+  public long getAccessCount();
+  
+  /** @return the isCached Flag. */
+  public int getIsCached();
 
   /** A read-only copy of the inode attributes. */
   public static abstract class SnapshotCopy implements INodeAttributes {
@@ -60,6 +67,9 @@ public interface INodeAttributes {
     private final long permission;
     private final long modificationTime;
     private final long accessTime;
+    //Added accessCount and isCached IDecider - 03/29/2015 - 2:15AM
+    private final long accessCount;
+    private final int isCached;
 
     SnapshotCopy(byte[] name, PermissionStatus permissions,
         long modificationTime, long accessTime) {
@@ -67,13 +77,27 @@ public interface INodeAttributes {
       this.permission = PermissionStatusFormat.toLong(permissions);
       this.modificationTime = modificationTime;
       this.accessTime = accessTime;
+      this.accessCount = 0L;
+      this.isCached = 0;
     }
-
+    //Overload the SnapshotCopy() with access count and cached flag IDecider - 03/29/2015 11:09PM
+    SnapshotCopy(byte[] name, PermissionStatus permissions,
+        long modificationTime, long accessTime, long accessCount, int isCached) {
+      this.name = name;
+      this.permission = PermissionStatusFormat.toLong(permissions);
+      this.modificationTime = modificationTime;
+      this.accessTime = accessTime;
+      this.accessCount = accessCount;
+      this.isCached = isCached;
+    }
+    
     SnapshotCopy(INode inode) {
       this.name = inode.getLocalNameBytes();
       this.permission = inode.getPermissionLong();
       this.modificationTime = inode.getModificationTime();
       this.accessTime = inode.getAccessTime();
+      this.accessCount = inode.getAccessCount();
+      this.isCached = inode.getIsCached();
     }
 
     @Override
@@ -117,5 +141,17 @@ public interface INodeAttributes {
     public final long getAccessTime() {
       return accessTime;
     }
+    
+    //Added getAccessCount and getIsCached methods IDecider - 03/29/2015 - 2:15AM
+    @Override
+    public final long getAccessCount() {
+      return accessCount;
+    }
+    
+    @Override
+    public final int getIsCached() {
+      return isCached;
+    }
+    
   }
 }
