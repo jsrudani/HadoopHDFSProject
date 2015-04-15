@@ -1,0 +1,145 @@
+appendToFile Command
+=======================
+
+
+2015-04-11 22:59:00,753 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File3_appendToFile_cmd.txt	dst=null	perm=null
+2015-04-11 22:59:00,820 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 22:59:00,821 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File3_appendToFile_cmd.txtis: 0flag: 0
+2015-04-11 22:59:00,821 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 22:59:00,821 INFO org.apache.hadoop.hdfs.server.namenode.FSEditLog: Number of transactions: 2 Total time for transactions(ms): 5 Number of transactions batched in Syncs: 0 Number of syncs: 2 SyncTimes(ms): 98 
+2015-04-11 22:59:00,868 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File3_appendToFile_cmd.txt	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-11 22:59:00,902 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 22:59:00,902 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File3_appendToFile_cmd.txtis: 0flag: 0
+2015-04-11 22:59:00,902 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 22:59:00,910 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File3_appendToFile_cmd.txt is closed by DFSClient_NONMAPREDUCE_-387220431_1
+2015-04-11 22:59:00,923 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File3_appendToFile_cmd.txt	dst=null	perm=null
+2015-04-11 22:59:00,934 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 22:59:00,934 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File3_appendToFile_cmd.txtis: 0flag: 0
+2015-04-11 22:59:00,934 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 22:59:00,944 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=append	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File3_appendToFile_cmd.txt	dst=null	perm=null
+2015-04-11 22:59:00,983 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File3_appendToFile_cmd.txt. BP-1377275016-127.0.1.1-1428461302848 blk_1073741886_1062{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-11 22:59:01,203 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741886_1062{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-11 22:59:01,205 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 22:59:01,206 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File3_appendToFile_cmd.txtis: 0flag: 0
+2015-04-11 22:59:01,206 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 22:59:01,233 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File3_appendToFile_cmd.txt is closed by DFSClient_NONMAPREDUCE_-387220431_1
+2015-04-11 22:59:08,222 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: Processed cache report from DatanodeRegistration(127.0.0.1, datanodeUuid=43947538-87d8-4adb-855d-cf61b46b848b, infoPort=50075, ipcPort=50020, storageInfo=lv=-51;cid=CID-6582d17a-f0e3-4879-9e4b-dbb772076b9f;nsid=1679534034;c=0), blocks: 0, processing time: 0 msecs
+2015-04-11 22:59:20,222 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: Processed cache report from DatanodeRegistration(127.0.0.1, datanodeUuid=43947538-87d8-4adb-855d-cf61b46b848b, infoPort=50075, ipcPort=50020, storageInfo=lv=-51;cid=CID-6582d17a-f0e3-4879-9e4b-dbb772076b9f;nsid=1679534034;c=0), blocks: 0, processing time: 0 msecs
+2015-04-11 22:59:32,222 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: Processed cache report from DatanodeRegistration(127.0.0.1, datanodeUuid=43947538-87d8-4adb-855d-cf61b46b848b, infoPort=50075, ipcPort=50020, storageInfo=lv=-51;cid=CID-6582d17a-f0e3-4879-9e4b-dbb772076b9f;nsid=1679534034;c=0), blocks: 0, processing time: 0 msecs
+
+Cat Command Logs. Need to Discuss about whether to keep incrementing count on cat command
+=========================================================================================
+
+2015-04-11 23:00:41,536 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File3_appendToFile_cmd.txt	dst=null	perm=null
+2015-04-11 23:00:41,599 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-11 23:00:41,599 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-11 23:00:41,599 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File3_appendToFile_cmd.txt
+2015-04-11 23:00:41,599 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Non-Stage File. Need to perform IDecider approach
+2015-04-11 23:00:41,600 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File3_appendToFile_cmd.txtis accessed 0 times before increment
+2015-04-11 23:00:41,600 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File3_appendToFile_cmd.txtis accessed 1 times after increment
+2015-04-11 23:00:41,600 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File3_appendToFile_cmd.txtis accessed 1times
+2015-04-11 23:00:41,600 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Not Eligible for caching since access count is less than cache threshold
+2015-04-11 23:00:41,601 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File3_appendToFile_cmd.txt	dst=null	perm=null
+2015-04-11 23:00:44,223 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: Processed cache report from DatanodeRegistration(127.0.0.1, datanodeUuid=43947538-87d8-4adb-855d-cf61b46b848b, infoPort=50075, ipcPort=50020, storageInfo=lv=-51;cid=CID-6582d17a-f0e3-4879-9e4b-dbb772076b9f;nsid=1679534034;c=0), blocks: 0, processing time: 0 msecs
+2015-04-11 23:00:56,224 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: Processed cache report from DatanodeRegistration(127.0.0.1, datanodeUuid=43947538-87d8-4adb-855d-cf61b46b848b, infoPort=50075, ipcPort=50020, storageInfo=lv=-51;cid=CID-6582d17a-f0e3-4879-9e4b-dbb772076b9f;nsid=1679534034;c=0), blocks: 0, processing time: 0 msecs
+
+copyFromLocal command
+======================
+
+2015-04-11 23:10:16,648 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input	dst=null	perm=null
+2015-04-11 23:10:16,692 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File1.txt	dst=null	perm=null
+2015-04-11 23:10:16,700 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File1.txt._COPYING_	dst=null	perm=null
+2015-04-11 23:10:16,713 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 23:10:16,714 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File1.txt._COPYING_is: 0flag: 0
+2015-04-11 23:10:16,714 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 23:10:16,714 INFO org.apache.hadoop.hdfs.server.namenode.FSEditLog: Number of transactions: 9 Total time for transactions(ms): 8 Number of transactions batched in Syncs: 0 Number of syncs: 7 SyncTimes(ms): 193 
+2015-04-11 23:10:16,748 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File1.txt._COPYING_	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-11 23:10:16,767 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File1.txt._COPYING_	dst=null	perm=null
+2015-04-11 23:10:16,804 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File1.txt._COPYING_. BP-1377275016-127.0.1.1-1428461302848 blk_1073741887_1063{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-11 23:10:16,975 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741887_1063{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-11 23:10:16,979 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 23:10:16,979 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File1.txt._COPYING_is: 0flag: 0
+2015-04-11 23:10:16,979 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 23:10:17,014 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File1.txt._COPYING_ is closed by DFSClient_NONMAPREDUCE_1699730705_1
+2015-04-11 23:10:17,037 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=rename	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File1.txt._COPYING_	dst=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File1.txt	perm=jsrudani:supergroup:rw-r--r--
+2015-04-11 23:10:20,249 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: Processed cache report from DatanodeRegistration(127.0.0.1, datanodeUuid=43947538-87d8-4adb-855d-cf61b46b848b, infoPort=50075, ipcPort=50020, storageInfo=lv=-51;cid=CID-6582d17a-f0e3-4879-9e4b-dbb772076b9f;nsid=1679534034;c=0), blocks: 0, processing time: 0 msecs
+
+moveFromLocal command
+======================
+
+2015-04-11 23:19:53,369 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input	dst=null	perm=null
+2015-04-11 23:19:53,408 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File2_moveFromLocal_cmd.txt	dst=null	perm=null
+2015-04-11 23:19:53,414 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File2_moveFromLocal_cmd.txt._COPYING_	dst=null	perm=null
+2015-04-11 23:19:53,428 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 23:19:53,428 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File2_moveFromLocal_cmd.txt._COPYING_is: 0flag: 0
+2015-04-11 23:19:53,428 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 23:19:53,428 INFO org.apache.hadoop.hdfs.server.namenode.FSEditLog: Number of transactions: 15 Total time for transactions(ms): 8 Number of transactions batched in Syncs: 0 Number of syncs: 11 SyncTimes(ms): 294 
+2015-04-11 23:19:53,459 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File2_moveFromLocal_cmd.txt._COPYING_	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-11 23:19:53,478 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File2_moveFromLocal_cmd.txt._COPYING_	dst=null	perm=null
+2015-04-11 23:19:53,499 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File2_moveFromLocal_cmd.txt._COPYING_. BP-1377275016-127.0.1.1-1428461302848 blk_1073741888_1064{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-11 23:19:53,660 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741888_1064{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-11 23:19:53,663 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 23:19:53,663 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File2_moveFromLocal_cmd.txt._COPYING_is: 0flag: 0
+2015-04-11 23:19:53,663 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 23:19:53,692 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File2_moveFromLocal_cmd.txt._COPYING_ is closed by DFSClient_NONMAPREDUCE_1968189684_1
+2015-04-11 23:19:53,703 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=rename	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File2_moveFromLocal_cmd.txt._COPYING_	dst=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File2_moveFromLocal_cmd.txt	perm=jsrudani:supergroup:rw-r--r--
+2015-04-11 23:19:56,280 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: Processed cache report from DatanodeRegistration(127.0.0.1, datanodeUuid=43947538-87d8-4adb-855d-cf61b46b848b, infoPort=50075, ipcPort=50020, storageInfo=lv=-51;cid=CID-6582d17a-f0e3-4879-9e4b-dbb772076b9f;nsid=1679534034;c=0), blocks: 0, processing time: 0 msecs
+
+
+put command
+============
+
+2015-04-11 23:24:03,070 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input	dst=null	perm=null
+2015-04-11 23:24:03,110 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File4_put_cmd.txt	dst=null	perm=null
+2015-04-11 23:24:03,117 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File4_put_cmd.txt._COPYING_	dst=null	perm=null
+2015-04-11 23:24:03,129 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 23:24:03,130 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File4_put_cmd.txt._COPYING_is: 0flag: 0
+2015-04-11 23:24:03,130 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 23:24:03,130 INFO org.apache.hadoop.hdfs.server.namenode.FSEditLog: Number of transactions: 21 Total time for transactions(ms): 10 Number of transactions batched in Syncs: 0 Number of syncs: 15 SyncTimes(ms): 361 
+2015-04-11 23:24:03,157 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File4_put_cmd.txt._COPYING_	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-11 23:24:03,180 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File4_put_cmd.txt._COPYING_	dst=null	perm=null
+2015-04-11 23:24:03,203 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File4_put_cmd.txt._COPYING_. BP-1377275016-127.0.1.1-1428461302848 blk_1073741889_1065{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-11 23:24:03,371 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741889_1065{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-11 23:24:03,375 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 23:24:03,375 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File4_put_cmd.txt._COPYING_is: 0flag: 0
+2015-04-11 23:24:03,375 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 23:24:03,401 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File4_put_cmd.txt._COPYING_ is closed by DFSClient_NONMAPREDUCE_-625147753_1
+2015-04-11 23:24:03,413 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=rename	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File4_put_cmd.txt._COPYING_	dst=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File4_put_cmd.txt	perm=jsrudani:supergroup:rw-r--r--
+2015-04-11 23:24:03,417 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File5_put_cmd_multipleFiles.txt	dst=null	perm=null
+2015-04-11 23:24:03,420 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File5_put_cmd_multipleFiles.txt._COPYING_	dst=null	perm=null
+2015-04-11 23:24:03,423 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 23:24:03,423 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File5_put_cmd_multipleFiles.txt._COPYING_is: 0flag: 0
+2015-04-11 23:24:03,423 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 23:24:03,435 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File5_put_cmd_multipleFiles.txt._COPYING_	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-11 23:24:03,438 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File5_put_cmd_multipleFiles.txt._COPYING_	dst=null	perm=null
+2015-04-11 23:24:03,440 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File5_put_cmd_multipleFiles.txt._COPYING_. BP-1377275016-127.0.1.1-1428461302848 blk_1073741890_1066{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-11 23:24:03,458 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741890_1066{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-11 23:24:03,459 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 23:24:03,459 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File5_put_cmd_multipleFiles.txt._COPYING_is: 0flag: 0
+2015-04-11 23:24:03,460 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 23:24:03,468 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File5_put_cmd_multipleFiles.txt._COPYING_ is closed by DFSClient_NONMAPREDUCE_-625147753_1
+2015-04-11 23:24:03,479 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=rename	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File5_put_cmd_multipleFiles.txt._COPYING_	dst=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File5_put_cmd_multipleFiles.txt	perm=jsrudani:supergroup:rw-r--r--
+2015-04-11 23:24:08,285 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: Processed cache report from DatanodeRegistration(127.0.0.1, datanodeUuid=43947538-87d8-4adb-855d-cf61b46b848b, infoPort=50075, ipcPort=50020, storageInfo=lv=-51;cid=CID-6582d17a-f0e3-4879-9e4b-dbb772076b9f;nsid=1679534034;c=0), blocks: 0, processing time: 0 msecs
+
+touch Command
+===============
+
+
+2015-04-11 23:27:03,101 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File6_touch_cmd.txt	dst=null	perm=null
+2015-04-11 23:27:03,124 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input	dst=null	perm=null
+2015-04-11 23:27:03,163 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 23:27:03,163 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File6_touch_cmd.txtis: 0flag: 0
+2015-04-11 23:27:03,163 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 23:27:03,163 INFO org.apache.hadoop.hdfs.server.namenode.FSEditLog: Number of transactions: 33 Total time for transactions(ms): 11 Number of transactions batched in Syncs: 0 Number of syncs: 23 SyncTimes(ms): 463 
+2015-04-11 23:27:03,198 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File6_touch_cmd.txt	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-11 23:27:03,219 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 23:27:03,219 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File6_touch_cmd.txtis: 0flag: 0
+2015-04-11 23:27:03,219 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-11 23:27:03,231 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File6_touch_cmd.txt is closed by DFSClient_NONMAPREDUCE_761865642_1
+2015-04-11 23:27:08,292 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: Processed cache report from DatanodeRegistration(127.0.0.1, datanodeUuid=43947538-87d8-4adb-855d-cf61b46b848b, infoPort=50075, ipcPort=50020, storageInfo=lv=-51;cid=CID-6582d17a-f0e3-4879-9e4b-dbb772076b9f;nsid=1679534034;c=0), blocks: 0, processing time: 0 msecs
+
+
+
+
+
+

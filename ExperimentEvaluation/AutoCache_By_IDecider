@@ -1,0 +1,911 @@
+wordcount attemp 1
+====================
+
+2015-04-12 12:01:38,341 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM	dst=null	perm=null
+2015-04-12 12:01:38,367 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging	dst=null	perm=null
+2015-04-12 12:01:38,389 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging	dst=null	perm=null
+2015-04-12 12:01:38,649 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001	dst=null	perm=null
+2015-04-12 12:01:38,656 INFO org.apache.hadoop.hdfs.server.namenode.FSEditLog: Number of transactions: 2 Total time for transactions(ms): 0 Number of transactions batched in Syncs: 0 Number of syncs: 2 SyncTimes(ms): 229 
+2015-04-12 12:01:38,704 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=mkdirs	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001	dst=null	perm=jsrudani:supergroup:rwxr-xr-x
+2015-04-12 12:01:38,726 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setPermission	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001	dst=null	perm=jsrudani:supergroup:rwx------
+2015-04-12 12:01:38,738 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.jar	dst=null	perm=null
+2015-04-12 12:01:38,751 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:38,751 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.jaris: 0flag: 0
+2015-04-12 12:01:38,751 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:38,804 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.jar	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:01:38,847 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.jar. BP-1377275016-127.0.1.1-1428461302848 blk_1073741892_1068{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:01:39,033 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741892_1068{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:01:39,038 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:39,038 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.jaris: 0flag: 0
+2015-04-12 12:01:39,038 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:39,059 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.jar is closed by DFSClient_NONMAPREDUCE_-2010161652_1
+2015-04-12 12:01:39,076 INFO org.apache.hadoop.hdfs.server.blockmanagement.BlockManager: Increasing replication from 3 to 10 for /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.jar
+2015-04-12 12:01:39,082 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setReplication	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.jar	dst=null	perm=null
+2015-04-12 12:01:39,104 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setPermission	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.jar	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:01:39,145 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput	dst=null	perm=null
+2015-04-12 12:01:39,148 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput	dst=null	perm=null
+2015-04-12 12:01:39,152 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=listStatus	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput	dst=null	perm=null
+2015-04-12 12:01:39,203 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:39,203 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.splitis: 0flag: 0
+2015-04-12 12:01:39,203 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:39,226 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.split	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:01:39,237 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setPermission	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.split	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:01:39,240 INFO org.apache.hadoop.hdfs.server.blockmanagement.BlockManager: Increasing replication from 3 to 10 for /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.split
+2015-04-12 12:01:39,248 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setReplication	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.split	dst=null	perm=null
+2015-04-12 12:01:39,285 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.split. BP-1377275016-127.0.1.1-1428461302848 blk_1073741893_1069{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:01:39,324 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741893_1069{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:01:39,326 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:39,326 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.splitis: 0flag: 0
+2015-04-12 12:01:39,327 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:39,337 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.split is closed by DFSClient_NONMAPREDUCE_-2010161652_1
+2015-04-12 12:01:39,342 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:39,342 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.splitmetainfois: 0flag: 0
+2015-04-12 12:01:39,342 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:39,348 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.splitmetainfo	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:01:39,360 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setPermission	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.splitmetainfo	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:01:39,366 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.splitmetainfo. BP-1377275016-127.0.1.1-1428461302848 blk_1073741894_1070{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:01:39,380 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741894_1070{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:01:39,381 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:39,382 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.splitmetainfois: 0flag: 0
+2015-04-12 12:01:39,382 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:39,393 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.splitmetainfo is closed by DFSClient_NONMAPREDUCE_-2010161652_1
+2015-04-12 12:01:39,422 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:39,422 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.xmlis: 0flag: 0
+2015-04-12 12:01:39,422 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:39,448 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.xml	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:01:39,460 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setPermission	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.xml	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:01:39,666 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.xml. BP-1377275016-127.0.1.1-1428461302848 blk_1073741895_1071{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:01:39,692 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741895_1071{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:01:39,698 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:39,698 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.xmlis: 0flag: 0
+2015-04-12 12:01:39,698 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:39,742 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.xml is closed by DFSClient_NONMAPREDUCE_-2010161652_1
+2015-04-12 12:01:39,839 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001	dst=null	perm=null
+2015-04-12 12:01:39,921 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.xml	dst=null	perm=null
+2015-04-12 12:01:39,922 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.xml	dst=null	perm=null
+2015-04-12 12:01:39,928 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.jar	dst=null	perm=null
+2015-04-12 12:01:39,930 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.jar	dst=null	perm=null
+2015-04-12 12:01:39,931 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.split	dst=null	perm=null
+2015-04-12 12:01:39,933 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.split	dst=null	perm=null
+2015-04-12 12:01:39,936 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.splitmetainfo	dst=null	perm=null
+2015-04-12 12:01:39,940 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.splitmetainfo	dst=null	perm=null
+2015-04-12 12:01:41,713 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.jar	dst=null	perm=null
+2015-04-12 12:01:41,748 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.jar	dst=null	perm=null
+2015-04-12 12:01:41,763 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:01:41,763 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:01:41,763 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.jar
+2015-04-12 12:01:41,763 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:01:41,764 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.jar	dst=null	perm=null
+2015-04-12 12:01:41,973 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.splitmetainfo	dst=null	perm=null
+2015-04-12 12:01:41,975 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.splitmetainfo	dst=null	perm=null
+2015-04-12 12:01:41,978 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:01:41,978 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:01:41,978 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.splitmetainfo
+2015-04-12 12:01:41,978 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:01:41,979 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.splitmetainfo	dst=null	perm=null
+2015-04-12 12:01:42,029 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.split	dst=null	perm=null
+2015-04-12 12:01:42,032 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.split	dst=null	perm=null
+2015-04-12 12:01:42,034 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:01:42,034 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:01:42,034 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.split
+2015-04-12 12:01:42,035 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:01:42,035 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.split	dst=null	perm=null
+2015-04-12 12:01:42,088 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.xml	dst=null	perm=null
+2015-04-12 12:01:42,091 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.xml	dst=null	perm=null
+2015-04-12 12:01:42,093 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:01:42,093 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:01:42,093 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.xml
+2015-04-12 12:01:42,094 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:01:42,094 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.xml	dst=null	perm=null
+2015-04-12 12:01:43,163 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: Processed cache report from DatanodeRegistration(127.0.0.1, datanodeUuid=43947538-87d8-4adb-855d-cf61b46b848b, infoPort=50075, ipcPort=50020, storageInfo=lv=-51;cid=CID-6582d17a-f0e3-4879-9e4b-dbb772076b9f;nsid=1679534034;c=0), blocks: 0, processing time: 0 msecs
+2015-04-12 12:01:44,061 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging	dst=null	perm=null
+2015-04-12 12:01:44,094 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/COMMIT_STARTED	dst=null	perm=null
+2015-04-12 12:01:44,097 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/COMMIT_SUCCESS	dst=null	perm=null
+2015-04-12 12:01:44,100 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/COMMIT_FAIL	dst=null	perm=null
+2015-04-12 12:01:44,241 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001	dst=null	perm=null
+2015-04-12 12:01:44,243 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/history/done_intermediate	dst=null	perm=null
+2015-04-12 12:01:44,245 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani	dst=null	perm=null
+2015-04-12 12:01:44,593 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.splitmetainfo	dst=null	perm=null
+2015-04-12 12:01:44,604 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:01:44,604 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:01:44,604 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.splitmetainfo
+2015-04-12 12:01:44,604 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:01:44,605 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.splitmetainfo	dst=null	perm=null
+2015-04-12 12:01:45,571 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:45,571 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job_1428857998758_0001_1.jhistis: 0flag: 0
+2015-04-12 12:01:45,571 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:45,582 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job_1428857998758_0001_1.jhist	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:01:45,593 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=mkdirs	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM/_temporary/1	dst=null	perm=jsrudani:supergroup:rwxr-xr-x
+2015-04-12 12:01:45,667 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:45,667 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job_1428857998758_0001_1_conf.xmlis: 0flag: 0
+2015-04-12 12:01:45,667 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:45,671 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job_1428857998758_0001_1_conf.xml	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:01:45,777 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job_1428857998758_0001_1_conf.xml. BP-1377275016-127.0.1.1-1428461302848 blk_1073741896_1072{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:01:45,834 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741896_1072{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:01:45,836 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:45,836 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job_1428857998758_0001_1_conf.xmlis: 0flag: 0
+2015-04-12 12:01:45,837 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:45,849 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job_1428857998758_0001_1_conf.xml is closed by DFSClient_NONMAPREDUCE_61997059_1
+2015-04-12 12:01:47,640 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.jar	dst=null	perm=null
+2015-04-12 12:01:47,643 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.jar	dst=null	perm=null
+2015-04-12 12:01:47,657 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.xml	dst=null	perm=null
+2015-04-12 12:01:47,659 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.xml	dst=null	perm=null
+2015-04-12 12:01:49,883 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:01:49,883 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:01:49,883 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.split
+2015-04-12 12:01:49,883 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:01:49,883 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job.split	dst=null	perm=null
+2015-04-12 12:01:50,107 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:01:50,107 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:01:50,108 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txt
+2015-04-12 12:01:50,108 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Non-Stage File. Need to perform IDecider approach
+2015-04-12 12:01:50,108 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txtis accessed 0 times before increment
+2015-04-12 12:01:50,108 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txtis accessed 1 times after increment
+2015-04-12 12:01:50,108 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txtis accessed 1times
+2015-04-12 12:01:50,108 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Not Eligible for caching since access count is less than cache threshold
+2015-04-12 12:01:50,109 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Calling Overload unprotectedSetTimes method ==
+2015-04-12 12:01:50,109 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: Parameters 
+2015-04-12 12:01:50,109 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: ACCESSCNT 1
+2015-04-12 12:01:50,109 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: CACHED 0
+2015-04-12 12:01:50,109 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Inside overload unprotectedSetTimes ==
+2015-04-12 12:01:50,109 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE ACCESSCNT 1
+2015-04-12 12:01:50,109 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE CACHED 0
+2015-04-12 12:01:50,109 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txt	dst=null	perm=null
+2015-04-12 12:01:50,266 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM/_temporary/1/_temporary/attempt_1428857998758_0001_m_000000_0	dst=null	perm=null
+2015-04-12 12:01:50,373 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job_1428857998758_0001_1.jhist. BP-1377275016-127.0.1.1-1428461302848 blk_1073741897_1073{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:01:50,420 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* fsync: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job_1428857998758_0001_1.jhist for DFSClient_NONMAPREDUCE_61997059_1
+2015-04-12 12:01:55,165 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: Processed cache report from DatanodeRegistration(127.0.0.1, datanodeUuid=43947538-87d8-4adb-855d-cf61b46b848b, infoPort=50075, ipcPort=50020, storageInfo=lv=-51;cid=CID-6582d17a-f0e3-4879-9e4b-dbb772076b9f;nsid=1679534034;c=0), blocks: 0, processing time: 0 msecs
+2015-04-12 12:01:55,180 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:55,180 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM/_temporary/1/_temporary/attempt_1428857998758_0001_r_000000_0/part-r-00000is: 0flag: 0
+2015-04-12 12:01:55,180 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:55,521 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM/_temporary/1/_temporary/attempt_1428857998758_0001_r_000000_0/part-r-00000	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:01:55,567 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM/_temporary/1/_temporary/attempt_1428857998758_0001_r_000000_0/part-r-00000. BP-1377275016-127.0.1.1-1428461302848 blk_1073741898_1074{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:01:55,679 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741898_1074{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:01:55,681 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:55,681 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM/_temporary/1/_temporary/attempt_1428857998758_0001_r_000000_0/part-r-00000is: 0flag: 0
+2015-04-12 12:01:55,681 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:55,693 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM/_temporary/1/_temporary/attempt_1428857998758_0001_r_000000_0/part-r-00000 is closed by DFSClient_attempt_1428857998758_0001_r_000000_0_-1108353973_1
+2015-04-12 12:01:55,762 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM/_temporary/1/_temporary/attempt_1428857998758_0001_r_000000_0	dst=null	perm=null
+2015-04-12 12:01:55,772 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM/_temporary/1/_temporary/attempt_1428857998758_0001_r_000000_0	dst=null	perm=null
+2015-04-12 12:01:55,774 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM/_temporary/1/task_1428857998758_0001_r_000000	dst=null	perm=null
+2015-04-12 12:01:55,782 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=rename	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM/_temporary/1/_temporary/attempt_1428857998758_0001_r_000000_0	dst=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM/_temporary/1/task_1428857998758_0001_r_000000	perm=jsrudani:supergroup:rwxr-xr-x
+2015-04-12 12:01:55,850 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:55,850 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/COMMIT_STARTEDis: 0flag: 0
+2015-04-12 12:01:55,850 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:55,860 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/COMMIT_STARTED	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:01:55,864 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:55,864 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/COMMIT_STARTEDis: 0flag: 0
+2015-04-12 12:01:55,864 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:55,871 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/COMMIT_STARTED is closed by DFSClient_NONMAPREDUCE_61997059_1
+2015-04-12 12:01:55,879 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=listStatus	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM/_temporary/1	dst=null	perm=null
+2015-04-12 12:01:55,888 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM	dst=null	perm=null
+2015-04-12 12:01:55,890 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM	dst=null	perm=null
+2015-04-12 12:01:55,893 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=listStatus	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM/_temporary/1/task_1428857998758_0001_r_000000	dst=null	perm=null
+2015-04-12 12:01:55,896 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM/part-r-00000	dst=null	perm=null
+2015-04-12 12:01:55,905 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=rename	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM/_temporary/1/task_1428857998758_0001_r_000000/part-r-00000	dst=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM/part-r-00000	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:01:55,928 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=delete	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM/_temporary	dst=null	perm=null
+2015-04-12 12:01:55,939 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:55,939 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM/_SUCCESSis: 0flag: 0
+2015-04-12 12:01:55,939 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:55,971 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM/_SUCCESS	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:01:55,975 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:55,975 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM/_SUCCESSis: 0flag: 0
+2015-04-12 12:01:55,975 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:55,982 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_12PM/_SUCCESS is closed by DFSClient_NONMAPREDUCE_61997059_1
+2015-04-12 12:01:55,986 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:55,987 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/COMMIT_SUCCESSis: 0flag: 0
+2015-04-12 12:01:55,987 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:55,994 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/COMMIT_SUCCESS	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:01:55,997 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:55,997 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/COMMIT_SUCCESSis: 0flag: 0
+2015-04-12 12:01:55,997 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:56,004 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/COMMIT_SUCCESS is closed by DFSClient_NONMAPREDUCE_61997059_1
+2015-04-12 12:01:56,034 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: BLOCK* checkFileProgress: blk_1073741897_1073{blockUCState=COMMITTED, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} has not reached minimal replication 1
+2015-04-12 12:01:56,034 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741897_1073{blockUCState=COMMITTED, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 32748
+2015-04-12 12:01:56,436 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:56,436 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job_1428857998758_0001_1.jhistis: 0flag: 0
+2015-04-12 12:01:56,437 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:56,482 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job_1428857998758_0001_1.jhist is closed by DFSClient_NONMAPREDUCE_61997059_1
+2015-04-12 12:01:56,486 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:56,487 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001.summary_tmpis: 0flag: 0
+2015-04-12 12:01:56,487 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:56,494 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001.summary_tmp	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:01:56,499 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001.summary_tmp. BP-1377275016-127.0.1.1-1428461302848 blk_1073741899_1075{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:01:56,516 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741899_1075{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:01:56,517 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:56,518 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001.summary_tmpis: 0flag: 0
+2015-04-12 12:01:56,518 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:56,527 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001.summary_tmp is closed by DFSClient_NONMAPREDUCE_61997059_1
+2015-04-12 12:01:56,538 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setPermission	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001.summary_tmp	dst=null	perm=jsrudani:supergroup:rwxrwx---
+2015-04-12 12:01:56,548 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job_1428857998758_0001_1.jhist	dst=null	perm=null
+2015-04-12 12:01:56,550 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001-1428858099998-jsrudani-word+count-1428858116006-1-1-SUCCEEDED-default-1428858105524.jhist_tmp	dst=null	perm=null
+2015-04-12 12:01:56,557 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job_1428857998758_0001_1.jhist	dst=null	perm=null
+2015-04-12 12:01:56,558 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001-1428858099998-jsrudani-word+count-1428858116006-1-1-SUCCEEDED-default-1428858105524.jhist_tmp	dst=null	perm=null
+2015-04-12 12:01:56,560 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:01:56,560 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:01:56,560 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job_1428857998758_0001_1.jhist
+2015-04-12 12:01:56,561 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:01:56,561 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job_1428857998758_0001_1.jhist	dst=null	perm=null
+2015-04-12 12:01:56,565 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:56,565 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001-1428858099998-jsrudani-word+count-1428858116006-1-1-SUCCEEDED-default-1428858105524.jhist_tmpis: 0flag: 0
+2015-04-12 12:01:56,566 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:56,616 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001-1428858099998-jsrudani-word+count-1428858116006-1-1-SUCCEEDED-default-1428858105524.jhist_tmp	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:01:56,631 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001-1428858099998-jsrudani-word+count-1428858116006-1-1-SUCCEEDED-default-1428858105524.jhist_tmp. BP-1377275016-127.0.1.1-1428461302848 blk_1073741900_1076{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:01:56,670 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741900_1076{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:01:56,675 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:56,675 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001-1428858099998-jsrudani-word+count-1428858116006-1-1-SUCCEEDED-default-1428858105524.jhist_tmpis: 0flag: 0
+2015-04-12 12:01:56,675 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:56,682 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001-1428858099998-jsrudani-word+count-1428858116006-1-1-SUCCEEDED-default-1428858105524.jhist_tmp is closed by DFSClient_NONMAPREDUCE_61997059_1
+2015-04-12 12:01:56,694 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setPermission	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001-1428858099998-jsrudani-word+count-1428858116006-1-1-SUCCEEDED-default-1428858105524.jhist_tmp	dst=null	perm=jsrudani:supergroup:rwxrwx---
+2015-04-12 12:01:56,695 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job_1428857998758_0001_1_conf.xml	dst=null	perm=null
+2015-04-12 12:01:56,697 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001_conf.xml_tmp	dst=null	perm=null
+2015-04-12 12:01:56,699 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job_1428857998758_0001_1_conf.xml	dst=null	perm=null
+2015-04-12 12:01:56,701 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001_conf.xml_tmp	dst=null	perm=null
+2015-04-12 12:01:56,703 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:01:56,703 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:01:56,703 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job_1428857998758_0001_1_conf.xml
+2015-04-12 12:01:56,703 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:01:56,704 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0001/job_1428857998758_0001_1_conf.xml	dst=null	perm=null
+2015-04-12 12:01:56,708 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:56,708 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001_conf.xml_tmpis: 0flag: 0
+2015-04-12 12:01:56,708 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:56,716 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001_conf.xml_tmp	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:01:56,771 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001_conf.xml_tmp. BP-1377275016-127.0.1.1-1428461302848 blk_1073741901_1077{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:01:56,804 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741901_1077{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:01:56,807 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:56,807 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001_conf.xml_tmpis: 0flag: 0
+2015-04-12 12:01:56,807 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:01:56,816 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001_conf.xml_tmp is closed by DFSClient_NONMAPREDUCE_61997059_1
+2015-04-12 12:01:56,827 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setPermission	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001_conf.xml_tmp	dst=null	perm=jsrudani:supergroup:rwxrwx---
+2015-04-12 12:01:56,838 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=rename	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001.summary_tmp	dst=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001.summary	perm=jsrudani:supergroup:rwxrwx---
+2015-04-12 12:01:56,849 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=rename	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001_conf.xml_tmp	dst=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001_conf.xml	perm=jsrudani:supergroup:rwxrwx---
+2015-04-12 12:01:56,860 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=rename	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001-1428858099998-jsrudani-word+count-1428858116006-1-1-SUCCEEDED-default-1428858105524.jhist_tmp	dst=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0001-1428858099998-jsrudani-word+count-1428858116006-1-1-SUCCEEDED-default-1428858105524.jhist	perm=jsrudani:supergroup:rwxrwx---
+2015-04-12 12:01:58,002 INFO BlockStateChange: BLOCK* addToInvalidates: blk_1073741892_1068 127.0.0.1:50010 
+2015-04-12 12:01:58,003 INFO BlockStateChange: BLOCK* addToInvalidates: blk_1073741893_1069 127.0.0.1:50010 
+2015-04-12 12:01:58,003 INFO BlockStateChange: BLOCK* addToInvalidates: blk_1073741894_1070 127.0.0.1:50010 
+2015-04-12 12:01:58,003 INFO BlockStateChange: BLOCK* addToInvalidates: blk_1073741895_1071 127.0.0.1:50010 
+2015-04-12 12:01:58,003 INFO BlockStateChange: BLOCK* addToInvalidates: blk_1073741897_1073 127.0.0.1:50010 
+2015-04-12 12:01:58,003 INFO BlockStateChange: BLOCK* addToInvalidates: blk_1073741896_1072 127.0.0.1:50010 
+
+wordcount attemp 2
+====================
+
+2015-04-12 12:05:15,760 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM	dst=null	perm=null
+2015-04-12 12:05:15,788 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging	dst=null	perm=null
+2015-04-12 12:05:15,809 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging	dst=null	perm=null
+2015-04-12 12:05:16,005 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002	dst=null	perm=null
+2015-04-12 12:05:16,012 INFO org.apache.hadoop.hdfs.server.namenode.FSEditLog: Number of transactions: 83 Total time for transactions(ms): 18 Number of transactions batched in Syncs: 1 Number of syncs: 58 SyncTimes(ms): 1428 
+2015-04-12 12:05:16,035 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=mkdirs	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002	dst=null	perm=jsrudani:supergroup:rwxr-xr-x
+2015-04-12 12:05:16,046 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setPermission	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002	dst=null	perm=jsrudani:supergroup:rwx------
+2015-04-12 12:05:16,058 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.jar	dst=null	perm=null
+2015-04-12 12:05:16,072 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:16,072 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.jaris: 0flag: 0
+2015-04-12 12:05:16,072 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:16,080 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.jar	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:05:16,119 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.jar. BP-1377275016-127.0.1.1-1428461302848 blk_1073741902_1078{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:05:16,231 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741902_1078{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:05:16,235 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:16,235 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.jaris: 0flag: 0
+2015-04-12 12:05:16,236 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:16,247 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.jar is closed by DFSClient_NONMAPREDUCE_808842171_1
+2015-04-12 12:05:16,255 INFO org.apache.hadoop.hdfs.server.blockmanagement.BlockManager: Increasing replication from 3 to 10 for /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.jar
+2015-04-12 12:05:16,257 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setReplication	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.jar	dst=null	perm=null
+2015-04-12 12:05:16,269 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setPermission	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.jar	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:05:16,287 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput	dst=null	perm=null
+2015-04-12 12:05:16,290 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput	dst=null	perm=null
+2015-04-12 12:05:16,295 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=listStatus	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput	dst=null	perm=null
+2015-04-12 12:05:16,324 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:16,324 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.splitis: 0flag: 0
+2015-04-12 12:05:16,324 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:16,335 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.split	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:05:16,347 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setPermission	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.split	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:05:16,350 INFO org.apache.hadoop.hdfs.server.blockmanagement.BlockManager: Increasing replication from 3 to 10 for /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.split
+2015-04-12 12:05:16,357 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setReplication	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.split	dst=null	perm=null
+2015-04-12 12:05:16,373 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.split. BP-1377275016-127.0.1.1-1428461302848 blk_1073741903_1079{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:05:16,388 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741903_1079{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:05:16,392 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:16,392 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.splitis: 0flag: 0
+2015-04-12 12:05:16,392 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:16,402 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.split is closed by DFSClient_NONMAPREDUCE_808842171_1
+2015-04-12 12:05:16,405 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:16,405 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.splitmetainfois: 0flag: 0
+2015-04-12 12:05:16,406 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:16,413 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.splitmetainfo	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:05:16,424 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setPermission	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.splitmetainfo	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:05:16,431 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.splitmetainfo. BP-1377275016-127.0.1.1-1428461302848 blk_1073741904_1080{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:05:16,444 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741904_1080{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:05:16,446 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:16,446 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.splitmetainfois: 0flag: 0
+2015-04-12 12:05:16,446 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:16,457 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.splitmetainfo is closed by DFSClient_NONMAPREDUCE_808842171_1
+2015-04-12 12:05:16,467 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:16,467 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.xmlis: 0flag: 0
+2015-04-12 12:05:16,467 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:16,480 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.xml	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:05:16,491 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setPermission	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.xml	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:05:16,584 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.xml. BP-1377275016-127.0.1.1-1428461302848 blk_1073741905_1081{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:05:16,612 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741905_1081{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:05:16,615 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:16,615 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.xmlis: 0flag: 0
+2015-04-12 12:05:16,615 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:16,657 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.xml is closed by DFSClient_NONMAPREDUCE_808842171_1
+2015-04-12 12:05:16,719 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002	dst=null	perm=null
+2015-04-12 12:05:16,791 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.xml	dst=null	perm=null
+2015-04-12 12:05:16,793 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.xml	dst=null	perm=null
+2015-04-12 12:05:16,798 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.jar	dst=null	perm=null
+2015-04-12 12:05:16,800 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.jar	dst=null	perm=null
+2015-04-12 12:05:16,802 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.split	dst=null	perm=null
+2015-04-12 12:05:16,804 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.split	dst=null	perm=null
+2015-04-12 12:05:16,806 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.splitmetainfo	dst=null	perm=null
+2015-04-12 12:05:16,810 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.splitmetainfo	dst=null	perm=null
+2015-04-12 12:05:17,573 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.jar	dst=null	perm=null
+2015-04-12 12:05:17,577 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.jar	dst=null	perm=null
+2015-04-12 12:05:17,579 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:05:17,579 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:05:17,579 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.jar
+2015-04-12 12:05:17,579 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:05:17,580 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.jar	dst=null	perm=null
+2015-04-12 12:05:17,641 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.splitmetainfo	dst=null	perm=null
+2015-04-12 12:05:17,643 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.splitmetainfo	dst=null	perm=null
+2015-04-12 12:05:17,645 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:05:17,645 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:05:17,645 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.splitmetainfo
+2015-04-12 12:05:17,645 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:05:17,646 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.splitmetainfo	dst=null	perm=null
+2015-04-12 12:05:17,691 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.split	dst=null	perm=null
+2015-04-12 12:05:17,693 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.split	dst=null	perm=null
+2015-04-12 12:05:17,695 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:05:17,696 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:05:17,696 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.split
+2015-04-12 12:05:17,696 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:05:17,696 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.split	dst=null	perm=null
+2015-04-12 12:05:17,740 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.xml	dst=null	perm=null
+2015-04-12 12:05:17,744 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.xml	dst=null	perm=null
+2015-04-12 12:05:17,746 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:05:17,746 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:05:17,746 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.xml
+2015-04-12 12:05:17,746 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:05:17,747 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.xml	dst=null	perm=null
+2015-04-12 12:05:19,168 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: Processed cache report from DatanodeRegistration(127.0.0.1, datanodeUuid=43947538-87d8-4adb-855d-cf61b46b848b, infoPort=50075, ipcPort=50020, storageInfo=lv=-51;cid=CID-6582d17a-f0e3-4879-9e4b-dbb772076b9f;nsid=1679534034;c=0), blocks: 0, processing time: 0 msecs
+2015-04-12 12:05:19,553 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging	dst=null	perm=null
+2015-04-12 12:05:19,588 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/COMMIT_STARTED	dst=null	perm=null
+2015-04-12 12:05:19,591 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/COMMIT_SUCCESS	dst=null	perm=null
+2015-04-12 12:05:19,593 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/COMMIT_FAIL	dst=null	perm=null
+2015-04-12 12:05:19,674 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002	dst=null	perm=null
+2015-04-12 12:05:19,677 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/history/done_intermediate	dst=null	perm=null
+2015-04-12 12:05:19,679 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani	dst=null	perm=null
+2015-04-12 12:05:19,986 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.splitmetainfo	dst=null	perm=null
+2015-04-12 12:05:20,008 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:05:20,008 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:05:20,008 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.splitmetainfo
+2015-04-12 12:05:20,008 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:05:20,009 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.splitmetainfo	dst=null	perm=null
+2015-04-12 12:05:20,837 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:20,837 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job_1428857998758_0002_1.jhistis: 0flag: 0
+2015-04-12 12:05:20,837 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:20,858 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job_1428857998758_0002_1.jhist	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:05:20,869 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=mkdirs	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM/_temporary/1	dst=null	perm=jsrudani:supergroup:rwxr-xr-x
+2015-04-12 12:05:20,939 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:20,939 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job_1428857998758_0002_1_conf.xmlis: 0flag: 0
+2015-04-12 12:05:20,939 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:20,947 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job_1428857998758_0002_1_conf.xml	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:05:21,097 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job_1428857998758_0002_1_conf.xml. BP-1377275016-127.0.1.1-1428461302848 blk_1073741906_1082{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:05:21,160 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741906_1082{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:05:21,163 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:21,163 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job_1428857998758_0002_1_conf.xmlis: 0flag: 0
+2015-04-12 12:05:21,163 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:21,169 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job_1428857998758_0002_1_conf.xml is closed by DFSClient_NONMAPREDUCE_861544166_1
+2015-04-12 12:05:22,922 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.jar	dst=null	perm=null
+2015-04-12 12:05:22,924 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.jar	dst=null	perm=null
+2015-04-12 12:05:22,940 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.xml	dst=null	perm=null
+2015-04-12 12:05:22,943 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.xml	dst=null	perm=null
+2015-04-12 12:05:25,058 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:05:25,058 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:05:25,058 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.split
+2015-04-12 12:05:25,058 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:05:25,058 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job.split	dst=null	perm=null
+2015-04-12 12:05:25,215 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:05:25,215 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:05:25,215 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txt
+2015-04-12 12:05:25,215 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Non-Stage File. Need to perform IDecider approach
+2015-04-12 12:05:25,215 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txtis accessed 1 times before increment
+2015-04-12 12:05:25,216 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txtis accessed 2 times after increment
+2015-04-12 12:05:25,216 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txtis accessed 2times
+2015-04-12 12:05:25,216 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Not Eligible for caching since access count is less than cache threshold
+2015-04-12 12:05:25,216 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Calling Overload unprotectedSetTimes method ==
+2015-04-12 12:05:25,216 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: Parameters 
+2015-04-12 12:05:25,217 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: ACCESSCNT 2
+2015-04-12 12:05:25,217 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: CACHED 0
+2015-04-12 12:05:25,217 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Inside overload unprotectedSetTimes ==
+2015-04-12 12:05:25,217 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE ACCESSCNT 2
+2015-04-12 12:05:25,217 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE CACHED 0
+2015-04-12 12:05:25,217 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txt	dst=null	perm=null
+2015-04-12 12:05:25,342 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM/_temporary/1/_temporary/attempt_1428857998758_0002_m_000000_0	dst=null	perm=null
+2015-04-12 12:05:25,431 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job_1428857998758_0002_1.jhist. BP-1377275016-127.0.1.1-1428461302848 blk_1073741907_1083{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:05:25,466 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* fsync: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job_1428857998758_0002_1.jhist for DFSClient_NONMAPREDUCE_861544166_1
+2015-04-12 12:05:28,568 INFO org.apache.hadoop.hdfs.server.blockmanagement.CacheReplicationMonitor: Rescanning after 300000 milliseconds
+2015-04-12 12:05:28,568 INFO org.apache.hadoop.hdfs.server.blockmanagement.CacheReplicationMonitor: Scanned 0 directive(s) and 0 block(s) in 0 millisecond(s).
+2015-04-12 12:05:30,215 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:30,216 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM/_temporary/1/_temporary/attempt_1428857998758_0002_r_000000_0/part-r-00000is: 0flag: 0
+2015-04-12 12:05:30,216 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:30,236 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM/_temporary/1/_temporary/attempt_1428857998758_0002_r_000000_0/part-r-00000	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:05:30,283 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM/_temporary/1/_temporary/attempt_1428857998758_0002_r_000000_0/part-r-00000. BP-1377275016-127.0.1.1-1428461302848 blk_1073741908_1084{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:05:30,371 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: Processed cache report from DatanodeRegistration(127.0.0.1, datanodeUuid=43947538-87d8-4adb-855d-cf61b46b848b, infoPort=50075, ipcPort=50020, storageInfo=lv=-51;cid=CID-6582d17a-f0e3-4879-9e4b-dbb772076b9f;nsid=1679534034;c=0), blocks: 0, processing time: 0 msecs
+2015-04-12 12:05:30,381 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741908_1084{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:05:30,384 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:30,384 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM/_temporary/1/_temporary/attempt_1428857998758_0002_r_000000_0/part-r-00000is: 0flag: 0
+2015-04-12 12:05:30,384 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:30,391 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM/_temporary/1/_temporary/attempt_1428857998758_0002_r_000000_0/part-r-00000 is closed by DFSClient_attempt_1428857998758_0002_r_000000_0_-412698426_1
+2015-04-12 12:05:30,455 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM/_temporary/1/_temporary/attempt_1428857998758_0002_r_000000_0	dst=null	perm=null
+2015-04-12 12:05:30,465 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM/_temporary/1/_temporary/attempt_1428857998758_0002_r_000000_0	dst=null	perm=null
+2015-04-12 12:05:30,467 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM/_temporary/1/task_1428857998758_0002_r_000000	dst=null	perm=null
+2015-04-12 12:05:30,480 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=rename	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM/_temporary/1/_temporary/attempt_1428857998758_0002_r_000000_0	dst=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM/_temporary/1/task_1428857998758_0002_r_000000	perm=jsrudani:supergroup:rwxr-xr-x
+2015-04-12 12:05:30,545 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:30,545 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/COMMIT_STARTEDis: 0flag: 0
+2015-04-12 12:05:30,545 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:30,558 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/COMMIT_STARTED	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:05:30,562 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:30,562 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/COMMIT_STARTEDis: 0flag: 0
+2015-04-12 12:05:30,562 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:30,569 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/COMMIT_STARTED is closed by DFSClient_NONMAPREDUCE_861544166_1
+2015-04-12 12:05:30,574 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=listStatus	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM/_temporary/1	dst=null	perm=null
+2015-04-12 12:05:30,582 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM	dst=null	perm=null
+2015-04-12 12:05:30,584 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM	dst=null	perm=null
+2015-04-12 12:05:30,586 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=listStatus	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM/_temporary/1/task_1428857998758_0002_r_000000	dst=null	perm=null
+2015-04-12 12:05:30,589 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM/part-r-00000	dst=null	perm=null
+2015-04-12 12:05:30,602 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=rename	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM/_temporary/1/task_1428857998758_0002_r_000000/part-r-00000	dst=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM/part-r-00000	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:05:30,625 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=delete	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM/_temporary	dst=null	perm=null
+2015-04-12 12:05:30,632 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:30,632 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM/_SUCCESSis: 0flag: 0
+2015-04-12 12:05:30,632 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:30,636 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM/_SUCCESS	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:05:30,639 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:30,639 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM/_SUCCESSis: 0flag: 0
+2015-04-12 12:05:30,639 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:30,647 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_2_12PM/_SUCCESS is closed by DFSClient_NONMAPREDUCE_861544166_1
+2015-04-12 12:05:30,650 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:30,650 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/COMMIT_SUCCESSis: 0flag: 0
+2015-04-12 12:05:30,650 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:30,658 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/COMMIT_SUCCESS	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:05:30,662 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:30,662 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/COMMIT_SUCCESSis: 0flag: 0
+2015-04-12 12:05:30,662 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:30,669 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/COMMIT_SUCCESS is closed by DFSClient_NONMAPREDUCE_861544166_1
+2015-04-12 12:05:30,701 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741907_1083{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 12358
+2015-04-12 12:05:30,702 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:30,702 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job_1428857998758_0002_1.jhistis: 0flag: 0
+2015-04-12 12:05:30,703 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:30,714 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job_1428857998758_0002_1.jhist is closed by DFSClient_NONMAPREDUCE_861544166_1
+2015-04-12 12:05:30,717 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:30,718 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002.summary_tmpis: 0flag: 0
+2015-04-12 12:05:30,718 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:30,725 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002.summary_tmp	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:05:30,731 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002.summary_tmp. BP-1377275016-127.0.1.1-1428461302848 blk_1073741909_1085{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:05:30,957 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741909_1085{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:05:30,960 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:30,960 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002.summary_tmpis: 0flag: 0
+2015-04-12 12:05:30,960 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:30,969 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002.summary_tmp is closed by DFSClient_NONMAPREDUCE_861544166_1
+2015-04-12 12:05:30,980 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setPermission	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002.summary_tmp	dst=null	perm=jsrudani:supergroup:rwxrwx---
+2015-04-12 12:05:30,991 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job_1428857998758_0002_1.jhist	dst=null	perm=null
+2015-04-12 12:05:30,994 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002-1428858316841-jsrudani-word+count-1428858330672-1-1-SUCCEEDED-default-1428858320828.jhist_tmp	dst=null	perm=null
+2015-04-12 12:05:31,000 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job_1428857998758_0002_1.jhist	dst=null	perm=null
+2015-04-12 12:05:31,002 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002-1428858316841-jsrudani-word+count-1428858330672-1-1-SUCCEEDED-default-1428858320828.jhist_tmp	dst=null	perm=null
+2015-04-12 12:05:31,005 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:05:31,005 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:05:31,005 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job_1428857998758_0002_1.jhist
+2015-04-12 12:05:31,005 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:05:31,005 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job_1428857998758_0002_1.jhist	dst=null	perm=null
+2015-04-12 12:05:31,009 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:31,009 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002-1428858316841-jsrudani-word+count-1428858330672-1-1-SUCCEEDED-default-1428858320828.jhist_tmpis: 0flag: 0
+2015-04-12 12:05:31,009 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:31,014 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002-1428858316841-jsrudani-word+count-1428858330672-1-1-SUCCEEDED-default-1428858320828.jhist_tmp	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:05:31,031 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002-1428858316841-jsrudani-word+count-1428858330672-1-1-SUCCEEDED-default-1428858320828.jhist_tmp. BP-1377275016-127.0.1.1-1428461302848 blk_1073741910_1086{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:05:31,046 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741910_1086{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:05:31,047 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:31,048 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002-1428858316841-jsrudani-word+count-1428858330672-1-1-SUCCEEDED-default-1428858320828.jhist_tmpis: 0flag: 0
+2015-04-12 12:05:31,048 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:31,058 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002-1428858316841-jsrudani-word+count-1428858330672-1-1-SUCCEEDED-default-1428858320828.jhist_tmp is closed by DFSClient_NONMAPREDUCE_861544166_1
+2015-04-12 12:05:31,069 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setPermission	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002-1428858316841-jsrudani-word+count-1428858330672-1-1-SUCCEEDED-default-1428858320828.jhist_tmp	dst=null	perm=jsrudani:supergroup:rwxrwx---
+2015-04-12 12:05:31,073 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job_1428857998758_0002_1_conf.xml	dst=null	perm=null
+2015-04-12 12:05:31,075 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002_conf.xml_tmp	dst=null	perm=null
+2015-04-12 12:05:31,077 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job_1428857998758_0002_1_conf.xml	dst=null	perm=null
+2015-04-12 12:05:31,080 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002_conf.xml_tmp	dst=null	perm=null
+2015-04-12 12:05:31,082 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:05:31,082 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:05:31,082 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job_1428857998758_0002_1_conf.xml
+2015-04-12 12:05:31,082 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:05:31,082 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0002/job_1428857998758_0002_1_conf.xml	dst=null	perm=null
+2015-04-12 12:05:31,089 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:31,089 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002_conf.xml_tmpis: 0flag: 0
+2015-04-12 12:05:31,089 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:31,092 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002_conf.xml_tmp	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:05:31,100 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002_conf.xml_tmp. BP-1377275016-127.0.1.1-1428461302848 blk_1073741911_1087{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:05:31,115 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: BLOCK* checkFileProgress: blk_1073741911_1087{blockUCState=COMMITTED, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} has not reached minimal replication 1
+2015-04-12 12:05:31,116 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741911_1087{blockUCState=COMMITTED, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 84597
+2015-04-12 12:05:31,518 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:31,518 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002_conf.xml_tmpis: 0flag: 0
+2015-04-12 12:05:31,518 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:05:31,525 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002_conf.xml_tmp is closed by DFSClient_NONMAPREDUCE_861544166_1
+2015-04-12 12:05:31,536 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setPermission	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002_conf.xml_tmp	dst=null	perm=jsrudani:supergroup:rwxrwx---
+2015-04-12 12:05:31,547 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=rename	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002.summary_tmp	dst=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002.summary	perm=jsrudani:supergroup:rwxrwx---
+2015-04-12 12:05:31,558 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=rename	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002_conf.xml_tmp	dst=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002_conf.xml	perm=jsrudani:supergroup:rwxrwx---
+2015-04-12 12:05:31,569 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=rename	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002-1428858316841-jsrudani-word+count-1428858330672-1-1-SUCCEEDED-default-1428858320828.jhist_tmp	dst=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0002-1428858316841-jsrudani-word+count-1428858330672-1-1-SUCCEEDED-default-1428858320828.jhist	perm=jsrudani:supergroup:rwxrwx---
+2015-04-12 12:05:32,614 INFO BlockStateChange: BLOCK* addToInvalidates: blk_1073741902_1078 127.0.0.1:50010 
+2015-04-12 12:05:32,614 INFO BlockStateChange: BLOCK* addToInvalidates: blk_1073741903_1079 127.0.0.1:50010 
+2015-04-12 12:05:32,615 INFO BlockStateChange: BLOCK* addToInvalidates: blk_1073741904_1080 127.0.0.1:50010 
+2015-04-12 12:05:32,615 INFO BlockStateChange: BLOCK* addToInvalidates: blk_1073741905_1081 127.0.0.1:50010 
+2015-04-12 12:05:32,615 INFO BlockStateChange: BLOCK* addToInvalidates: blk_1073741907_1083 127.0.0.1:50010 
+2015-04-12 12:05:32,615 INFO BlockStateChange: BLOCK* addToInvalidates: blk_1073741906_1082 127.0.0.1:50010 
+
+
+3 attempt
+==========
+
+
+
+2015-04-12 12:08:40,645 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM	dst=null	perm=null
+2015-04-12 12:08:40,677 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging	dst=null	perm=null
+2015-04-12 12:08:40,697 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging	dst=null	perm=null
+2015-04-12 12:08:40,888 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003	dst=null	perm=null
+2015-04-12 12:08:40,892 INFO org.apache.hadoop.hdfs.server.namenode.FSEditLog: Number of transactions: 164 Total time for transactions(ms): 28 Number of transactions batched in Syncs: 2 Number of syncs: 114 SyncTimes(ms): 2143 
+2015-04-12 12:08:40,911 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=mkdirs	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003	dst=null	perm=jsrudani:supergroup:rwxr-xr-x
+2015-04-12 12:08:40,922 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setPermission	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003	dst=null	perm=jsrudani:supergroup:rwx------
+2015-04-12 12:08:40,934 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.jar	dst=null	perm=null
+2015-04-12 12:08:40,947 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:08:40,947 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.jaris: 0flag: 0
+2015-04-12 12:08:40,947 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:08:40,955 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.jar	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:08:40,994 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.jar. BP-1377275016-127.0.1.1-1428461302848 blk_1073741912_1088{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:08:41,108 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741912_1088{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:08:41,114 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:08:41,114 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.jaris: 0flag: 0
+2015-04-12 12:08:41,114 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:08:41,122 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.jar is closed by DFSClient_NONMAPREDUCE_-926164937_1
+2015-04-12 12:08:41,131 INFO org.apache.hadoop.hdfs.server.blockmanagement.BlockManager: Increasing replication from 3 to 10 for /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.jar
+2015-04-12 12:08:41,133 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setReplication	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.jar	dst=null	perm=null
+2015-04-12 12:08:41,144 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setPermission	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.jar	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:08:41,162 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput	dst=null	perm=null
+2015-04-12 12:08:41,165 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput	dst=null	perm=null
+2015-04-12 12:08:41,170 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=listStatus	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput	dst=null	perm=null
+2015-04-12 12:08:41,201 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:08:41,202 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.splitis: 0flag: 0
+2015-04-12 12:08:41,202 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:08:41,487 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.split	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:08:41,511 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setPermission	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.split	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:08:41,513 INFO org.apache.hadoop.hdfs.server.blockmanagement.BlockManager: Increasing replication from 3 to 10 for /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.split
+2015-04-12 12:08:41,522 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setReplication	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.split	dst=null	perm=null
+2015-04-12 12:08:41,536 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.split. BP-1377275016-127.0.1.1-1428461302848 blk_1073741913_1089{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:08:41,554 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: Processed cache report from DatanodeRegistration(127.0.0.1, datanodeUuid=43947538-87d8-4adb-855d-cf61b46b848b, infoPort=50075, ipcPort=50020, storageInfo=lv=-51;cid=CID-6582d17a-f0e3-4879-9e4b-dbb772076b9f;nsid=1679534034;c=0), blocks: 0, processing time: 0 msecs
+2015-04-12 12:08:41,557 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: BLOCK* checkFileProgress: blk_1073741913_1089{blockUCState=COMMITTED, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} has not reached minimal replication 1
+2015-04-12 12:08:41,558 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741913_1089{blockUCState=COMMITTED, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 161
+2015-04-12 12:08:41,960 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:08:41,960 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.splitis: 0flag: 0
+2015-04-12 12:08:41,960 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:08:42,061 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.split is closed by DFSClient_NONMAPREDUCE_-926164937_1
+2015-04-12 12:08:42,063 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:08:42,063 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.splitmetainfois: 0flag: 0
+2015-04-12 12:08:42,063 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:08:42,077 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.splitmetainfo	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:08:42,088 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setPermission	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.splitmetainfo	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:08:42,095 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.splitmetainfo. BP-1377275016-127.0.1.1-1428461302848 blk_1073741914_1090{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:08:42,111 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741914_1090{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:08:42,113 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:08:42,113 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.splitmetainfois: 0flag: 0
+2015-04-12 12:08:42,113 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:08:42,122 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.splitmetainfo is closed by DFSClient_NONMAPREDUCE_-926164937_1
+2015-04-12 12:08:42,134 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:08:42,134 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.xmlis: 0flag: 0
+2015-04-12 12:08:42,134 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:08:42,144 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.xml	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:08:42,155 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setPermission	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.xml	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:08:42,259 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.xml. BP-1377275016-127.0.1.1-1428461302848 blk_1073741915_1091{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:08:42,275 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741915_1091{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:08:42,276 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:08:42,277 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.xmlis: 0flag: 0
+2015-04-12 12:08:42,277 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:08:42,288 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.xml is closed by DFSClient_NONMAPREDUCE_-926164937_1
+2015-04-12 12:08:42,344 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003	dst=null	perm=null
+2015-04-12 12:08:42,417 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.xml	dst=null	perm=null
+2015-04-12 12:08:42,419 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.xml	dst=null	perm=null
+2015-04-12 12:08:42,425 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.jar	dst=null	perm=null
+2015-04-12 12:08:42,427 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.jar	dst=null	perm=null
+2015-04-12 12:08:42,429 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.split	dst=null	perm=null
+2015-04-12 12:08:42,432 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.split	dst=null	perm=null
+2015-04-12 12:08:42,434 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.splitmetainfo	dst=null	perm=null
+2015-04-12 12:08:42,438 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.splitmetainfo	dst=null	perm=null
+2015-04-12 12:08:43,205 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.jar	dst=null	perm=null
+2015-04-12 12:08:43,209 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.jar	dst=null	perm=null
+2015-04-12 12:08:43,211 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:08:43,211 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:08:43,211 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.jar
+2015-04-12 12:08:43,211 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:08:43,212 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.jar	dst=null	perm=null
+2015-04-12 12:08:43,270 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.splitmetainfo	dst=null	perm=null
+2015-04-12 12:08:43,273 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.splitmetainfo	dst=null	perm=null
+2015-04-12 12:08:43,274 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:08:43,274 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:08:43,274 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.splitmetainfo
+2015-04-12 12:08:43,275 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:08:43,275 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.splitmetainfo	dst=null	perm=null
+2015-04-12 12:08:43,318 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.split	dst=null	perm=null
+2015-04-12 12:08:43,320 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.split	dst=null	perm=null
+2015-04-12 12:08:43,322 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:08:43,322 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:08:43,322 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.split
+2015-04-12 12:08:43,323 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:08:43,323 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.split	dst=null	perm=null
+2015-04-12 12:08:43,359 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.xml	dst=null	perm=null
+2015-04-12 12:08:43,362 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.xml	dst=null	perm=null
+2015-04-12 12:08:43,363 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:08:43,363 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:08:43,363 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.xml
+2015-04-12 12:08:43,363 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:08:43,363 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.xml	dst=null	perm=null
+2015-04-12 12:08:45,280 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging	dst=null	perm=null
+2015-04-12 12:08:45,316 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/COMMIT_STARTED	dst=null	perm=null
+2015-04-12 12:08:45,318 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/COMMIT_SUCCESS	dst=null	perm=null
+2015-04-12 12:08:45,320 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/COMMIT_FAIL	dst=null	perm=null
+2015-04-12 12:08:45,425 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003	dst=null	perm=null
+2015-04-12 12:08:45,427 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/history/done_intermediate	dst=null	perm=null
+2015-04-12 12:08:45,429 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani	dst=null	perm=null
+2015-04-12 12:08:45,742 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.splitmetainfo	dst=null	perm=null
+2015-04-12 12:08:45,762 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:08:45,762 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:08:45,762 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.splitmetainfo
+2015-04-12 12:08:45,762 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:08:45,762 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.splitmetainfo	dst=null	perm=null
+2015-04-12 12:08:46,717 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:08:46,718 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job_1428857998758_0003_1.jhistis: 0flag: 0
+2015-04-12 12:08:46,718 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:08:46,733 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job_1428857998758_0003_1.jhist	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:08:46,744 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=mkdirs	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM/_temporary/1	dst=null	perm=jsrudani:supergroup:rwxr-xr-x
+2015-04-12 12:08:46,800 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:08:46,800 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job_1428857998758_0003_1_conf.xmlis: 0flag: 0
+2015-04-12 12:08:46,800 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:08:46,811 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job_1428857998758_0003_1_conf.xml	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:08:46,926 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job_1428857998758_0003_1_conf.xml. BP-1377275016-127.0.1.1-1428461302848 blk_1073741916_1092{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:08:46,990 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741916_1092{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:08:46,993 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:08:46,993 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job_1428857998758_0003_1_conf.xmlis: 0flag: 0
+2015-04-12 12:08:46,993 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:08:47,052 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job_1428857998758_0003_1_conf.xml is closed by DFSClient_NONMAPREDUCE_-1948664837_1
+2015-04-12 12:08:48,793 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.jar	dst=null	perm=null
+2015-04-12 12:08:48,795 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.jar	dst=null	perm=null
+2015-04-12 12:08:48,806 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.xml	dst=null	perm=null
+2015-04-12 12:08:48,809 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.xml	dst=null	perm=null
+2015-04-12 12:08:50,878 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:08:50,879 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:08:50,879 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.split
+2015-04-12 12:08:50,879 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:08:50,880 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.split	dst=null	perm=null
+2015-04-12 12:08:51,028 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:08:51,028 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:08:51,028 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txt
+2015-04-12 12:08:51,028 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Non-Stage File. Need to perform IDecider approach
+2015-04-12 12:08:51,029 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txtis accessed 2 times before increment
+2015-04-12 12:08:51,029 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txtis accessed 3 times after increment
+2015-04-12 12:08:51,029 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txtis accessed 3times
+2015-04-12 12:08:51,029 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Eligible for caching
+2015-04-12 12:08:51,029 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in isCached /home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txt is cached 0
+2015-04-12 12:08:51,029 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in isCached /home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txt is cached false
+2015-04-12 12:08:51,029 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: Value of isDefaultCachePresent false
+2015-04-12 12:08:51,030 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=listCachePools	src=null	dst=null	perm=null
+2015-04-12 12:08:51,030 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: Creating default cache pool 
+2015-04-12 12:08:51,034 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: addCachePool of {poolName:default, ownerName:jsrudani, groupName:supergroup, mode:0755, limit:null, maxRelativeExpiryMs:null} successful.
+2015-04-12 12:08:51,034 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=addCachePool	src=default	dst=null	perm=null
+2015-04-12 12:08:51,055 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: Default Cache pool present
+2015-04-12 12:08:51,059 WARN org.apache.hadoop.ipc.Server: IPC Server handler 2 on 9000, call org.apache.hadoop.hdfs.protocol.ClientProtocol.getBlockLocations from 127.0.0.1:32804 Call#3 Retry#0: error: java.lang.ClassCastException: org.apache.hadoop.ipc.RetryCache$CacheEntry cannot be cast to org.apache.hadoop.ipc.RetryCache$CacheEntryWithPayload
+java.lang.ClassCastException: org.apache.hadoop.ipc.RetryCache$CacheEntry cannot be cast to org.apache.hadoop.ipc.RetryCache$CacheEntryWithPayload
+	at org.apache.hadoop.ipc.RetryCache.waitForCompletion(RetryCache.java:310)
+	at org.apache.hadoop.hdfs.server.namenode.FSNamesystem.addCacheDirective(FSNamesystem.java:7133)
+	at org.apache.hadoop.hdfs.server.namenode.IDecider.cacheFile(IDecider.java:138)
+	at org.apache.hadoop.hdfs.server.namenode.FSNamesystem.getBlockLocations(FSNamesystem.java:1549)
+	at org.apache.hadoop.hdfs.server.namenode.NameNodeRpcServer.getBlockLocations(NameNodeRpcServer.java:476)
+	at org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolServerSideTranslatorPB.getBlockLocations(ClientNamenodeProtocolServerSideTranslatorPB.java:289)
+	at org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos$ClientNamenodeProtocol$2.callBlockingMethod(ClientNamenodeProtocolProtos.java)
+	at org.apache.hadoop.ipc.ProtobufRpcEngine$Server$ProtoBufRpcInvoker.call(ProtobufRpcEngine.java:585)
+	at org.apache.hadoop.ipc.RPC$Server.call(RPC.java:928)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:1962)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:1958)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:396)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1548)
+	at org.apache.hadoop.ipc.Server$Handler.run(Server.java:1956)
+2015-04-12 12:08:51,132 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job_1428857998758_0003_1.jhist. BP-1377275016-127.0.1.1-1428461302848 blk_1073741917_1093{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:08:51,139 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* fsync: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job_1428857998758_0003_1.jhist for DFSClient_NONMAPREDUCE_-1948664837_1
+2015-04-12 12:08:52,178 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: Processed cache report from DatanodeRegistration(127.0.0.1, datanodeUuid=43947538-87d8-4adb-855d-cf61b46b848b, infoPort=50075, ipcPort=50020, storageInfo=lv=-51;cid=CID-6582d17a-f0e3-4879-9e4b-dbb772076b9f;nsid=1679534034;c=0), blocks: 0, processing time: 0 msecs
+2015-04-12 12:08:54,887 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:08:54,887 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:08:54,887 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.split
+2015-04-12 12:08:54,887 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:08:54,888 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job.split	dst=null	perm=null
+2015-04-12 12:08:55,074 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:08:55,074 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:08:55,074 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txt
+2015-04-12 12:08:55,074 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Non-Stage File. Need to perform IDecider approach
+2015-04-12 12:08:55,075 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txtis accessed 3 times before increment
+2015-04-12 12:08:55,075 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txtis accessed 4 times after increment
+2015-04-12 12:08:55,075 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txtis accessed 4times
+2015-04-12 12:08:55,075 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Eligible for caching
+2015-04-12 12:08:55,075 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in isCached /home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txt is cached 0
+2015-04-12 12:08:55,075 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in isCached /home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txt is cached false
+2015-04-12 12:08:55,075 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: Value of isDefaultCachePresent true
+2015-04-12 12:08:55,077 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: addDirective of {path: /home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txt, replication: 1, pool: default} successful.
+2015-04-12 12:08:55,100 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=addCacheDirective	src=null	dst=null	perm=null
+2015-04-12 12:08:55,101 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in setIsCached /home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txt is cached 0
+2015-04-12 12:08:55,101 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file after caching in setIsCached /home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txt is cached 1
+2015-04-12 12:08:55,101 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Calling Cache API to cached the file
+2015-04-12 12:08:55,102 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Calling Overload unprotectedSetTimes method ==
+2015-04-12 12:08:55,102 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: Parameters 
+2015-04-12 12:08:55,102 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: ACCESSCNT 4
+2015-04-12 12:08:55,102 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: CACHED 1
+2015-04-12 12:08:55,102 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Inside overload unprotectedSetTimes ==
+2015-04-12 12:08:55,102 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE ACCESSCNT 4
+2015-04-12 12:08:55,102 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE CACHED 1
+2015-04-12 12:08:55,102 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txt	dst=null	perm=null
+2015-04-12 12:08:55,199 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM/_temporary/1/_temporary/attempt_1428857998758_0003_m_000000_1	dst=null	perm=null
+2015-04-12 12:09:00,076 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,076 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM/_temporary/1/_temporary/attempt_1428857998758_0003_r_000000_0/part-r-00000is: 0flag: 0
+2015-04-12 12:09:00,076 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,102 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM/_temporary/1/_temporary/attempt_1428857998758_0003_r_000000_0/part-r-00000	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:09:00,149 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM/_temporary/1/_temporary/attempt_1428857998758_0003_r_000000_0/part-r-00000. BP-1377275016-127.0.1.1-1428461302848 blk_1073741918_1094{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:09:00,268 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741918_1094{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:09:00,272 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,272 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM/_temporary/1/_temporary/attempt_1428857998758_0003_r_000000_0/part-r-00000is: 0flag: 0
+2015-04-12 12:09:00,272 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,280 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM/_temporary/1/_temporary/attempt_1428857998758_0003_r_000000_0/part-r-00000 is closed by DFSClient_attempt_1428857998758_0003_r_000000_0_-1837702612_1
+2015-04-12 12:09:00,333 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM/_temporary/1/_temporary/attempt_1428857998758_0003_r_000000_0	dst=null	perm=null
+2015-04-12 12:09:00,343 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM/_temporary/1/_temporary/attempt_1428857998758_0003_r_000000_0	dst=null	perm=null
+2015-04-12 12:09:00,345 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM/_temporary/1/task_1428857998758_0003_r_000000	dst=null	perm=null
+2015-04-12 12:09:00,358 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=rename	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM/_temporary/1/_temporary/attempt_1428857998758_0003_r_000000_0	dst=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM/_temporary/1/task_1428857998758_0003_r_000000	perm=jsrudani:supergroup:rwxr-xr-x
+2015-04-12 12:09:00,425 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,425 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/COMMIT_STARTEDis: 0flag: 0
+2015-04-12 12:09:00,425 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,436 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/COMMIT_STARTED	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:09:00,437 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,437 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/COMMIT_STARTEDis: 0flag: 0
+2015-04-12 12:09:00,437 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,447 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/COMMIT_STARTED is closed by DFSClient_NONMAPREDUCE_-1948664837_1
+2015-04-12 12:09:00,453 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=listStatus	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM/_temporary/1	dst=null	perm=null
+2015-04-12 12:09:00,467 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM	dst=null	perm=null
+2015-04-12 12:09:00,469 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM	dst=null	perm=null
+2015-04-12 12:09:00,471 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=listStatus	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM/_temporary/1/task_1428857998758_0003_r_000000	dst=null	perm=null
+2015-04-12 12:09:00,474 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM/part-r-00000	dst=null	perm=null
+2015-04-12 12:09:00,480 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=rename	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM/_temporary/1/task_1428857998758_0003_r_000000/part-r-00000	dst=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM/part-r-00000	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:09:00,491 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=delete	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM/_temporary	dst=null	perm=null
+2015-04-12 12:09:00,495 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,495 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM/_SUCCESSis: 0flag: 0
+2015-04-12 12:09:00,495 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,502 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM/_SUCCESS	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:09:00,506 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,506 INFO org.mortbay.log: The count and cached flag of file /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM/_SUCCESSis: 0flag: 0
+2015-04-12 12:09:00,506 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,513 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_Attempt_3_12PM/_SUCCESS is closed by DFSClient_NONMAPREDUCE_-1948664837_1
+2015-04-12 12:09:00,517 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,517 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/COMMIT_SUCCESSis: 0flag: 0
+2015-04-12 12:09:00,517 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,525 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/COMMIT_SUCCESS	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:09:00,528 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,528 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/COMMIT_SUCCESSis: 0flag: 0
+2015-04-12 12:09:00,529 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,536 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/COMMIT_SUCCESS is closed by DFSClient_NONMAPREDUCE_-1948664837_1
+2015-04-12 12:09:00,565 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741917_1093{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 14465
+2015-04-12 12:09:00,567 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,567 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job_1428857998758_0003_1.jhistis: 0flag: 0
+2015-04-12 12:09:00,568 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,580 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job_1428857998758_0003_1.jhist is closed by DFSClient_NONMAPREDUCE_-1948664837_1
+2015-04-12 12:09:00,584 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,585 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003.summary_tmpis: 0flag: 0
+2015-04-12 12:09:00,585 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,591 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003.summary_tmp	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:09:00,598 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003.summary_tmp. BP-1377275016-127.0.1.1-1428461302848 blk_1073741919_1095{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:09:00,612 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741919_1095{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:09:00,616 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,616 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003.summary_tmpis: 0flag: 0
+2015-04-12 12:09:00,616 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,624 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003.summary_tmp is closed by DFSClient_NONMAPREDUCE_-1948664837_1
+2015-04-12 12:09:00,636 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setPermission	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003.summary_tmp	dst=null	perm=jsrudani:supergroup:rwxrwx---
+2015-04-12 12:09:00,644 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job_1428857998758_0003_1.jhist	dst=null	perm=null
+2015-04-12 12:09:00,647 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003-1428858522470-jsrudani-word+count-1428858540538-1-1-SUCCEEDED-default-1428858526699.jhist_tmp	dst=null	perm=null
+2015-04-12 12:09:00,652 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job_1428857998758_0003_1.jhist	dst=null	perm=null
+2015-04-12 12:09:00,654 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003-1428858522470-jsrudani-word+count-1428858540538-1-1-SUCCEEDED-default-1428858526699.jhist_tmp	dst=null	perm=null
+2015-04-12 12:09:00,656 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:09:00,656 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:09:00,656 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job_1428857998758_0003_1.jhist
+2015-04-12 12:09:00,656 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:09:00,657 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job_1428857998758_0003_1.jhist	dst=null	perm=null
+2015-04-12 12:09:00,662 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,662 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003-1428858522470-jsrudani-word+count-1428858540538-1-1-SUCCEEDED-default-1428858526699.jhist_tmpis: 0flag: 0
+2015-04-12 12:09:00,662 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,669 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003-1428858522470-jsrudani-word+count-1428858540538-1-1-SUCCEEDED-default-1428858526699.jhist_tmp	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:09:00,682 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003-1428858522470-jsrudani-word+count-1428858540538-1-1-SUCCEEDED-default-1428858526699.jhist_tmp. BP-1377275016-127.0.1.1-1428461302848 blk_1073741920_1096{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:09:00,701 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741920_1096{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:09:00,703 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,703 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003-1428858522470-jsrudani-word+count-1428858540538-1-1-SUCCEEDED-default-1428858526699.jhist_tmpis: 0flag: 0
+2015-04-12 12:09:00,703 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,713 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003-1428858522470-jsrudani-word+count-1428858540538-1-1-SUCCEEDED-default-1428858526699.jhist_tmp is closed by DFSClient_NONMAPREDUCE_-1948664837_1
+2015-04-12 12:09:00,725 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setPermission	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003-1428858522470-jsrudani-word+count-1428858540538-1-1-SUCCEEDED-default-1428858526699.jhist_tmp	dst=null	perm=jsrudani:supergroup:rwxrwx---
+2015-04-12 12:09:00,727 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job_1428857998758_0003_1_conf.xml	dst=null	perm=null
+2015-04-12 12:09:00,730 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003_conf.xml_tmp	dst=null	perm=null
+2015-04-12 12:09:00,732 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job_1428857998758_0003_1_conf.xml	dst=null	perm=null
+2015-04-12 12:09:00,734 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003_conf.xml_tmp	dst=null	perm=null
+2015-04-12 12:09:00,736 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 12:09:00,736 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 12:09:00,736 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job_1428857998758_0003_1_conf.xml
+2015-04-12 12:09:00,737 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Stage File. No need to perform IDecider approach
+2015-04-12 12:09:00,737 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/tmp/hadoop-yarn/staging/jsrudani/.staging/job_1428857998758_0003/job_1428857998758_0003_1_conf.xml	dst=null	perm=null
+2015-04-12 12:09:00,744 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,744 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003_conf.xml_tmpis: 0flag: 0
+2015-04-12 12:09:00,744 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,747 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=create	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003_conf.xml_tmp	dst=null	perm=jsrudani:supergroup:rw-r--r--
+2015-04-12 12:09:00,755 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003_conf.xml_tmp. BP-1377275016-127.0.1.1-1428461302848 blk_1073741921_1097{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]}
+2015-04-12 12:09:00,769 INFO BlockStateChange: BLOCK* addStoredBlock: blockMap updated: 127.0.0.1:50010 is added to blk_1073741921_1097{blockUCState=UNDER_CONSTRUCTION, primaryNodeIndex=-1, replicas=[ReplicaUnderConstruction[[DISK]DS-e95b3e9b-1090-4454-bd4b-25f9d71790df:NORMAL|RBW]]} size 0
+2015-04-12 12:09:00,770 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,770 INFO org.mortbay.log: The count and cached flag of file /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003_conf.xml_tmpis: 0flag: 0
+2015-04-12 12:09:00,771 INFO org.mortbay.log: ====== Inside Write Fields Access count and flag Edit Log =======
+2015-04-12 12:09:00,780 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003_conf.xml_tmp is closed by DFSClient_NONMAPREDUCE_-1948664837_1
+2015-04-12 12:09:00,791 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=setPermission	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003_conf.xml_tmp	dst=null	perm=jsrudani:supergroup:rwxrwx---
+2015-04-12 12:09:00,802 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=rename	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003.summary_tmp	dst=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003.summary	perm=jsrudani:supergroup:rwxrwx---
+2015-04-12 12:09:00,813 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=rename	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003_conf.xml_tmp	dst=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003_conf.xml	perm=jsrudani:supergroup:rwxrwx---
+2015-04-12 12:09:00,827 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=rename	src=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003-1428858522470-jsrudani-word+count-1428858540538-1-1-SUCCEEDED-default-1428858526699.jhist_tmp	dst=/tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428857998758_0003-1428858522470-jsrudani-word+count-1428858540538-1-1-SUCCEEDED-default-1428858526699.jhist	perm=jsrudani:supergroup:rwxrwx---
+2015-04-12 12:09:01,869 INFO BlockStateChange: BLOCK* addToInvalidates: blk_1073741912_1088 127.0.0.1:50010 
+2015-04-12 12:09:01,869 INFO BlockStateChange: BLOCK* addToInvalidates: blk_1073741913_1089 127.0.0.1:50010 
+2015-04-12 12:09:01,870 INFO BlockStateChange: BLOCK* addToInvalidates: blk_1073741914_1090 127.0.0.1:50010 
+2015-04-12 12:09:01,870 INFO BlockStateChange: BLOCK* addToInvalidates: blk_1073741915_1091 127.0.0.1:50010 
+2015-04-12 12:09:01,870 INFO BlockStateChange: BLOCK* addToInvalidates: blk_1073741917_1093 127.0.0.1:50010 
+2015-04-12 12:09:01,870 INFO BlockStateChange: BLOCK* addToInvalidates: blk_1073741916_1092 127.0.0.1:50010 
+
+Automatic Cache
+===================
+2015-04-12 12:16:04,198 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: Processed cache report from DatanodeRegistration(127.0.0.1, datanodeUuid=43947538-87d8-4adb-855d-cf61b46b848b, infoPort=50075, ipcPort=50020, storageInfo=lv=-51;cid=CID-6582d17a-f0e3-4879-9e4b-dbb772076b9f;nsid=1679534034;c=0), blocks: 1, processing time: 0 msecs
+
+
+2015-04-12 12:16:11,253 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=listCachePools	src=null	dst=null	perm=null
+2015-04-12 12:16:16,199 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: Processed cache report from DatanodeRegistration(127.0.0.1, datanodeUuid=43947538-87d8-4adb-855d-cf61b46b848b, infoPort=50075, ipcPort=50020, storageInfo=lv=-51;cid=CID-6582d17a-f0e3-4879-9e4b-dbb772076b9f;nsid=1679534034;c=0), blocks: 1, processing time: 0 msecs
+2015-04-12 12:16:28,200 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: Processed cache report from DatanodeRegistration(127.0.0.1, datanodeUuid=43947538-87d8-4adb-855d-cf61b46b848b, infoPort=50075, ipcPort=50020, storageInfo=lv=-51;cid=CID-6582d17a-f0e3-4879-9e4b-dbb772076b9f;nsid=1679534034;c=0), blocks: 1, processing time: 0 msecs
+
+
+2015-04-12 12:16:31,875 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=listCachePools	src=null	dst=null	perm=null
+2015-04-12 12:16:40,199 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: Processed cache report from DatanodeRegistration(127.0.0.1, datanodeUuid=43947538-87d8-4adb-855d-cf61b46b848b, infoPort=50075, ipcPort=50020, storageInfo=lv=-51;cid=CID-6582d17a-f0e3-4879-9e4b-dbb772076b9f;nsid=1679534034;c=0), blocks: 1, processing time: 0 msecs
+
+jsrudani@Jigs:~/hadoopcache/hadoopInstalled/hadoop$ hdfs cacheadmin -listPools
+Found 1 result.
+NAME     OWNER     GROUP       MODE            LIMIT  MAXTTL
+default  jsrudani  supergroup  rwxr-xr-x   unlimited   never
+jsrudani@Jigs:~/hadoopcache/hadoopInstalled/hadoop$ hdfs cacheadmin -listPools -stats
+Found 1 result.
+NAME     OWNER     GROUP       MODE            LIMIT  MAXTTL  BYTES_NEEDED  BYTES_CACHED  BYTES_OVERLIMIT  FILES_NEEDED  FILES_CACHED
+default  jsrudani  supergroup  rwxr-xr-x   unlimited   never            16            16                0             1             1
+
+jsrudani@Jigs:~/hadoopcache/hadoopInstalled/hadoop$ hdfs dfsadmin -report
+Configured Capacity: 487213572096 (453.75 GB)
+Present Capacity: 410618914512 (382.42 GB)
+DFS Remaining: 410615959552 (382.42 GB)
+DFS Used: 2954960 (2.82 MB)
+DFS Used%: 0.00%
+Under replicated blocks: 80
+Blocks with corrupt replicas: 0
+Missing blocks: 0
+
+-------------------------------------------------
+Datanodes available: 1 (1 total, 0 dead)
+
+Live datanodes:
+Name: 127.0.0.1:50010 (localhost)
+Hostname: Jigs
+Decommission Status : Normal
+Configured Capacity: 487213572096 (453.75 GB)
+DFS Used: 2954960 (2.82 MB)
+Non DFS Used: 76594657584 (71.33 GB)
+DFS Remaining: 410615959552 (382.42 GB)
+DFS Used%: 0.00%
+DFS Remaining%: 84.28%
+Configured Cache Capacity: 10485760 (10 MB)
+Cache Used: 12288 (12 KB)
+Cache Remaining: 10473472 (9.99 MB)
+Cache Used%: 0.12%
+Cache Remaining%: 99.88%
+Last contact: Sun Apr 12 16:51:23 CDT 2015
+
+

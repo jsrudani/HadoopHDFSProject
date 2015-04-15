@@ -1,0 +1,328 @@
+
+wordcount
+===============
+
+
+2015-04-12 16:20:35,856 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 16:20:35,856 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 16:20:35,856 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt
+2015-04-12 16:20:35,856 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Non-Stage File. Need to perform IDecider approach
+2015-04-12 16:20:35,856 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txtis accessed 0 times before increment
+2015-04-12 16:20:35,856 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txtis accessed 1 times after increment
+2015-04-12 16:20:35,857 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txtis accessed 1times
+2015-04-12 16:20:35,857 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Not Eligible for caching since access count is less than cache threshold
+2015-04-12 16:20:35,857 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Calling Overload unprotectedSetTimes method ==
+2015-04-12 16:20:35,857 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: Parameters 
+2015-04-12 16:20:35,857 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: ACCESSCNT 1
+2015-04-12 16:20:35,857 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: CACHED 0
+2015-04-12 16:20:35,857 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Inside overload unprotectedSetTimes ==
+2015-04-12 16:20:35,857 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE ACCESSCNT 1
+2015-04-12 16:20:35,857 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE CACHED 0
+2015-04-12 16:20:35,857 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt	dst=null	perm=null
+2015-04-12 16:20:35,888 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Finished loading File: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt in 31 msecs
+2015-04-12 16:20:35,904 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 16:20:35,904 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 16:20:35,904 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt
+2015-04-12 16:20:35,905 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Non-Stage File. Need to perform IDecider approach
+2015-04-12 16:20:35,905 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txtis accessed 0 times before increment
+2015-04-12 16:20:35,905 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txtis accessed 1 times after increment
+2015-04-12 16:20:35,905 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txtis accessed 1times
+2015-04-12 16:20:35,905 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Not Eligible for caching since access count is less than cache threshold
+2015-04-12 16:20:35,905 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Calling Overload unprotectedSetTimes method ==
+2015-04-12 16:20:35,906 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: Parameters 
+2015-04-12 16:20:35,906 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: ACCESSCNT 1
+2015-04-12 16:20:35,906 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: CACHED 0
+2015-04-12 16:20:35,906 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Inside overload unprotectedSetTimes ==
+2015-04-12 16:20:35,906 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE ACCESSCNT 1
+2015-04-12 16:20:35,906 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE CACHED 0
+2015-04-12 16:20:35,906 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt	dst=null	perm=null
+2015-04-12 16:20:35,906 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Finished loading File: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt in 1 msecs
+
+2 Attempt
+===========
+
+
+2015-04-12 16:25:54,403 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 16:25:54,403 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 16:25:54,403 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt
+2015-04-12 16:25:54,403 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Non-Stage File. Need to perform IDecider approach
+2015-04-12 16:25:54,403 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txtis accessed 1 times before increment
+2015-04-12 16:25:54,403 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txtis accessed 2 times after increment
+2015-04-12 16:25:54,403 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txtis accessed 2times
+2015-04-12 16:25:54,403 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Not Eligible for caching since access count is less than cache threshold
+2015-04-12 16:25:54,403 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Calling Overload unprotectedSetTimes method ==
+2015-04-12 16:25:54,403 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: Parameters 
+2015-04-12 16:25:54,403 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: ACCESSCNT 2
+2015-04-12 16:25:54,403 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: CACHED 0
+2015-04-12 16:25:54,403 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Inside overload unprotectedSetTimes ==
+2015-04-12 16:25:54,403 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE ACCESSCNT 2
+2015-04-12 16:25:54,403 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE CACHED 0
+2015-04-12 16:25:54,403 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt	dst=null	perm=null
+2015-04-12 16:25:54,404 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Finished loading File: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt in 0 msecs
+2015-04-12 16:25:54,461 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 16:25:54,461 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 16:25:54,461 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt
+2015-04-12 16:25:54,461 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Non-Stage File. Need to perform IDecider approach
+2015-04-12 16:25:54,461 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txtis accessed 1 times before increment
+2015-04-12 16:25:54,461 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txtis accessed 2 times after increment
+2015-04-12 16:25:54,461 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txtis accessed 2times
+2015-04-12 16:25:54,461 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Not Eligible for caching since access count is less than cache threshold
+2015-04-12 16:25:54,461 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Calling Overload unprotectedSetTimes method ==
+2015-04-12 16:25:54,461 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: Parameters 
+2015-04-12 16:25:54,461 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: ACCESSCNT 2
+2015-04-12 16:25:54,462 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: CACHED 0
+2015-04-12 16:25:54,462 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Inside overload unprotectedSetTimes ==
+2015-04-12 16:25:54,462 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE ACCESSCNT 2
+2015-04-12 16:25:54,462 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE CACHED 0
+2015-04-12 16:25:54,462 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt	dst=null	perm=null
+2015-04-12 16:25:54,462 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Finished loading File: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt in 1 msecs
+
+3rd Attempt
+============
+
+2015-04-12 16:33:08,096 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 16:33:08,096 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 16:33:08,096 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt
+2015-04-12 16:33:08,096 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Non-Stage File. Need to perform IDecider approach
+2015-04-12 16:33:08,096 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txtis accessed 2 times before increment
+2015-04-12 16:33:08,097 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txtis accessed 3 times after increment
+2015-04-12 16:33:08,097 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txtis accessed 3times
+2015-04-12 16:33:08,097 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Eligible for caching
+2015-04-12 16:33:08,097 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in isCached /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt is cached 0
+2015-04-12 16:33:08,097 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in isCached /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt is cached false
+2015-04-12 16:33:08,097 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: Value of isDefaultCachePresent false
+2015-04-12 16:33:08,100 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 16:33:08,100 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 16:33:08,100 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt
+2015-04-12 16:33:08,100 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Non-Stage File. Need to perform IDecider approach
+2015-04-12 16:33:08,101 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txtis accessed 2 times before increment
+2015-04-12 16:33:08,101 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txtis accessed 3 times after increment
+2015-04-12 16:33:08,101 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txtis accessed 3times
+2015-04-12 16:33:08,101 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Eligible for caching
+2015-04-12 16:33:08,101 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in isCached /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt is cached 0
+2015-04-12 16:33:08,101 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in isCached /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt is cached false
+2015-04-12 16:33:08,101 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: Value of isDefaultCachePresent false
+2015-04-12 16:33:08,148 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=listCachePools	src=null	dst=null	perm=null
+2015-04-12 16:33:08,148 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=listCachePools	src=null	dst=null	perm=null
+2015-04-12 16:33:08,148 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: Other Cache pool present 
+2015-04-12 16:33:08,148 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: Other Cache pool present 
+2015-04-12 16:33:08,148 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: Default Cache pool present
+2015-04-12 16:33:08,148 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: Default Cache pool present
+2015-04-12 16:33:08,154 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: addDirective of {path: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt, replication: 1, pool: default} successful.
+2015-04-12 16:33:08,155 INFO org.apache.hadoop.hdfs.server.namenode.CacheManager: addDirective of {path: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt, replication: 1, pool: default} successful.
+2015-04-12 16:33:08,179 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=addCacheDirective	src=null	dst=null	perm=null
+2015-04-12 16:33:08,180 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in setIsCached /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt is cached 0
+2015-04-12 16:33:08,180 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file after caching in setIsCached /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt is cached 1
+2015-04-12 16:33:08,180 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Calling Cache API to cached the file
+2015-04-12 16:33:08,181 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Calling Overload unprotectedSetTimes method ==
+2015-04-12 16:33:08,181 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: Parameters 
+2015-04-12 16:33:08,181 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: ACCESSCNT 3
+2015-04-12 16:33:08,181 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: CACHED 1
+2015-04-12 16:33:08,181 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Inside overload unprotectedSetTimes ==
+2015-04-12 16:33:08,181 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE ACCESSCNT 3
+2015-04-12 16:33:08,181 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE CACHED 1
+2015-04-12 16:33:08,182 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt	dst=null	perm=null
+2015-04-12 16:33:08,182 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Finished loading File: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt in 2 msecs
+2015-04-12 16:33:08,190 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=addCacheDirective	src=null	dst=null	perm=null
+2015-04-12 16:33:08,191 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in setIsCached /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt is cached 0
+2015-04-12 16:33:08,191 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file after caching in setIsCached /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt is cached 1
+2015-04-12 16:33:08,191 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Calling Cache API to cached the file
+2015-04-12 16:33:08,194 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Calling Overload unprotectedSetTimes method ==
+2015-04-12 16:33:08,195 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: Parameters 
+2015-04-12 16:33:08,195 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: ACCESSCNT 3
+2015-04-12 16:33:08,195 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: CACHED 1
+2015-04-12 16:33:08,196 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Inside overload unprotectedSetTimes ==
+2015-04-12 16:33:08,196 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE ACCESSCNT 3
+2015-04-12 16:33:08,196 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE CACHED 1
+2015-04-12 16:33:08,196 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt	dst=null	perm=null
+2015-04-12 16:33:08,196 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Finished loading File: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt in 5 msecs
+
+jsrudani@Jigs:~/hadoopcache/hadoopInstalled/hadoop$ hdfs cacheadmin -listDirectives -stats
+Found 3 entries
+ ID POOL      REPL EXPIRY  PATH                                                                                 BYTES_NEEDED  BYTES_CACHED  FILES_NEEDED  FILES_CACHED
+  1 default      1 never   /home/jsrudani/hadoopcache/hadoopInstalled/data/CacheInput/File1.txt                           16            16             1             1
+  2 default      1 never   /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt            510           510             1             1
+  3 default      1 never   /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt             16            16             1             1
+
+4th attempt
+================
+
+2015-04-12 16:36:35,896 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 16:36:35,896 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 16:36:35,896 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt
+2015-04-12 16:36:35,896 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Non-Stage File. Need to perform IDecider approach
+2015-04-12 16:36:35,896 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txtis accessed 3 times before increment
+2015-04-12 16:36:35,896 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txtis accessed 4 times after increment
+2015-04-12 16:36:35,896 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txtis accessed 4times
+2015-04-12 16:36:35,896 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Eligible for caching
+2015-04-12 16:36:35,897 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in isCached /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt is cached 1
+2015-04-12 16:36:35,897 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in isCached /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt is cached true
+2015-04-12 16:36:35,897 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: File is already cached
+2015-04-12 16:36:35,897 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Calling Overload unprotectedSetTimes method ==
+2015-04-12 16:36:35,897 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: Parameters 
+2015-04-12 16:36:35,897 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: ACCESSCNT 4
+2015-04-12 16:36:35,897 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: CACHED 1
+2015-04-12 16:36:35,897 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Inside overload unprotectedSetTimes ==
+2015-04-12 16:36:35,897 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE ACCESSCNT 4
+2015-04-12 16:36:35,897 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE CACHED 1
+2015-04-12 16:36:35,897 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt	dst=null	perm=null
+2015-04-12 16:36:35,897 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Finished loading File: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt in 0 msecs
+2015-04-12 16:36:36,008 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_AutoCacheFile1n4_4attempt_4PM/_temporary/1/_temporary/attempt_1428874309868_0002_m_000001_0	dst=null	perm=null
+2015-04-12 16:36:36,066 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 16:36:36,066 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 16:36:36,066 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt
+2015-04-12 16:36:36,066 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Non-Stage File. Need to perform IDecider approach
+2015-04-12 16:36:36,067 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txtis accessed 3 times before increment
+2015-04-12 16:36:36,067 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txtis accessed 4 times after increment
+2015-04-12 16:36:36,067 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txtis accessed 4times
+2015-04-12 16:36:36,067 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Eligible for caching
+2015-04-12 16:36:36,067 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in isCached /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt is cached 1
+2015-04-12 16:36:36,067 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in isCached /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt is cached true
+2015-04-12 16:36:36,067 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: File is already cached
+2015-04-12 16:36:36,068 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Calling Overload unprotectedSetTimes method ==
+2015-04-12 16:36:36,068 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: Parameters 
+2015-04-12 16:36:36,068 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: ACCESSCNT 4
+2015-04-12 16:36:36,068 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: CACHED 1
+2015-04-12 16:36:36,068 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Inside overload unprotectedSetTimes ==
+2015-04-12 16:36:36,068 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE ACCESSCNT 4
+2015-04-12 16:36:36,068 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE CACHED 1
+2015-04-12 16:36:36,068 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt	dst=null	perm=null
+2015-04-12 16:36:36,068 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Finished loading File: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt in 1 msecs
+
+5th Attempt Restart
+=======================
+
+2015-04-12 16:43:24,714 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 16:43:24,714 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 16:43:24,714 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt
+2015-04-12 16:43:24,714 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Non-Stage File. Need to perform IDecider approach
+2015-04-12 16:43:24,714 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txtis accessed 4 times before increment
+2015-04-12 16:43:24,714 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txtis accessed 5 times after increment
+2015-04-12 16:43:24,714 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txtis accessed 5times
+2015-04-12 16:43:24,714 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Eligible for caching
+2015-04-12 16:43:24,714 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in isCached /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt is cached 1
+2015-04-12 16:43:24,715 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in isCached /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt is cached true
+2015-04-12 16:43:24,715 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: File is already cached
+2015-04-12 16:43:24,715 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Calling Overload unprotectedSetTimes method ==
+2015-04-12 16:43:24,715 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: Parameters 
+2015-04-12 16:43:24,715 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: ACCESSCNT 5
+2015-04-12 16:43:24,715 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: CACHED 1
+2015-04-12 16:43:24,715 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Inside overload unprotectedSetTimes ==
+2015-04-12 16:43:24,715 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE ACCESSCNT 5
+2015-04-12 16:43:24,715 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE CACHED 1
+2015-04-12 16:43:24,715 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt	dst=null	perm=null
+2015-04-12 16:43:24,715 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Finished loading File: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt in 0 msecs
+2015-04-12 16:43:24,736 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 16:43:24,736 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 16:43:24,736 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt
+2015-04-12 16:43:24,737 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Non-Stage File. Need to perform IDecider approach
+2015-04-12 16:43:24,737 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txtis accessed 4 times before increment
+2015-04-12 16:43:24,737 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txtis accessed 5 times after increment
+2015-04-12 16:43:24,737 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txtis accessed 5times
+2015-04-12 16:43:24,737 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Eligible for caching
+2015-04-12 16:43:24,737 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in isCached /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt is cached 1
+2015-04-12 16:43:24,737 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in isCached /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt is cached true
+2015-04-12 16:43:24,737 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: File is already cached
+2015-04-12 16:43:24,737 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Calling Overload unprotectedSetTimes method ==
+2015-04-12 16:43:24,737 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: Parameters 
+2015-04-12 16:43:24,737 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: ACCESSCNT 5
+2015-04-12 16:43:24,738 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: CACHED 1
+2015-04-12 16:43:24,738 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Inside overload unprotectedSetTimes ==
+2015-04-12 16:43:24,738 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE ACCESSCNT 5
+2015-04-12 16:43:24,738 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE CACHED 1
+2015-04-12 16:43:24,738 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt	dst=null	perm=null
+2015-04-12 16:43:24,738 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Finished loading File: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt in 1 msecs
+
+6th Attempt After processing cache report found 3 cached directives
+===================================================================
+
+2015-04-12 16:47:45,455 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 16:47:45,455 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 16:47:45,455 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt
+2015-04-12 16:47:45,456 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Non-Stage File. Need to perform IDecider approach
+2015-04-12 16:47:45,456 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txtis accessed 5 times before increment
+2015-04-12 16:47:45,456 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txtis accessed 6 times after increment
+2015-04-12 16:47:45,456 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txtis accessed 6times
+2015-04-12 16:47:45,456 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Eligible for caching
+2015-04-12 16:47:45,456 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in isCached /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt is cached 1
+2015-04-12 16:47:45,456 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in isCached /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt is cached true
+2015-04-12 16:47:45,456 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: File is already cached
+2015-04-12 16:47:45,456 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Calling Overload unprotectedSetTimes method ==
+2015-04-12 16:47:45,456 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: Parameters 
+2015-04-12 16:47:45,456 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: ACCESSCNT 6
+2015-04-12 16:47:45,456 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: CACHED 1
+2015-04-12 16:47:45,457 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Inside overload unprotectedSetTimes ==
+2015-04-12 16:47:45,457 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE ACCESSCNT 6
+2015-04-12 16:47:45,457 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE CACHED 1
+2015-04-12 16:47:45,457 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt	dst=null	perm=null
+2015-04-12 16:47:45,457 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Finished loading File: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt in 1 msecs
+2015-04-12 16:47:45,557 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=getfileinfo	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_12_2015_AutoCacheFile1n4_6attempt_4PM/_temporary/1/_temporary/attempt_1428874944919_0002_m_000001_0	dst=null	perm=null
+2015-04-12 16:47:45,569 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 16:47:45,570 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 16:47:45,570 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt
+2015-04-12 16:47:45,570 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Non-Stage File. Need to perform IDecider approach
+2015-04-12 16:47:45,570 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txtis accessed 5 times before increment
+2015-04-12 16:47:45,570 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txtis accessed 6 times after increment
+2015-04-12 16:47:45,570 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txtis accessed 6times
+2015-04-12 16:47:45,570 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Eligible for caching
+2015-04-12 16:47:45,570 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in isCached /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt is cached 1
+2015-04-12 16:47:45,570 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in isCached /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt is cached true
+2015-04-12 16:47:45,570 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: File is already cached
+2015-04-12 16:47:45,571 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Calling Overload unprotectedSetTimes method ==
+2015-04-12 16:47:45,571 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: Parameters 
+2015-04-12 16:47:45,571 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: ACCESSCNT 6
+2015-04-12 16:47:45,571 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: CACHED 1
+2015-04-12 16:47:45,571 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Inside overload unprotectedSetTimes ==
+2015-04-12 16:47:45,571 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE ACCESSCNT 6
+2015-04-12 16:47:45,571 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE CACHED 1
+2015-04-12 16:47:45,571 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt	dst=null	perm=null
+2015-04-12 16:47:45,571 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Finished loading File: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt in 1 msecs
+
+7th Attempt
+===============
+
+
+
+2015-04-12 16:54:30,573 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 16:54:30,573 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 16:54:30,573 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt
+2015-04-12 16:54:30,573 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Non-Stage File. Need to perform IDecider approach
+2015-04-12 16:54:30,573 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txtis accessed 6 times before increment
+2015-04-12 16:54:30,573 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txtis accessed 7 times after increment
+2015-04-12 16:54:30,573 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txtis accessed 7times
+2015-04-12 16:54:30,573 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Eligible for caching
+2015-04-12 16:54:30,574 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in isCached /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt is cached 1
+2015-04-12 16:54:30,574 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in isCached /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt is cached true
+2015-04-12 16:54:30,574 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: File is already cached
+2015-04-12 16:54:30,574 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Calling Overload unprotectedSetTimes method ==
+2015-04-12 16:54:30,574 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: Parameters 
+2015-04-12 16:54:30,574 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: ACCESSCNT 7
+2015-04-12 16:54:30,574 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: CACHED 1
+2015-04-12 16:54:30,574 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Inside overload unprotectedSetTimes ==
+2015-04-12 16:54:30,574 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE ACCESSCNT 7
+2015-04-12 16:54:30,574 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE CACHED 1
+2015-04-12 16:54:30,574 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt	dst=null	perm=null
+2015-04-12 16:54:30,574 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Finished loading File: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File4_autocache.txt in 0 msecs
+2015-04-12 16:54:30,669 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: ================= Inside getBlockLocations =====================
+2015-04-12 16:54:30,669 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of clientMachine: 127.0.0.1
+2015-04-12 16:54:30,669 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Value of src: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt
+2015-04-12 16:54:30,669 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: It is Non-Stage File. Need to perform IDecider approach
+2015-04-12 16:54:30,669 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txtis accessed 6 times before increment
+2015-04-12 16:54:30,669 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txtis accessed 7 times after increment
+2015-04-12 16:54:30,669 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txtis accessed 7times
+2015-04-12 16:54:30,669 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Eligible for caching
+2015-04-12 16:54:30,670 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in isCached /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt is cached 1
+2015-04-12 16:54:30,670 INFO org.apache.hadoop.hdfs.server.namenode.IDecider: The file before caching in isCached /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt is cached true
+2015-04-12 16:54:30,670 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: File is already cached
+2015-04-12 16:54:30,670 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Calling Overload unprotectedSetTimes method ==
+2015-04-12 16:54:30,670 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: Parameters 
+2015-04-12 16:54:30,670 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: ACCESSCNT 7
+2015-04-12 16:54:30,670 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: CACHED 1
+2015-04-12 16:54:30,670 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory:  == Inside overload unprotectedSetTimes ==
+2015-04-12 16:54:30,670 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE ACCESSCNT 7
+2015-04-12 16:54:30,670 INFO org.apache.hadoop.hdfs.server.namenode.FSDirectory: INODE CACHED 1
+2015-04-12 16:54:30,670 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem.audit: allowed=true	ugi=jsrudani (auth:SIMPLE)	ip=/127.0.0.1	cmd=open	src=/home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt	dst=null	perm=null
+2015-04-12 16:54:30,670 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Finished loading File: /home/jsrudani/hadoopcache/hadoopInstalled/data/AutoCacheInput/File1_autocache.txt in 0 msecs
+
+
+

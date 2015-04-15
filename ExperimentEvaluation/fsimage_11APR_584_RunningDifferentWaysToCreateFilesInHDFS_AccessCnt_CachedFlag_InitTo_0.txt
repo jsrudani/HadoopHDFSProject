@@ -1,0 +1,957 @@
+FS_IMAGE
+  IMAGE_VERSION = -51
+  NAMESPACE_ID = 1679534034
+  GENERATION_STAMP = 1000
+  GENERATION_STAMP_V2 = 1066
+  GENERATION_STAMP_V1_LIMIT = 0
+  LAST_ALLOCATED_BLOCK_ID = 1073741890
+  TRANSACTION_ID = 584
+  LAST_INODE_ID = 16520
+  SNAPSHOT_COUNTER = 0
+  NUM_SNAPSHOTS_TOTAL = 0
+  IS_COMPRESSED = false
+  INODES [NUM_INODES = 57]
+    INODE
+      INODE_PATH = /
+      INODE_ID = 16385
+      REPLICATION = 0
+      MODIFICATION_TIME = 2015-04-07 23:22
+      ACCESS_TIME = 1969-12-31 18:00
+      BLOCK_SIZE = 0
+      BLOCKS [NUM_BLOCKS = -1]
+      NS_QUOTA = 9223372036854775807
+      DS_QUOTA = -1
+      IS_SNAPSHOTTABLE_DIR = true
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxr-xr-x
+    SNAPSHOTS [NUM_SNAPSHOTS = 0]
+      SNAPSHOT_QUOTA = 0
+    INODE
+      INODE_PATH = /home
+      INODE_ID = 16386
+      REPLICATION = 0
+      MODIFICATION_TIME = 2015-04-07 22:45
+      ACCESS_TIME = 1969-12-31 18:00
+      BLOCK_SIZE = 0
+      BLOCKS [NUM_BLOCKS = -1]
+      NS_QUOTA = -1
+      DS_QUOTA = -1
+      IS_WITHSNAPSHOT_DIR = false
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxr-xr-x
+    INODE
+      INODE_PATH = /tmp
+      INODE_ID = 16393
+      REPLICATION = 0
+      MODIFICATION_TIME = 2015-04-07 23:22
+      ACCESS_TIME = 1969-12-31 18:00
+      BLOCK_SIZE = 0
+      BLOCKS [NUM_BLOCKS = -1]
+      NS_QUOTA = -1
+      DS_QUOTA = -1
+      IS_WITHSNAPSHOT_DIR = false
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwx------
+    SNAPSHOT_DIR_DIFFS [NUM_SNAPSHOT_DIR_DIFF = 0]
+    INODE
+      INODE_PATH = /home/jsrudani
+      INODE_ID = 16387
+      REPLICATION = 0
+      MODIFICATION_TIME = 2015-04-07 22:45
+      ACCESS_TIME = 1969-12-31 18:00
+      BLOCK_SIZE = 0
+      BLOCKS [NUM_BLOCKS = -1]
+      NS_QUOTA = -1
+      DS_QUOTA = -1
+      IS_WITHSNAPSHOT_DIR = false
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxr-xr-x
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache
+      INODE_ID = 16388
+      REPLICATION = 0
+      MODIFICATION_TIME = 2015-04-07 22:45
+      ACCESS_TIME = 1969-12-31 18:00
+      BLOCK_SIZE = 0
+      BLOCKS [NUM_BLOCKS = -1]
+      NS_QUOTA = -1
+      DS_QUOTA = -1
+      IS_WITHSNAPSHOT_DIR = false
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxr-xr-x
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled
+      INODE_ID = 16389
+      REPLICATION = 0
+      MODIFICATION_TIME = 2015-04-07 22:45
+      ACCESS_TIME = 1969-12-31 18:00
+      BLOCK_SIZE = 0
+      BLOCKS [NUM_BLOCKS = -1]
+      NS_QUOTA = -1
+      DS_QUOTA = -1
+      IS_WITHSNAPSHOT_DIR = false
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxr-xr-x
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data
+      INODE_ID = 16390
+      REPLICATION = 0
+      MODIFICATION_TIME = 2015-04-08 17:45
+      ACCESS_TIME = 1969-12-31 18:00
+      BLOCK_SIZE = 0
+      BLOCKS [NUM_BLOCKS = -1]
+      NS_QUOTA = -1
+      DS_QUOTA = -1
+      IS_WITHSNAPSHOT_DIR = false
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxr-xr-x
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Input
+      INODE_ID = 16391
+      REPLICATION = 0
+      MODIFICATION_TIME = 2015-04-11 23:27
+      ACCESS_TIME = 1969-12-31 18:00
+      BLOCK_SIZE = 0
+      BLOCKS [NUM_BLOCKS = -1]
+      NS_QUOTA = -1
+      DS_QUOTA = -1
+      IS_WITHSNAPSHOT_DIR = false
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxr-xr-x
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_07_2015_11_22PM
+      INODE_ID = 16406
+      REPLICATION = 0
+      MODIFICATION_TIME = 2015-04-07 23:22
+      ACCESS_TIME = 1969-12-31 18:00
+      BLOCK_SIZE = 0
+      BLOCKS [NUM_BLOCKS = -1]
+      NS_QUOTA = -1
+      DS_QUOTA = -1
+      IS_WITHSNAPSHOT_DIR = false
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxr-xr-x
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_07_2015_11_52PM
+      INODE_ID = 16425
+      REPLICATION = 0
+      MODIFICATION_TIME = 2015-04-07 23:52
+      ACCESS_TIME = 1969-12-31 18:00
+      BLOCK_SIZE = 0
+      BLOCKS [NUM_BLOCKS = -1]
+      NS_QUOTA = -1
+      DS_QUOTA = -1
+      IS_WITHSNAPSHOT_DIR = false
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxr-xr-x
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_07_2015_11_59PM
+      INODE_ID = 16445
+      REPLICATION = 0
+      MODIFICATION_TIME = 2015-04-07 23:59
+      ACCESS_TIME = 1969-12-31 18:00
+      BLOCK_SIZE = 0
+      BLOCKS [NUM_BLOCKS = -1]
+      NS_QUOTA = -1
+      DS_QUOTA = -1
+      IS_WITHSNAPSHOT_DIR = false
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxr-xr-x
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_08_2015_5_11PM
+      INODE_ID = 16464
+      REPLICATION = 0
+      MODIFICATION_TIME = 2015-04-08 17:11
+      ACCESS_TIME = 1969-12-31 18:00
+      BLOCK_SIZE = 0
+      BLOCKS [NUM_BLOCKS = -1]
+      NS_QUOTA = -1
+      DS_QUOTA = -1
+      IS_WITHSNAPSHOT_DIR = false
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxr-xr-x
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_08_2015_5_16PM
+      INODE_ID = 16483
+      REPLICATION = 0
+      MODIFICATION_TIME = 2015-04-08 17:17
+      ACCESS_TIME = 1969-12-31 18:00
+      BLOCK_SIZE = 0
+      BLOCKS [NUM_BLOCKS = -1]
+      NS_QUOTA = -1
+      DS_QUOTA = -1
+      IS_WITHSNAPSHOT_DIR = false
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxr-xr-x
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_08_2015_5_45PM
+      INODE_ID = 16501
+      REPLICATION = 0
+      MODIFICATION_TIME = 2015-04-08 17:45
+      ACCESS_TIME = 1969-12-31 18:00
+      BLOCK_SIZE = 0
+      BLOCKS [NUM_BLOCKS = -1]
+      NS_QUOTA = -1
+      DS_QUOTA = -1
+      IS_WITHSNAPSHOT_DIR = false
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxr-xr-x
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File1.txt
+      INODE_ID = 16516
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-11 23:10
+      ACCESS_TIME = 2015-04-11 23:10
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741887
+          NUM_BYTES = 16
+          GENERATION_STAMP = 1063
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rw-r--r--
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File2_moveFromLocal_cmd.txt
+      INODE_ID = 16517
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-11 23:19
+      ACCESS_TIME = 2015-04-11 23:19
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741888
+          NUM_BYTES = 145
+          GENERATION_STAMP = 1064
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rw-r--r--
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File3_appendToFile_cmd.txt
+      INODE_ID = 16515
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-11 22:59
+      ACCESS_TIME = 2015-04-11 22:59
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741886
+          NUM_BYTES = 553
+          GENERATION_STAMP = 1062
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rw-r--r--
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File4_put_cmd.txt
+      INODE_ID = 16518
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-11 23:24
+      ACCESS_TIME = 2015-04-11 23:24
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741889
+          NUM_BYTES = 510
+          GENERATION_STAMP = 1065
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rw-r--r--
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File5_put_cmd_multipleFiles.txt
+      INODE_ID = 16519
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-11 23:24
+      ACCESS_TIME = 2015-04-11 23:24
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741890
+          NUM_BYTES = 510
+          GENERATION_STAMP = 1066
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rw-r--r--
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Input/File6_touch_cmd.txt
+      INODE_ID = 16520
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-11 23:27
+      ACCESS_TIME = 2015-04-11 23:27
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 0]
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rw-r--r--
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_07_2015_11_22PM/_SUCCESS
+      INODE_ID = 16415
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-07 23:22
+      ACCESS_TIME = 2015-04-07 23:22
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 0]
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rw-r--r--
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_07_2015_11_22PM/part-r-00000
+      INODE_ID = 16413
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-07 23:22
+      ACCESS_TIME = 2015-04-07 23:22
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741832
+          NUM_BYTES = 22
+          GENERATION_STAMP = 1008
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rw-r--r--
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_07_2015_11_52PM/_SUCCESS
+      INODE_ID = 16434
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-07 23:52
+      ACCESS_TIME = 2015-04-07 23:52
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 0]
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rw-r--r--
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_07_2015_11_52PM/part-r-00000
+      INODE_ID = 16432
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-07 23:52
+      ACCESS_TIME = 2015-04-07 23:52
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741842
+          NUM_BYTES = 22
+          GENERATION_STAMP = 1018
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rw-r--r--
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_07_2015_11_59PM/_SUCCESS
+      INODE_ID = 16453
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-07 23:59
+      ACCESS_TIME = 2015-04-07 23:59
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 0]
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rw-r--r--
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_07_2015_11_59PM/part-r-00000
+      INODE_ID = 16451
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-07 23:59
+      ACCESS_TIME = 2015-04-07 23:59
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741852
+          NUM_BYTES = 22
+          GENERATION_STAMP = 1028
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rw-r--r--
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_08_2015_5_11PM/_SUCCESS
+      INODE_ID = 16472
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-08 17:11
+      ACCESS_TIME = 2015-04-08 17:11
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 0]
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rw-r--r--
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_08_2015_5_11PM/part-r-00000
+      INODE_ID = 16470
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-08 17:11
+      ACCESS_TIME = 2015-04-08 17:11
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741862
+          NUM_BYTES = 22
+          GENERATION_STAMP = 1038
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rw-r--r--
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_08_2015_5_16PM/_SUCCESS
+      INODE_ID = 16491
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-08 17:17
+      ACCESS_TIME = 2015-04-08 17:17
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 0]
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rw-r--r--
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_08_2015_5_16PM/part-r-00000
+      INODE_ID = 16489
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-08 17:17
+      ACCESS_TIME = 2015-04-08 17:17
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741872
+          NUM_BYTES = 22
+          GENERATION_STAMP = 1048
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rw-r--r--
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_08_2015_5_45PM/_SUCCESS
+      INODE_ID = 16510
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-08 17:45
+      ACCESS_TIME = 2015-04-08 17:45
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 0]
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rw-r--r--
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_04_08_2015_5_45PM/part-r-00000
+      INODE_ID = 16508
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-08 17:45
+      ACCESS_TIME = 2015-04-08 17:45
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741882
+          NUM_BYTES = 22
+          GENERATION_STAMP = 1058
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rw-r--r--
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn
+      INODE_ID = 16394
+      REPLICATION = 0
+      MODIFICATION_TIME = 2015-04-07 23:22
+      ACCESS_TIME = 1969-12-31 18:00
+      BLOCK_SIZE = 0
+      BLOCKS [NUM_BLOCKS = -1]
+      NS_QUOTA = -1
+      DS_QUOTA = -1
+      IS_WITHSNAPSHOT_DIR = false
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwx------
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn/staging
+      INODE_ID = 16395
+      REPLICATION = 0
+      MODIFICATION_TIME = 2015-04-07 23:22
+      ACCESS_TIME = 1969-12-31 18:00
+      BLOCK_SIZE = 0
+      BLOCKS [NUM_BLOCKS = -1]
+      NS_QUOTA = -1
+      DS_QUOTA = -1
+      IS_WITHSNAPSHOT_DIR = false
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwx------
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn/staging/history
+      INODE_ID = 16403
+      REPLICATION = 0
+      MODIFICATION_TIME = 2015-04-07 23:22
+      ACCESS_TIME = 1969-12-31 18:00
+      BLOCK_SIZE = 0
+      BLOCKS [NUM_BLOCKS = -1]
+      NS_QUOTA = -1
+      DS_QUOTA = -1
+      IS_WITHSNAPSHOT_DIR = false
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxr-xr-x
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn/staging/jsrudani
+      INODE_ID = 16396
+      REPLICATION = 0
+      MODIFICATION_TIME = 2015-04-07 23:22
+      ACCESS_TIME = 1969-12-31 18:00
+      BLOCK_SIZE = 0
+      BLOCKS [NUM_BLOCKS = -1]
+      NS_QUOTA = -1
+      DS_QUOTA = -1
+      IS_WITHSNAPSHOT_DIR = false
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwx------
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn/staging/history/done_intermediate
+      INODE_ID = 16404
+      REPLICATION = 0
+      MODIFICATION_TIME = 2015-04-07 23:22
+      ACCESS_TIME = 1969-12-31 18:00
+      BLOCK_SIZE = 0
+      BLOCKS [NUM_BLOCKS = -1]
+      NS_QUOTA = -1
+      DS_QUOTA = -1
+      IS_WITHSNAPSHOT_DIR = false
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxrwxrwt
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani
+      INODE_ID = 16405
+      REPLICATION = 0
+      MODIFICATION_TIME = 2015-04-08 17:45
+      ACCESS_TIME = 1969-12-31 18:00
+      BLOCK_SIZE = 0
+      BLOCKS [NUM_BLOCKS = -1]
+      NS_QUOTA = -1
+      DS_QUOTA = -1
+      IS_WITHSNAPSHOT_DIR = false
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxrwx---
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428466878117_0001-1428466961268-jsrudani-word+count-1428466977069-1-1-SUCCEEDED-default-1428466966742.jhist
+      INODE_ID = 16418
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-07 23:22
+      ACCESS_TIME = 2015-04-07 23:22
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741834
+          NUM_BYTES = 32749
+          GENERATION_STAMP = 1010
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxrwx---
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428466878117_0001.summary
+      INODE_ID = 16417
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-07 23:22
+      ACCESS_TIME = 2015-04-07 23:22
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741833
+          NUM_BYTES = 351
+          GENERATION_STAMP = 1009
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxrwx---
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428466878117_0001_conf.xml
+      INODE_ID = 16419
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-07 23:22
+      ACCESS_TIME = 2015-04-07 23:22
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741835
+          NUM_BYTES = 84589
+          GENERATION_STAMP = 1011
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxrwx---
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428468700206_0001-1428468749620-jsrudani-word+count-1428468764671-1-1-SUCCEEDED-default-1428468754464.jhist
+      INODE_ID = 16437
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-07 23:52
+      ACCESS_TIME = 2015-04-07 23:52
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741844
+          NUM_BYTES = 32748
+          GENERATION_STAMP = 1020
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxrwx---
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428468700206_0001.summary
+      INODE_ID = 16436
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-07 23:52
+      ACCESS_TIME = 2015-04-07 23:52
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741843
+          NUM_BYTES = 351
+          GENERATION_STAMP = 1019
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxrwx---
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428468700206_0001_conf.xml
+      INODE_ID = 16438
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-07 23:52
+      ACCESS_TIME = 2015-04-07 23:52
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741845
+          NUM_BYTES = 84585
+          GENERATION_STAMP = 1021
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxrwx---
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428468700206_0002-1428469172263-jsrudani-word+count-1428469185987-1-1-SUCCEEDED-default-1428469176126.jhist
+      INODE_ID = 16456
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-07 23:59
+      ACCESS_TIME = 2015-04-07 23:59
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741854
+          NUM_BYTES = 32753
+          GENERATION_STAMP = 1030
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxrwx---
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428468700206_0002.summary
+      INODE_ID = 16455
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-07 23:59
+      ACCESS_TIME = 2015-04-07 23:59
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741853
+          NUM_BYTES = 351
+          GENERATION_STAMP = 1029
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxrwx---
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428468700206_0002_conf.xml
+      INODE_ID = 16457
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-07 23:59
+      ACCESS_TIME = 2015-04-07 23:59
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741855
+          NUM_BYTES = 84585
+          GENERATION_STAMP = 1031
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxrwx---
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428531001327_0001-1428531095829-jsrudani-word+count-1428531111688-1-1-SUCCEEDED-default-1428531101585.jhist
+      INODE_ID = 16475
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-08 17:11
+      ACCESS_TIME = 2015-04-08 17:11
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741864
+          NUM_BYTES = 32748
+          GENERATION_STAMP = 1040
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxrwx---
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428531001327_0001.summary
+      INODE_ID = 16474
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-08 17:11
+      ACCESS_TIME = 2015-04-08 17:11
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741863
+          NUM_BYTES = 351
+          GENERATION_STAMP = 1039
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxrwx---
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428531001327_0001_conf.xml
+      INODE_ID = 16476
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-08 17:11
+      ACCESS_TIME = 2015-04-08 17:11
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741865
+          NUM_BYTES = 84584
+          GENERATION_STAMP = 1041
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxrwx---
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428531001327_0002-1428531419272-jsrudani-word+count-1428531432637-1-1-SUCCEEDED-default-1428531422855.jhist
+      INODE_ID = 16494
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-08 17:17
+      ACCESS_TIME = 2015-04-08 17:17
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741874
+          NUM_BYTES = 32747
+          GENERATION_STAMP = 1050
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxrwx---
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428531001327_0002.summary
+      INODE_ID = 16493
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-08 17:17
+      ACCESS_TIME = 2015-04-08 17:17
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741873
+          NUM_BYTES = 351
+          GENERATION_STAMP = 1049
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxrwx---
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428531001327_0002_conf.xml
+      INODE_ID = 16495
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-08 17:17
+      ACCESS_TIME = 2015-04-08 17:17
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741875
+          NUM_BYTES = 84584
+          GENERATION_STAMP = 1051
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxrwx---
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428533090320_0001-1428533133727-jsrudani-word+count-1428533148716-1-1-SUCCEEDED-default-1428533138344.jhist
+      INODE_ID = 16513
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-08 17:45
+      ACCESS_TIME = 2015-04-08 17:45
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741884
+          NUM_BYTES = 32750
+          GENERATION_STAMP = 1060
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxrwx---
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428533090320_0001.summary
+      INODE_ID = 16512
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-08 17:45
+      ACCESS_TIME = 2015-04-08 17:45
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741883
+          NUM_BYTES = 351
+          GENERATION_STAMP = 1059
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxrwx---
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn/staging/history/done_intermediate/jsrudani/job_1428533090320_0001_conf.xml
+      INODE_ID = 16514
+      REPLICATION = 3
+      MODIFICATION_TIME = 2015-04-08 17:45
+      ACCESS_TIME = 2015-04-08 17:45
+      BLOCK_SIZE = 134217728
+      BLOCKS [NUM_BLOCKS = 1]
+        BLOCK
+          BLOCK_ID = 1073741885
+          NUM_BYTES = 84584
+          GENERATION_STAMP = 1061
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwxrwx---
+      ACCESS_COUNT = 0
+      IS_CACHED = 0
+    INODE
+      INODE_PATH = /tmp/hadoop-yarn/staging/jsrudani/.staging
+      INODE_ID = 16397
+      REPLICATION = 0
+      MODIFICATION_TIME = 2015-04-08 17:45
+      ACCESS_TIME = 1969-12-31 18:00
+      BLOCK_SIZE = 0
+      BLOCKS [NUM_BLOCKS = -1]
+      NS_QUOTA = -1
+      DS_QUOTA = -1
+      IS_WITHSNAPSHOT_DIR = false
+      PERMISSIONS
+        USER_NAME = jsrudani
+        GROUP_NAME = supergroup
+        PERMISSION_STRING = rwx------
+  INODES_UNDER_CONSTRUCTION [NUM_INODES_UNDER_CONSTRUCTION = 0]
+  CURRENT_DELEGATION_KEY_ID = 0
+  DELEGATION_KEYS [NUM_DELEGATION_KEYS = 0]
+  DELEGATION_TOKEN_SEQUENCE_NUMBER = 0
+  DELEGATION_TOKENS [NUM_DELEGATION_TOKENS = 0]
+  CACHE_NEXT_ENTRY_ID = 1

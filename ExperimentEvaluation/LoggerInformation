@@ -1,0 +1,52 @@
+Logger 1 - DFSClient.java	REMOVED
+Line No :- 1279
+Method Name :- public DFSInputStream open(String src, int buffersize, boolean verifyChecksum);
+
+Logger 1 - FSNamesystem.java	ADDED	Perfect
+Line No :- 1524
+Method Name :- LocatedBlocks getBlockLocations(String clientMachine, String src,long offset, long length) throws AccessControlException, FileNotFoundException, UnresolvedLinkException, IOException {}
+
+	// Added Logger statement - 03/22/2015 9:10 PM
+    	LOG.info("================= Read Ops Starts =====================");
+    	LOG.info("Value of Input File: " + src);
+    	LOG.info("================= Read Ops Ends =====================");
+
+WordCount Example
+=================
+hadoop jar ~/hadoopcache/hadoopsrccode/hadoop-mapreduce-project/hadoop-mapreduce-examples/target/hadoop-mapreduce-examples-2.3.0.jar wordcount /home/jsrudani/hadoopcache/hadoopInstalled/data/Input /home/jsrudani/hadoopcache/hadoopInstalled/data/Output_03_22_2015_12AM
+
+Build Command
+=============
+mvn package -Pdist,native -DskipTests=true -Dtar
+
+Copy Jar Command
+================
+cp hadoop-hdfs-2.3.0.jar ~/hadoopcache/hadoopInstalled/hadoop/share/hadoop/hdfs/.
+cp IDecider.java /home/jsrudani/hadoopcache/hadoopsrccode/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/.
+
+Diff Command
+==============
+diff /home/jsrudani/hadoopcache/hadoopsrccode/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/FSNamesystem.java FSNamesystem.java
+
+tail -f section
+=================
+
+How to view FSImage and Edit Log
+==============================================
+Path :- ~/hadoopcache/hadoopInstalled/data/namenode/current/fsimage_0000000000000001011
+Path :- ~/hadoopcache/hadoopInstalled/data/namenode/current/edits_0000000000000001013-0000000000000001014
+	~/hadoopcache/hadoopInstalled/data/namenode/current/edits_inprogress_0000000000000001015
+
+Command :- 
+hdfs dfsadmin -fetchImage ~/hadoopcache/HDFSJarArchive/
+hdfs oiv -i ~/hadoopcache/HDFSJarArchive/fsimage_0000000000000001011 -o ~/hadoopcache/HDFSJarArchive/fsimage_b4changes.txt -p Indented
+
+hdfs oev -i ~/hadoopcache/hadoopInstalled/data/namenode/current/edits_0000000000000000127-0000000000000000213 -o ~/hadoopcache/HDFSJarArchive/editlog_127_213.xml
+
+
+127.0.0.1, datanodeUuid=e7b5a8a4-6977-4f42-8ef3-665f52fcc62a, infoPort=50075, ipcPort=50020, storageInfo=lv=-51;cid=CID-55e07d5a-010f-46f2-a1f7-b6c8c99b1852;nsid=461043439;c=0), blocks: 0, processing time: 0 msecs
+BP-1532118852-127.0.1.1-1427751295916
+
+fsimage_0000000000000000002
+
+
