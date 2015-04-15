@@ -512,6 +512,11 @@ public final class CacheManager {
       long id = getNextDirectiveId();
       directive = new CacheDirective(id, path, replication, expiryTime);
       addInternal(directive, pool);
+      
+      // Set the Access count and Is Cached flag to CACHETHRESHOLD/True respectively as 
+      // directive is added through cacheadmin addDirective command api.
+      namesystem.getIDecider().setAccessCountAndIsCachedFlag(directive.getPath());
+      
     } catch (IOException e) {
       LOG.warn("addDirective of " + info + " failed: ", e);
       throw e;
@@ -654,6 +659,9 @@ public final class CacheManager {
       CacheDirective directive = getById(id);
       checkWritePermission(pc, directive.getPool());
       removeInternal(directive);
+  	 //  Set the Is Cached flag to false as directive is removed through cacheadmin 
+  	 //  removeDirective/removeDirectives command api.
+  	 namesystem.getIDecider().setIsCached(directive.getPath(), false);
     } catch (IOException e) {
       LOG.warn("removeDirective of " + id + " failed: ", e);
       throw e;
