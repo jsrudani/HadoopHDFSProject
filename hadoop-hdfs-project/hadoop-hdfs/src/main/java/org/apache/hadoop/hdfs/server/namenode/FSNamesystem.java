@@ -751,7 +751,7 @@ public class FSNamesystem implements Namesystem, FSClusterStats,
       /*
        * Instantiating the IDecider reference - IDecider 03/23/2015 - 11:21 AM
        */
-      this.idecider = new IDecider(this.dir);
+      this.idecider = new IDecider(this.dir, conf);
       this.auditLoggers = initAuditLoggers(conf);
       this.isDefaultAuditLogger = auditLoggers.size() == 1 &&
         auditLoggers.get(0) instanceof DefaultAuditLogger;
@@ -1545,6 +1545,8 @@ public class FSNamesystem implements Namesystem, FSClusterStats,
 		if (idecider.checkFileEligiblityForCache(src)) {
 			LOG.info("Eligible for caching");
 			if (!idecider.isCached(src)) {
+				// Calling method to cached the file - IDecider 04/10/2015
+				idecider.cacheFile(src, this);
 				idecider.setIsCached(src, true);
 				LOG.info("Calling Cache API to cached the file");
 			} else
@@ -1553,8 +1555,12 @@ public class FSNamesystem implements Namesystem, FSClusterStats,
 			LOG.info("Not Eligible for caching since access count is less than cache threshold");
 		}
 	}
+	// Check the total time to load a file IDecider.
+	long loadFileStart = now();
     LocatedBlocks blocks = getBlockLocations(src, offset, length, true, true,
         true);
+    long timeTakenToLoadFile = now() - loadFileStart;
+    LOG.info("Finished loading File: " + src +" in " + timeTakenToLoadFile + " msecs");
     if (blocks != null) {
       blockManager.getDatanodeManager().sortLocatedBlocks(
           clientMachine, blocks.getLocatedBlocks());
@@ -6736,6 +6742,10 @@ public class FSNamesystem implements Namesystem, FSClusterStats,
   /** @return the cache manager. */
   public CacheManager getCacheManager() {
     return cacheManager;
+  }
+  /** @return the IDecider. */
+  public IDecider getIDecider() {
+	    return idecider;
   }
 
   @Override  // NameNodeMXBean
